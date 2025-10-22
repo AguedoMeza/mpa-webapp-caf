@@ -1,0 +1,217 @@
+:root{
+  --bg:#262626;
+  --surface:#fff;
+  --text:#111;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --radius:10px;
+  --shadow:0 4px 12px rgba(0,0,0,.08);
+   --font-heading: "Antonio", "Anton", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+
+/* Fondo global similar */
+body{
+  background:var(--bg);
+  color:var(--text);
+}
+   
+
+/* Chip de usuario */
+.userchip{
+  background: var(--surface);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:8px 12px;
+  box-shadow: var(--shadow);
+}
+.userchip .avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:#ddd;display:inline-block;
+}
+
+.brand-logo{
+  height: 54px;   /* antes 42px */
+  width: auto;
+  object-fit: contain;
+}
+@media (max-width: 420px){
+  .brand-logo{ height: 46px; }
+}
+
+/* Card look */
+.card{
+  border-radius: var(--radius);
+}
+
+/* Inputs más redondos como en tu maqueta */
+.form-control,
+.form-select{
+  height:44px;
+  border-radius:8px;
+  border-color: var(--line);
+}
+.form-label{
+  font-size:.9rem;
+  color: var(--muted);
+}
+
+/* Botón primario estilo "negro MPA" */
+ /* Botón naranja con gradiente */
+.btn.cbre-button{
+  background: linear-gradient(135deg, #F7941D 0%, #F7941D 100%);
+  color:#fff;
+  border:0;
+  font-weight:700;
+  border-radius:12px;
+  transition: transform .15s ease, box-shadow .2s ease, filter .1s ease;
+}
+
+.btn.cbre-button:hover{
+  background: linear-gradient(135deg, #F7941D 0%, #F7941D 100%);
+  transform: translateY(-2px); 
+}
+
+.btn.cbre-button:active{
+  transform: translateY(0); 
+  filter: brightness(0.98);
+}
+
+.btn.cbre-button:disabled{
+  opacity:.75;
+  transform:none;
+  box-shadow:none;
+}
+
+
+/* Tabla con header sticky */
+.table-wrap{
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.table-wrap thead.table-dark th{
+  background-color: #2BB14A!important;
+  color: #ffffff !important;     
+  border-color: #9fa5aa !important;
+}
+
+.sticky-header th{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Hover de filas sutil */
+.table tbody tr:hover{
+  background: #fafafa;
+}
+
+/* ===== NAVBAR (scope: .app-navbar) ===== */
+.app-navbar {
+  background-color: #1a1a1a !important;
+  color: #ffffff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.35);
+}
+.app-navbar .container-fluid{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-navbar .navbar-brand a {
+  color: #ffffff;
+  font-size: 1.25rem; /* 1.5rem si quieres más grande */
+  font-weight: bold;
+  text-decoration: none;
+}
+.app-navbar .navbar-brand a:hover {
+  color: #bbbbbb;
+}
+
+.app-navbar .navbar-nav a {
+  color: #ffffff;
+  margin-right: 15px;
+  text-decoration: none;
+  font-weight: 500;
+  opacity: .95;
+}
+.app-navbar .navbar-nav a:last-child{ margin-right: 0; }
+.app-navbar .navbar-nav a:hover{ opacity: 1; }
+.app-navbar .navbar-nav a.active {
+  border-bottom: 2px solid #ffffff;
+}
+
+.app-navbar .navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.app-navbar .logout-btn {
+  background-color: #F7941D;
+  border: none;
+  padding: 8px 16px;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color .3s;
+}
+.app-navbar .logout-btn:hover {
+  background-color: #F7941D;
+}
+
+/* Aplica a títulos globales o sólo a la clase .page-title */
+h1, .page-title{
+  font-family: var(--font-heading);
+  font-weight: 600;           /* 600 queda elegante con Antonio */
+  letter-spacing: .2px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* Responsive pequeño: oculta el subtítulo "AML System" si falta espacio */
+@media (max-width: 420px){
+  .app-navbar .navbar-brand span{ display:none; }
+}
+
+/* --- Stacking en móvil, inline desde md --- */
+.inline-md { /* contenedor de grupos label+input */
+  /* nada en xs */
+}
+@media (min-width: 768px) {
+  .inline-md { display: flex; align-items: center; }
+}
+
+/* Label: margen abajo en móvil, margen derecho en md+ */
+.label-resp { margin-bottom: .25rem; }
+@media (min-width: 768px) {
+  .label-resp { margin-bottom: 0; margin-right: .5rem; }
+}
+
+/* Anchos responsivos: full en móvil, fijos en md+ */
+.w-md-4rem   { }
+.w-md-6rem   { }
+.w-md-10rem  { }
+.w-md-20rem  { }
+.w-md-30rem  { }
+@media (min-width: 768px) {
+  .w-md-4rem   { width: 4rem !important; }
+  .w-md-6rem   { width: 6rem !important; }
+  .w-md-10rem  { width: 10rem !important; }
+  .w-md-20rem  { width: 20rem !important; }
+  .w-md-30rem  { width: 30rem !important; }
+}
+
+/* En móvil, inputs/selects ocupan todo el ancho */
+.full-sm { width: 100%; }
+
+/* Empuja el botón a la derecha en md+ */
+.ms-md-auto { }
+@media (min-width: 768px) {
+  .ms-md-auto { margin-left: auto !important; }
+}
+

@@ -1,0 +1,293 @@
+:root {
+  --nav-font: 0.875rem;
+  /* 16px */
+  --nav-icon: 1.375rem;
+  /* 22px */
+  --nav-gap: 0.875rem;
+  /* 14px */
+  --nav-x: 0.5rem;
+  /* 28px */
+  --nav-y: 0.5rem;
+  /* 18px */
+
+  --nav-sub-font: 0.90625rem;
+  /* 14.5px */
+  --nav-sub-icon: 1.125rem;
+  /* 18px */
+  --nav-sub-indent: 3.5rem;
+  /* 56px */
+  --nav-y-sub: 0.75rem;
+  /* 12px */
+
+  --nav-row-gap: 0.25rem;
+  /* 4px */
+   --brand-orange: #ff8c42;
+}
+
+
+/* SideMenu Styles - Fixed Sidebar */
+.sidebar-fixed {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 280px;
+  z-index: 1000;
+}
+
+.sidebar-content {
+  height: 100vh;
+  background: linear-gradient(180deg, #313131 0%, #262626 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.sidebar-header {
+  padding: 1.5625rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 5rem;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.logo-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  background: #ff8c42;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.logo-link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 34px;
+  /* ajusta a tu gusto: 28–40px suele ir bien */
+  width: auto;
+  display: block;
+  object-fit: contain;
+  /* opcional en fondos oscuros: */
+  /* filter: drop-shadow(0 1px 0 rgba(0,0,0,.25)); */
+}
+
+.system-title h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  color: white;
+}
+
+.system-title p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  margin: 0;
+}
+
+/* Navigation */
+.sidebar-nav {
+  padding: 20px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nav-row-gap);
+}
+
+.sidebar-nav .nav {
+  --bs-nav-link-padding-x: 0;
+  --bs-nav-link-padding-y: 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: var(--nav-y) var(--nav-x);
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--nav-font);
+  border-radius: 0; 
+}
+
+.nav-item:hover {
+  background: rgba(255, 140, 66, 0.1);  
+  padding-left: calc(var(--nav-x) + 0.3125rem); /* +5px */
+  padding-top: var(--nav-y);
+  padding-bottom: var(--nav-y);
+}
+
+.nav-item.active {
+  background: rgba(255, 140, 66, 0.2); 
+  border-right: 0.25rem solid #ff8c42;
+}
+
+.nav-icon {
+  margin-right: var(--nav-gap);
+  font-size: var(--nav-icon);
+  width: calc(var(--nav-icon) + 0.25rem); /* +4px para alinear */
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.nav-arrow {
+  margin-left: auto;
+  font-size:  1rem; /* 16px */
+  flex-shrink: 0;
+}
+
+/* Submenu */
+.submenu-container {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.submenu-item {
+  padding-left: var(--nav-sub-indent) !important;
+  font-size: var(--nav-sub-font);
+  border-right: none;
+  padding-top: var(--nav-y-sub) !important;
+  padding-bottom: var(--nav-y-sub) !important;
+}
+
+.submenu-item:hover {
+  padding-left: calc(var(--nav-sub-indent) + 0.3125rem) !important; /* +5px */
+  background: rgba(255,140,66,.05);
+  padding-top: var(--nav-y-sub) !important;
+  padding-bottom: var(--nav-y-sub) !important;
+}
+
+.submenu-icon {
+  font-size: var(--nav-sub-icon);
+  margin-right: 0.75rem; /* 12px */
+  width: calc(var(--nav-sub-icon) + 0.125rem); /* +2px */
+}
+
+
+/* ===== Hover / Activo: naranja ===== */
+.sidebar-nav .nav-item:hover,
+.sidebar-nav .nav-item.active,
+.sidebar-nav .submenu-item:hover,
+.sidebar-nav .submenu-item.active{
+  color: var(--brand-orange)!important;
+}
+
+.sidebar-nav .nav-item:hover .nav-icon,
+.sidebar-nav .nav-item.active .nav-icon,
+.sidebar-nav .nav-item:hover .nav-arrow,
+.sidebar-nav .nav-item.active .nav-arrow,
+.sidebar-nav .submenu-item:hover .submenu-icon,
+.sidebar-nav .submenu-item.active .submenu-icon{
+  color: var(--brand-orange) !important;
+}
+
+/* (opcional) transición suave del color */
+.sidebar-nav .nav-item,
+.sidebar-nav .submenu-item,
+.sidebar-nav .nav-icon,
+.sidebar-nav .submenu-icon,
+.sidebar-nav .nav-arrow{
+  transition: color .2s ease;
+}
+
+
+/* Ajustes base para animación suave */
+.nav-icon,
+.nav-text,
+.nav-arrow {
+  transition: transform .28s ease, color .2s ease; /* un poco más despacio */
+}
+
+/* Variable para controlar cuánto se mueve */
+.nav-item { --hover-shift: 0.2rem; } /* ~3.2px; sube/baja a tu gusto */
+
+/* Desplazar icono y texto en hover */
+.nav-item:hover .nav-icon,
+.nav-item:hover .nav-text {
+  transform: translateX(var(--hover-shift));
+}
+
+/* (Opcional) si NO quieres mover la flecha, deja esto como está.
+   Si también quieres moverla, descomenta: */
+/*
+.nav-item:hover .nav-arrow {
+  transform: translateX(var(--hover-shift));
+}
+*/
+
+/* Respeto a reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .nav-icon, .nav-text, .nav-arrow {
+    transition: none;
+    transform: none !important;
+  }
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar-fixed {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease, width 0.3s ease;
+  }
+
+  .sidebar-fixed.mobile-visible {
+    transform: translateX(0);
+  }
+}
+
+/* Fix for Bootstrap conflicts */
+.sidebar-content .nav-link {
+  color: inherit;
+  padding: var(--nav-y) var(--nav-x);
+}
+
+.sidebar-content .nav-link:hover,
+.sidebar-content .nav-link:focus {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+@media (min-width: 1200px) {
+  .logo-img {
+    height: 40px;
+  }
+}

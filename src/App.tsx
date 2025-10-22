@@ -1,26 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+
+
+import React from 'react';
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './custom.css';
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import NavBar from './layouts/NavBar';
+import Bienvenida from './components/Inicio/Bienvenida';
+
+
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <HashRouter>
+      <NavBar>
+        <Routes>
+          <Route path="/" element={<Bienvenida />} />
+        </Routes>
+      </NavBar>
+    </HashRouter>
   );
-}
+};
 
 export default App;
