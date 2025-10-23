@@ -1,0 +1,12 @@
+h2 {
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background-color: #2f58a7;
+  border-color: #2f58a7;
+}
+
+.btn-primary:hover {
+  background-color: #1d3f7c;
+}
