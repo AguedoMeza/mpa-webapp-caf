@@ -12,6 +12,8 @@ import ProtectedRoute from './layouts/ProtectedRoute';
 import SolicitudCAFForm from './components/Inicio/CAF/SolicitudCAFForm';
 import FormatoCO from './components/Inicio/CAF/FormatoCO';
 import FormatoOC from './components/Inicio/CAF/FormatoOC';
+import FormatoPD from './components/Inicio/CAF/FormatoPD';
+import FormatoFD from './components/Inicio/CAF/FormatoFD';
 
 
 const App: React.FC = () => {
@@ -26,6 +28,8 @@ const App: React.FC = () => {
           />
           <Route path="/formato-co" element= {<ProtectedRoute><FormatoCO/></ProtectedRoute>}  />
            <Route path="/formato-oc" element= {<ProtectedRoute><FormatoOC/></ProtectedRoute>}  />
+           <Route path="/formato-pd" element= {<ProtectedRoute><FormatoPD/></ProtectedRoute>}  />
+            <Route path="/formato-fd" element= {<ProtectedRoute><FormatoFD/></ProtectedRoute>}  />
         </Routes>
       </NavBar>
     </HashRouter>
