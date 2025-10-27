@@ -192,13 +192,16 @@ const FormatoCO: React.FC = () => {
             ].map((doc, i) => (
               <Form.Check key={i} type="checkbox" label={doc} className="mb-1" />
             ))}
+
+            <Form.Group className="mt-4">
+              <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
+              <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} />
+            </Form.Group>
           </Col>
+
         </Row>
 
-        <Form.Group className="mt-4">
-          <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
-          <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} />
-        </Form.Group>
+
 
         <div className="text-center mt-4">
           <Button type="submit" variant="primary" className="px-4">

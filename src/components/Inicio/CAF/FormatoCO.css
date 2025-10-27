@@ -1,26 +1,170 @@
+/* ====== BASE GENERAL ====== */
+.container {
+  max-width: 1200px;
+  padding: 0 1rem;
+}
+
 h2 {
   letter-spacing: 0.5px;
+  color: #000000;
+  font-size: 1.7rem;
+}
+
+h6 {
+  font-weight: 600;
+  color: #000000;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
 }
 
 form label {
   font-size: 0.85rem;
   font-weight: 500;
+  color: #333;
 }
 
 .form-control,
 .form-select {
-  border: 1px solid #0a2351;
+  border: 1px solid #b7b7b7;
+  border-radius: 4px;
+  box-shadow: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #b7b7b7; 
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .btn-primary {
   background-color: #2f58a7;
   border-color: #2f58a7;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
 }
 
 .btn-primary:hover {
   background-color: #1d3f7c;
+  border-color: #1d3f7c;
 }
 
-.container {
-  max-width: 1200px;
+/* ====== SECCIONES ====== */
+hr {
+  border-top: 1px solid #d9e2f3;
+  margin: 1.5rem 0;
+}
+
+.form-check-label {
+  font-size: 0.85rem;
+  color: #444;
+}
+
+.text-muted {
+  font-size: 0.8rem;
+}
+
+/* ====== RESPONSIVE ====== */
+
+/* --- Tablets (768px a 992px) --- */
+@media (max-width: 992px) {
+  .container {
+    max-width: 90%;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 0.9rem;
+  }
+
+  h6 {
+    font-size: 0.95rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 0.6rem;
+  }
+}
+
+/* --- Móviles (hasta 767px) --- */
+@media (max-width: 767px) {
+  .container {
+    max-width: 100%;
+    padding: 0 0.75rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  h6 {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+
+  form label {
+    font-size: 0.8rem;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 0.85rem;
+    padding: 0.45rem 0.6rem;
+  }
+
+  textarea.form-control {
+    min-height: 60px;
+  }
+
+  /* Colapsar filas en una sola columna */
+  .row > [class*="col-"] {
+    margin-bottom: 1rem;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 0.7rem;
+    font-size: 1rem;
+  }
+
+  .form-check {
+    margin-bottom: 0.4rem;
+  }
+
+  /* Espaciado visual para secciones largas */
+  .fw-semibold {
+    display: block;
+    margin-top: 1.5rem;
+    border-top: 1px solid #dce2ef;
+    padding-top: 1rem;
+  }
+}
+
+/* --- Extra pequeñas (hasta 480px) --- */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  .btn-primary {
+    font-size: 0.9rem;
+  }
+
+  .form-check-label {
+    font-size: 0.8rem;
+  }
 }
