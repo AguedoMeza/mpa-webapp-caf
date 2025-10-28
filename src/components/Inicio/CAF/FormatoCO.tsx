@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import "./FormatoCO.css";
 
-const FormatoCO: React.FC = () => {
+interface Props {
+  tipoContrato: string;
+}
+
+const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
   const [formData, setFormData] = useState({
     buildingId: "",
     cliente: "",
@@ -49,7 +53,7 @@ const FormatoCO: React.FC = () => {
         <Row>
           {/* -------- COLUMNA IZQUIERDA -------- */}
           <Col md={6}>
-            <h6 className="fw-semibold">Tipo de Contratación</h6>
+            <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{tipoContrato}</span></h6>
 
             <h6 className="mt-3">Información General</h6>
             {[

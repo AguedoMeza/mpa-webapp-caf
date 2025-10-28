@@ -26,9 +26,9 @@ const App: React.FC = () => {
             path="/solicitud-caf"
             element={<ProtectedRoute><SolicitudCAFForm /></ProtectedRoute>} 
           />
-          <Route path="/formato-co" element= {<ProtectedRoute><FormatoCO/></ProtectedRoute>}  />
-           <Route path="/formato-oc" element= {<ProtectedRoute><FormatoOC/></ProtectedRoute>}  />
-           <Route path="/formato-pd" element= {<ProtectedRoute><FormatoPD/></ProtectedRoute>}  />
+          <Route path="/formato-co" element={<ProtectedRoute><FormatoCO tipoContrato="Contrato de Obra" /></ProtectedRoute>} />
+          <Route path="/formato-oc" element={<ProtectedRoute><FormatoOC tipoContrato="Contrato de Servicio" /></ProtectedRoute>} />
+          <Route path="/formato-pd" element={<ProtectedRoute><FormatoPD tipoContrato="Contrato de Suministro" /></ProtectedRoute>} />
             <Route path="/formato-fd" element= {<ProtectedRoute><FormatoFD/></ProtectedRoute>}  />
         </Routes>
       </NavBar>

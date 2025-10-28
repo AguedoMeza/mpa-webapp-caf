@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import "./FormatoOC.css";
 
-const FormatoOC: React.FC = () => {
+interface Props {
+  tipoContrato: string;
+}
+
+const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
   const [formData, setFormData] = useState({
     buildingId: "",
     cliente: "",
@@ -50,7 +54,7 @@ const FormatoOC: React.FC = () => {
         <div className="form-columns">
           {/* -------- COLUMNA IZQUIERDA -------- */}
           <div className="form-column">
-            <h6 className="fw-semibold">Tipo de Contratación</h6>
+            <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{tipoContrato}</span></h6>
 
             <h6 className="mt-3">Información General</h6>
             {["buildingId", "cliente", "direccion", "proveedor"].map((name, i) => (
