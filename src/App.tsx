@@ -24,8 +24,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Bienvenida />} /> 
           <Route
             path="/solicitud-caf"
-            element={<ProtectedRoute><FormatoOS /></ProtectedRoute>} 
-          />
+            element={<ProtectedRoute><FormatoOS tipoContrato="Orden de Servicio" /></ProtectedRoute>} />
           <Route path="/formato-co" element={<ProtectedRoute><FormatoCO tipoContrato="Contrato de Obra" /></ProtectedRoute>} />
           <Route path="/formato-oc" element={<ProtectedRoute><FormatoOC tipoContrato="Contrato de Servicio" /></ProtectedRoute>} />
           <Route path="/formato-pd" element={<ProtectedRoute><FormatoPD tipoContrato="Contrato de Suministro" /></ProtectedRoute>} />

@@ -25,9 +25,13 @@ const Bienvenida: React.FC = () => {
           }}
           className="w-auto me-3"
         >
-          <option>Contrato de Obra</option>
-          <option>Contrato de Servicio</option>
-          <option>Contrato de Suministro</option>
+          <option value="Contrato de Obra">Contrato de Obra</option>
+          <option value="Orden de Servicio">Orden de Servicio</option>
+          <option value="Orden de Cambio">Orden de Cambio</option>
+          <option value="Pago a Dependencia">Pago a Dependencia</option>
+          <option value="Firma de Documento">Firma de Documento</option>
+          
+         
         </Form.Select>
 
         <Button
@@ -35,8 +39,10 @@ const Bienvenida: React.FC = () => {
           className="px-4"
           onClick={() => {
             if (tipoContrato === 'Contrato de Obra') navigate('/formato-co');
-            else if (tipoContrato === 'Contrato de Servicio') navigate('/formato-oc');
-            else if (tipoContrato === 'Contrato de Suministro') navigate('/formato-pd');
+            else if (tipoContrato === 'Orden de Servicio') navigate('/solicitud-caf');
+            else if (tipoContrato === 'Firma de Documento') navigate('/formato-fd');
+            else if (tipoContrato === 'Orden de Cambio') navigate('/formato-oc');
+            else if (tipoContrato === 'Pago a Dependencia') navigate('/formato-pd');
           }}
         >
           Nuevo
