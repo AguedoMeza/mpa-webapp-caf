@@ -47,9 +47,9 @@ const FormatoOC: React.FC = () => {
       <h2 className="text-center fw-bold mb-5">SOLICITUD DE CAF PARA CONTRATACIÓN</h2>
 
       <Form onSubmit={handleSubmit}>
-        <Row>
+        <div className="form-columns">
           {/* -------- COLUMNA IZQUIERDA -------- */}
-          <Col md={6}>
+          <div className="form-column">
             <h6 className="fw-semibold">Tipo de Contratación</h6>
 
             <h6 className="mt-3">Información General</h6>
@@ -123,7 +123,7 @@ const FormatoOC: React.FC = () => {
                 <Form.Control name={f.name} value={(formData as any)[f.name]} onChange={handleChange} />
               </Form.Group>
             ))}
-          </Col>
+          </div>
 
           {/* -------- COLUMNA DERECHA -------- */}
           <Col md={6}>
@@ -170,13 +170,14 @@ const FormatoOC: React.FC = () => {
                 <Form.Control name={f.name} value={(formData as any)[f.name]} onChange={handleChange} />
               </Form.Group>
             ))}
-          </Col>
-        </Row>
-
-        <Form.Group className="mt-4">
+                    <Form.Group className="mt-4">
           <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
           <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} />
         </Form.Group>
+          </Col>
+        </div> 
+
+
 
         <div className="text-center mt-4">
           <Button variant="primary" type="submit" className="px-4">
