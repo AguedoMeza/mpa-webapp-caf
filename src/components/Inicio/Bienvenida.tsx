@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SolicitudCAFForm from '../Inicio/CAF/SolicitudCAFForm';
 import FormatoCO from '../Inicio/CAF/FormatoCO';
 import FormatoOC from '../Inicio/CAF/FormatoOC';
@@ -10,7 +11,7 @@ import './Bienvenida.css';
 
 const Bienvenida: React.FC = () => {
   const [tipoContrato, setTipoContrato] = useState('Contrato de Obra');
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="container py-5 text-center">
@@ -21,7 +22,6 @@ const Bienvenida: React.FC = () => {
           value={tipoContrato}
           onChange={(e) => {
             setTipoContrato(e.target.value);
-            setMostrarFormulario(false);
           }}
           className="w-auto me-3"
         >
@@ -33,19 +33,17 @@ const Bienvenida: React.FC = () => {
         <Button
           variant="primary"
           className="px-4"
-          onClick={() => setMostrarFormulario(true)}
+          onClick={() => {
+            if (tipoContrato === 'Contrato de Obra') navigate('/formato-co');
+            else if (tipoContrato === 'Contrato de Servicio') navigate('/formato-oc');
+            else if (tipoContrato === 'Contrato de Suministro') navigate('/formato-pd');
+          }}
         >
           Nuevo
         </Button>
       </div>
 
-      {mostrarFormulario && (
-        <div className="mt-4">
-          {tipoContrato === 'Contrato de Obra' && <FormatoCO tipoContrato={tipoContrato} />}
-          {tipoContrato === 'Contrato de Servicio' && <FormatoOC tipoContrato={tipoContrato} />}
-          {tipoContrato === 'Contrato de Suministro' && <FormatoPD tipoContrato={tipoContrato} />}
-        </div>
-      )}
+      {/* El formulario ahora se navega por rutas, no se renderiza aquí */}
     </div>
   );
 };
