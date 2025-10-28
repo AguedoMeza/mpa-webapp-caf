@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SolicitudCAFForm from './CAF/FormatoOS';
-import FormatoCO from '../Inicio/CAF/FormatoCO';
-import FormatoOC from '../Inicio/CAF/FormatoOC';
-import FormatoPD from '../Inicio/CAF/FormatoPD';
-import FormatoFD from '../Inicio/CAF/FormatoFD';
+import FormatoCO from './CAF/FormatoCO';
+import FormatoOC from './CAF/FormatoOC';
+import FormatoPD from './CAF/FormatoPD';
+import FormatoFD from './CAF/FormatoFD';
 import { Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Bienvenida.css';
