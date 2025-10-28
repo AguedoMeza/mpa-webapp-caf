@@ -61,20 +61,20 @@ const FormatoOC: React.FC = () => {
             ))}
 
             <h6 className="mt-3">Datos de los Trabajos / Servicios</h6>
-            <Row>
-              <Col>
+            <div className="form-column">
+               
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de inicio</Form.Label>
                   <Form.Control type="date" name="fechaInicio" value={formData.fechaInicio} onChange={handleChange} />
                 </Form.Group>
-              </Col>
-              <Col>
+               
+               
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de Terminación Final</Form.Label>
                   <Form.Control type="date" name="fechaFin" value={formData.fechaFin} onChange={handleChange} />
                 </Form.Group>
-              </Col>
-            </Row>
+               
+            </div>
 
             {[
               { label: "Monto en pesos (subtotal)", name: "montoPesos" },
@@ -90,8 +90,8 @@ const FormatoOC: React.FC = () => {
               </Form.Group>
             ))}
 
-            <Row>
-              <Col>
+            <div className="form-column">
+             
                 <Form.Group className="mb-2">
                   <Form.Label>Tipo de trabajo</Form.Label>
                   <Form.Select name="tipoTrabajo" value={formData.tipoTrabajo} onChange={handleChange}>
@@ -100,8 +100,8 @@ const FormatoOC: React.FC = () => {
                     <option>Supervisión</option>
                   </Form.Select>
                 </Form.Group>
-              </Col>
-              <Col>
+               
+               
                 <Form.Group className="mb-4">
                   <Form.Label>Es recuperable o No Recuperable</Form.Label>
                   <Form.Select name="recuperable" value={formData.recuperable} onChange={handleChange}>
@@ -109,8 +109,8 @@ const FormatoOC: React.FC = () => {
                     <option>NO REC</option>
                   </Form.Select>
                 </Form.Group>
-              </Col>
-            </Row>
+             
+            </div>
 
             <h6 className="mt-3">Datos exclusivos para Órdenes de Cambio</h6>
             {[
