@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import "./SolicitudCAFForm.css";
+import "./FormatoOS.css";
 
-const SolicitudCAFForm: React.FC = () => {
+const FormatoOS: React.FC = () => {
   const [formData, setFormData] = useState({
     buildingId: "",
     cliente: "",
@@ -195,4 +195,4 @@ const SolicitudCAFForm: React.FC = () => {
   );
 };
 
-export default SolicitudCAFForm;
+export default FormatoOS;

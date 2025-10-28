@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SolicitudCAFForm from '../Inicio/CAF/SolicitudCAFForm';
+import SolicitudCAFForm from './CAF/FormatoOS';
 import FormatoCO from '../Inicio/CAF/FormatoCO';
 import FormatoOC from '../Inicio/CAF/FormatoOC';
 import FormatoPD from '../Inicio/CAF/FormatoPD';
