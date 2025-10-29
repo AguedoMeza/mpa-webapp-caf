@@ -179,14 +179,12 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
                 onChange={handleChange}
               />
             </Form.Group>
+            <Form.Group className="mt-4">
+              <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
+              <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} />
+            </Form.Group>
           </Col>
         </Row>
-
-        {/* --- SHAREPOINT --- */}
-        <Form.Group className="mt-4">
-          <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
-          <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} />
-        </Form.Group>
 
         <div className="text-center mt-4">
           <Button variant="primary" type="submit" className="px-4">

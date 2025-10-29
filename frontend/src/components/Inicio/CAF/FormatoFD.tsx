@@ -113,19 +113,17 @@ const FormatoFD: React.FC = () => {
                 onChange={handleChange}
               />
             </Form.Group>
+            {/* Enlace SharePoint */}
+            <Form.Group className="mt-4">
+              <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
+              <Form.Control
+                name="sharepoint"
+                value={formData.sharepoint}
+                onChange={handleChange}
+              />
+            </Form.Group>
           </Col>
         </Row>
-
-        {/* Enlace SharePoint */}
-        <Form.Group className="mt-4">
-          <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
-          <Form.Control
-            name="sharepoint"
-            value={formData.sharepoint}
-            onChange={handleChange}
-          />
-        </Form.Group>
-
         <div className="text-center mt-4">
           <Button type="submit" variant="primary" className="px-4">
             Guardar Formato FD
