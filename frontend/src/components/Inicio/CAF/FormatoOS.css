@@ -1,5 +1,5 @@
 h2 {
-  letter-spacing: 0.5px;
+  letter-spacing:  0.03125em;
 }
 
 form label {
@@ -9,7 +9,7 @@ form label {
 
 .form-control,
 .form-select {
-  border: 1px solid #0a2351;
+  border: 0.0625em solid #0a2351;
 }
 
 .btn-primary {
@@ -22,5 +22,6 @@ form label {
 }
 
 .container {
-  max-width: 1200px;
+   max-width: 75em; /* 1200px */
+  min-height: 50vh; /* altura proporcional a la pantalla */
 }

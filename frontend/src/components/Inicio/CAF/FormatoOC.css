@@ -1,6 +1,6 @@
 /* ===== BASE GENERAL ===== */
 .container {
-  max-width: 1200px;
+  max-width: 75em;
   padding: 0 1rem;
   display: flex;
   flex-direction: column;
@@ -8,7 +8,7 @@
 }
 
 h2 {
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125em;
   color: #000000;
   font-size: 1.7rem;
   text-align: center;
@@ -29,8 +29,8 @@ form label {
 
 .form-control,
 .form-select {
-  border: 1px solid #000000;
-  border-radius: 5px;
+  border: 0.0625em solid #000000;
+  border-radius: 0.3125em;
   transition: border-color 0.2s ease-in-out;
 }
 
@@ -42,15 +42,16 @@ form label {
 
 textarea.form-control {
   resize: vertical;
-  min-height: 80px;
+  min-height: 5em;
+  /* 80px */
 }
 
 .btn-primary {
   background-color: #2f58a7;
   border-color: #2f58a7;
   font-weight: 600;
-  letter-spacing: 0.4px;
-  border-radius: 6px;
+  letter-spacing: 0.025em; 
+  border-radius: 0.375em; 
   padding: 0.6rem 1.5rem;
   align-self: center;
 }
@@ -124,7 +125,7 @@ h6 {
 
   .btn-primary {
     width: 100%;
-    max-width: 300px;
+    max-width: 18.75em;
   }
 
   h6 {

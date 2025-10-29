@@ -1,11 +1,12 @@
  /* --- GENERAL --- */
 .container {
-  max-width: 1200px;
+  max-width: 75em; 
   padding: 1rem;
+  min-height: 50vh;  
 }
 
 h2 {
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125em;
   font-size: 1.6rem;
 }
 
@@ -17,10 +18,10 @@ form label {
 
 .form-control,
 .form-select {
-  border: 1px solid #000000;
+  border:  0.0625em solid #000000;
   font-size: 0.9rem;
   padding: 0.45rem 0.75rem;
-  border-radius: 6px;
+  border-radius: 0.375em;
 }
 
 /* --- BOTÓN --- */
@@ -118,7 +119,7 @@ h6 {
 
   h6 {
     font-size: 0.9rem;
-    border-left-width: 2px;
+     border-left-width: 0.125em;
   }
 
   .form-check-label {
