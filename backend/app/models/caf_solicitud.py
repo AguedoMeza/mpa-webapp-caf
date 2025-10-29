@@ -1,5 +1,13 @@
-from sqlalchemy import Column, Integer, String, Date
+
+from sqlalchemy import Column, Integer, String, Date, Enum as SqlEnum
 from app.core.database import Base
+import enum
+
+class SolicitudStatus(enum.Enum):
+    revision = 0
+    aprobado = 1
+    rechazado = 2
+
 
 class TBL_CAF_Solicitud(Base):
     __tablename__ = "TBL_CAF_Solicitud"
@@ -25,7 +33,7 @@ class TBL_CAF_Solicitud(Base):
     Recuperable = Column(String(100), nullable=True)
     Justificacion_trabajo = Column(String(100), nullable=True)
     Enlace_sharepoint = Column(String(1000), nullable=True)
-    approve = Column(Integer, nullable=True)
+    approve = Column(SqlEnum(SolicitudStatus), nullable=True)
     Cotizacion_MPA_CP = Column(Integer, nullable=True)
     AprobacionCorreoConcurso = Column(Integer, nullable=True)
     AnalisisRiesgosWHSE_VOBO = Column(Integer, nullable=True)
