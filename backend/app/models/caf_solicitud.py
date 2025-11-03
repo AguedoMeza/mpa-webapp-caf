@@ -33,7 +33,7 @@ class TBL_CAF_Solicitud(Base):
     Recuperable = Column(String(100), nullable=True)
     Justificacion_trabajo = Column(String(100), nullable=True)
     Enlace_sharepoint = Column(String(1000), nullable=True)
-    approve = Column(SqlEnum(SolicitudStatus), nullable=True)
+    approve = Column(Integer, nullable=True)
     Cotizacion_MPA_CP = Column(Integer, nullable=True)
     AprobacionCorreoConcurso = Column(Integer, nullable=True)
     AnalisisRiesgosWHSE_VOBO = Column(Integer, nullable=True)
