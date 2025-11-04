@@ -14,6 +14,13 @@ export const checkboxToNumber = (value: boolean | undefined): number => {
 };
 
 /**
+ * Convierte número (del API) a boolean (para checkbox)
+ */
+export const numberToCheckbox = (value: number | undefined): boolean => {
+  return value === 1;
+};
+
+/**
  * Formatea fecha de input a formato YYYY-MM-DD
  */
 export const formatDateForAPI = (date: string | undefined): string | undefined => {
@@ -251,5 +258,52 @@ export const mapFormatoFDToAPI = (formData: any): CAFSolicitudFD => {
     approve: 0,
     Usuario: localStorage.getItem('username') || formData.responsable,
     Mode: 'Normal',
+  };
+};
+
+/**
+ * Mapea datos del API a la estructura del formulario CO
+ */
+export const mapAPIToFormatoCO = (apiData: any): any => {
+  return {
+    buildingId: apiData.Building || "",
+    cliente: apiData.Cliente || "",
+    direccion: apiData.Direccion || "",
+    proveedor: apiData.Proveedor || "",
+    fechaInicio: apiData.Fecha_inicio || "",
+    fechaFin: apiData.FechaTerminacionFinalServ || "",
+    montoPesos: apiData.MontoMXNsubtotal || "",
+    montoDolares: apiData.MontoUSDsubtotal || "",
+    tdc: apiData.TDC || "",
+    anticipo: apiData.Anticipo || "",
+    fuerzaTrabajo: apiData.Fuerza_trabajo || "",
+    presupuesto: apiData.Presupuesto_existente || "",
+    tipoTrabajo: apiData.Tipo_trabajo || "Desarrollo",
+    recuperable: apiData.Recuperable || "REC",
+    fechaOcupacion: apiData.Fecha_Ocupacion_Benefica || "",
+    fechaSustancial: apiData.Fecha_Terminacion_Sustancial || "",
+    fechaFinalContratos: apiData.FechaTerminacionFinalCont || "",
+    fianzaAnticipo: apiData.Fianza_Anticipo || "",
+    fianzaCumplimiento: apiData.FianzaCumplimiento_BuenaCalidad || "",
+    fianzaPasivos: apiData.Fianza_Pasivos_Contingentes || "",
+    responsable: apiData.Responsable || "",
+    fecha: apiData.Fecha || "",
+    descripcion: apiData.Descripcion_trabajo_servicio || "",
+    justificacion: apiData.Justificacion_trabajo || "",
+    sharepoint: apiData.Enlace_sharepoint || "",
+    
+    // Checkboxes comunes
+    docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
+    docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
+    docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
+    docDibujos: numberToCheckbox(apiData.DibujosEspecificaciones),
+    docProgramaObra: numberToCheckbox(apiData.ProgramaObra),
+    
+    // Checkboxes exclusivos de contratos
+    docActaConstitutiva: numberToCheckbox(apiData.Acta_Constitutiva),
+    docPoderNotarial: numberToCheckbox(apiData.Poder_Notarial),
+    docINE: numberToCheckbox(apiData.INE_Rep_Legal),
+    docAltaIMSS: numberToCheckbox(apiData.AltaIMSS_REPSE),
+    docInfoBancaria: numberToCheckbox(apiData.InfoBancariaContrato),
   };
 };

@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Col, Form, Row, Alert, Spinner } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import "./FormatoCO.css";
 // Servicios y utilidades
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
-import { mapFormatoCOToAPI } from "../../../utils/caf-solicitud.utils";
+import { mapFormatoCOToAPI, mapAPIToFormatoCO } from "../../../utils/caf-solicitud.utils";
 
 interface Props {
   tipoContrato: string;
 }
 
 const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = !!id;
+
   const [formData, setFormData] = useState({
     buildingId: "",
     cliente: "",
@@ -52,8 +56,38 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
   // Estados para UI (loading, errores, éxito)
   const [loading, setLoading] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Cargar datos existentes si hay ID en la URL
+  useEffect(() => {
+    if (id) {
+      loadExistingData(parseInt(id));
+    }
+  }, [id]);
+
+  const loadExistingData = async (solicitudId: number) => {
+    setLoadingData(true);
+    setError(null);
+
+    try {
+      const response = await cafSolicitudService.getSolicitudById(solicitudId);
+      const mappedData = mapAPIToFormatoCO(response);
+      setFormData(mappedData);
+      console.log("Datos cargados:", response);
+    } catch (err: any) {
+      console.error("Error al cargar solicitud:", err);
+      const errorMessage =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        "Error al cargar los datos de la solicitud";
+      setError(errorMessage);
+    } finally {
+      setLoadingData(false);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -91,20 +125,30 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
     try {
       const solicitudData = mapFormatoCOToAPI(formData);
-      const response = await cafSolicitudService.createSolicitudCO(solicitudData);
+      
+      if (isEditMode && id) {
+        // Modo edición: actualizar solicitud existente
+        const response = await cafSolicitudService.updateSolicitud(parseInt(id), solicitudData);
+        setSuccess(`Solicitud CAF actualizada exitosamente con ID: ${response.id_solicitud}`);
+        console.log("Solicitud actualizada:", response);
+      } else {
+        // Modo creación: crear nueva solicitud
+        const response = await cafSolicitudService.createSolicitudCO(solicitudData);
+        setSuccess(`Solicitud CAF creada exitosamente con ID: ${response.id_solicitud}`);
+        console.log("Solicitud creada:", response);
+      }
 
-      setSuccess(`Solicitud CAF creada exitosamente con ID: ${response.id_solicitud}`);
-      console.log("Solicitud creada:", response);
-
-      // Opcional: limpiar formulario
-      // setFormData({ ...valores iniciales si deseas resetear... });
+      // Opcional: limpiar formulario solo en modo creación
+      // if (!isEditMode) {
+      //   setFormData({ ...valores iniciales... });
+      // }
     } catch (err: any) {
-      console.error("Error al crear solicitud:", err);
+      console.error(`Error al ${isEditMode ? 'actualizar' : 'crear'} solicitud:`, err);
       const errorMessage =
         err.response?.data?.detail ||
         err.response?.data?.message ||
         err.message ||
-        "Error desconocido al crear la solicitud";
+        `Error desconocido al ${isEditMode ? 'actualizar' : 'crear'} la solicitud`;
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -113,7 +157,9 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
-      <h2 className="text-center fw-bold mb-5">SOLICITUD DE CAF PARA CONTRATACIÓN</h2>
+      <h2 className="text-center fw-bold mb-5">
+        {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
+      </h2>
 
       {/* Alertas de éxito o error */}
       {error && (
@@ -128,6 +174,16 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
           <Alert.Heading>¡Éxito!</Alert.Heading>
           <p>{success}</p>
         </Alert>
+      )}
+
+      {/* Spinner mientras se cargan los datos existentes */}
+      {loadingData && (
+        <div className="text-center my-5">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Cargando datos...</span>
+          </Spinner>
+          <p className="mt-2">Cargando datos de la solicitud...</p>
+        </div>
       )}
 
       <Form onSubmit={handleSubmit}>
@@ -309,7 +365,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             type="submit"
             variant="primary"
             className="px-4"
-            disabled={loading}
+            disabled={loading || loadingData}
           >
             {loading ? (
               <>
@@ -321,10 +377,10 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
                   aria-hidden="true"
                   className="me-2"
                 />
-                Guardando...
+                {isEditMode ? 'Actualizando...' : 'Guardando...'}
               </>
             ) : (
-              "Guardar Formato CO"
+              isEditMode ? "Actualizar Formato CO" : "Guardar Formato CO"
             )}
           </Button>
         </div>

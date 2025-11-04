@@ -19,3 +19,10 @@ def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
     if not result:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
     return result
+
+@router.put("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
+def update_caf_solicitud(solicitud_id: int, data: dict, db: Session = Depends(get_db)):
+    result = service.update(db, solicitud_id, data)
+    if not result:
+        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+    return result

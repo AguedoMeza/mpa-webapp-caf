@@ -14,3 +14,18 @@ class CafSolicitudService:
         db.commit()
         db.refresh(solicitud)
         return solicitud
+
+    def update(self, db: Session, solicitud_id: int, data: dict) -> TBL_CAF_Solicitud:
+        # Buscar la solicitud existente
+        solicitud = db.query(TBL_CAF_Solicitud).filter_by(id_solicitud=solicitud_id).first()
+        if not solicitud:
+            return None
+        
+        # Actualizar campos que lleguen en data
+        for field, value in data.items():
+            if hasattr(solicitud, field):
+                setattr(solicitud, field, value)
+        
+        db.commit()
+        db.refresh(solicitud)
+        return solicitud
