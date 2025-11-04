@@ -43,7 +43,8 @@ backend/app/config/
 ```
 frontend/src/components/Approval/
 ├── ApprovalSection.tsx                  # Sección con botones Aprobar/Rechazar
-└── ApprovalStatus.tsx                   # Indicador visual del estado actual
+├── ApprovalStatus.tsx                   # Indicador visual del estado actual
+└── RejectModal.tsx                      # Modal para capturar comentarios de rechazo
 ```
 
 ### 2. Servicios
@@ -106,8 +107,9 @@ frontend/.env
 ## Flujo Principal Simplificado
 
 1. **Creación** → `CafSolicitudService.create()` → dispara `SolicitudCreada` → `EmailNotificationObserver` → envía correo al Responsable con link
-2. **Aprobación/Rechazo** → API PATCH `/caf-solicitud/{id}/approval` → Service dispara evento → Observer notifica resultado por correo
-3. **Acceso por URL** → Responsable accede via link → `ApprovalView` carga datos → Botones de acción
+2. **Aprobación** → Botón "Aprobar" → API PATCH `/caf-solicitud/{id}/approval` → Service dispara `SolicitudAprobada` → Observer notifica por correo
+3. **Rechazo** → Botón "Rechazar" → Modal captura comentarios → API PATCH con comentarios → Service dispara `SolicitudRechazada` → Observer notifica por correo con comentarios
+4. **Acceso por URL** → Responsable accede via link → `ApprovalView` carga datos → Botones de acción
 
 ## Detalle del Flujo de Estados
 
@@ -146,6 +148,7 @@ Asunto: Solicitud CAF #{id} - {Estado}
 Contenido:
 - Confirmación de la decisión
 - Detalles finales
+- Comentarios del rechazo (solo si fue rechazada)
 - Próximos pasos (si aplica)
 ```
 
@@ -178,6 +181,7 @@ Contenido:
 - [ ] `ApprovalSection.tsx`
 - [ ] `ApprovalStatus.tsx`
 - [ ] `ApprovalView.tsx`
+- [ ] `RejectModal.tsx` (modal para capturar comentarios de rechazo)
 - [ ] Integrar en formularios existentes
 
 **Total estimado:** ~10-12 archivos nuevos/modificados
