@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, Row, Alert, Spinner } from "react-bootstrap";
 import "./FormatoCO.css";
+// Servicios y utilidades
+import { cafSolicitudService } from "../../../services/caf-solicitud.service";
+import { mapFormatoCOToAPI } from "../../../utils/caf-solicitud.utils";
 
 interface Props {
   tipoContrato: string;
@@ -33,21 +36,99 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
     descripcion: "",
     justificacion: "",
     sharepoint: "",
+    // Checkboxes comunes
+    docCotizacion: false,
+    docAprobacion: false,
+    docAnalisisRiesgos: false,
+    docDibujos: false,
+    docProgramaObra: false,
+    // Checkboxes exclusivos de contratos
+    docActaConstitutiva: false,
+    docPoderNotarial: false,
+    docINE: false,
+    docAltaIMSS: false,
+    docInfoBancaria: false,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  // Estados para UI (loading, errores, éxito)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target as HTMLInputElement;
+
+    if (type === "checkbox") {
+      const checked = (e.target as HTMLInputElement).checked;
+      setFormData({ ...formData, [name]: checked });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = (): boolean => {
+    if (!formData.responsable) {
+      setError("El campo Responsable es requerido");
+      return false;
+    }
+    if (!formData.cliente) {
+      setError("El campo Cliente/Desarrollo es requerido");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Datos capturados:", formData);
+    setError(null);
+    setSuccess(null);
+
+    if (!validateForm()) return;
+
+    setLoading(true);
+
+    try {
+      const solicitudData = mapFormatoCOToAPI(formData);
+      const response = await cafSolicitudService.createSolicitudCO(solicitudData);
+
+      setSuccess(`Solicitud CAF creada exitosamente con ID: ${response.id_solicitud}`);
+      console.log("Solicitud creada:", response);
+
+      // Opcional: limpiar formulario
+      // setFormData({ ...valores iniciales si deseas resetear... });
+    } catch (err: any) {
+      console.error("Error al crear solicitud:", err);
+      const errorMessage =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        "Error desconocido al crear la solicitud";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="container py-5">
       <h2 className="text-center fw-bold mb-5">SOLICITUD DE CAF PARA CONTRATACIÓN</h2>
+
+      {/* Alertas de éxito o error */}
+      {error && (
+        <Alert variant="danger" onClose={() => setError(null)} dismissible>
+          <Alert.Heading>Error</Alert.Heading>
+          <p>{error}</p>
+        </Alert>
+      )}
+
+      {success && (
+        <Alert variant="success" onClose={() => setSuccess(null)} dismissible>
+          <Alert.Heading>¡Éxito!</Alert.Heading>
+          <p>{success}</p>
+        </Alert>
+      )}
 
       <Form onSubmit={handleSubmit}>
         <Row>
@@ -172,13 +253,21 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
             <h6>Documentos a Enviar</h6>
             {[
-              "Cotización MPA y VOBO de C&P",
-              "Aprobación (correo) si no hay concurso",
-              "Análisis de Riesgo WHSE y VOBO",
-              "Dibujos y/o especificaciones",
-              "Programa de Obra",
-            ].map((doc, i) => (
-              <Form.Check key={i} type="checkbox" label={doc} className="mb-1" />
+              { label: "Cotización MPA y VOBO de C&P", name: "docCotizacion" },
+              { label: "Aprobación (correo) si no hay concurso", name: "docAprobacion" },
+              { label: "Análisis de Riesgo WHSE y VOBO", name: "docAnalisisRiesgos" },
+              { label: "Dibujos y/o especificaciones", name: "docDibujos" },
+              { label: "Programa de Obra", name: "docProgramaObra" },
+            ].map((d, i) => (
+              <Form.Check
+                key={i}
+                type="checkbox"
+                label={d.label}
+                name={d.name}
+                checked={(formData as any)[d.name]}
+                onChange={handleChange}
+                className="mb-1"
+              />
             ))}
 
             <Form.Group className="mt-4 mb-3">
@@ -188,13 +277,21 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
             <h6>Documentos Exclusivos para Contratos</h6>
             {[
-              "Acta constitutiva",
-              "Poder notarial",
-              "INE Representante legal",
-              "Alta IMSS y REPSE",
-              "Información bancaria",
-            ].map((doc, i) => (
-              <Form.Check key={i} type="checkbox" label={doc} className="mb-1" />
+              { label: "Acta constitutiva", name: "docActaConstitutiva" },
+              { label: "Poder notarial", name: "docPoderNotarial" },
+              { label: "INE Representante legal", name: "docINE" },
+              { label: "Alta IMSS y REPSE", name: "docAltaIMSS" },
+              { label: "Información bancaria", name: "docInfoBancaria" },
+            ].map((d, i) => (
+              <Form.Check
+                key={i}
+                type="checkbox"
+                label={d.label}
+                name={d.name}
+                checked={(formData as any)[d.name]}
+                onChange={handleChange}
+                className="mb-1"
+              />
             ))}
 
             <Form.Group className="mt-4">
@@ -208,8 +305,27 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
 
         <div className="text-center mt-4">
-          <Button type="submit" variant="primary" className="px-4">
-            Guardar Formato CO
+          <Button
+            type="submit"
+            variant="primary"
+            className="px-4"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                  className="me-2"
+                />
+                Guardando...
+              </>
+            ) : (
+              "Guardar Formato CO"
+            )}
           </Button>
         </div>
       </Form>
