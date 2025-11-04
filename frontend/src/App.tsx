@@ -22,13 +22,11 @@ const App: React.FC = () => {
       <NavBar>
         <Routes>
           <Route path="/" element={<Bienvenida />} /> 
-          <Route
-            path="/solicitud-caf"
-            element={<ProtectedRoute><FormatoOS tipoContrato="Orden de Servicio" /></ProtectedRoute>} />
+          <Route path="/solicitud-caf/:id?" element={<ProtectedRoute><FormatoOS tipoContrato="Orden de Servicio" /></ProtectedRoute>} />
           <Route path="/formato-co/:id?" element={<ProtectedRoute><FormatoCO tipoContrato="Contrato de Obra" /></ProtectedRoute>} />
-          <Route path="/formato-oc" element={<ProtectedRoute><FormatoOC tipoContrato="Contrato de Servicio" /></ProtectedRoute>} />
-          <Route path="/formato-pd" element={<ProtectedRoute><FormatoPD tipoContrato="Contrato de Suministro" /></ProtectedRoute>} />
-            <Route path="/formato-fd" element= {<ProtectedRoute><FormatoFD/></ProtectedRoute>}  />
+          <Route path="/formato-oc/:id?" element={<ProtectedRoute><FormatoOC tipoContrato="Contrato de Servicio" /></ProtectedRoute>} />
+          <Route path="/formato-pd/:id?" element={<ProtectedRoute><FormatoPD tipoContrato="Contrato de Suministro" /></ProtectedRoute>} />
+          <Route path="/formato-fd/:id?" element={<ProtectedRoute><FormatoFD/></ProtectedRoute>} />
         </Routes>
       </NavBar>
     </HashRouter>

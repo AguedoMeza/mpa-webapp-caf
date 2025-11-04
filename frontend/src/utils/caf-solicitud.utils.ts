@@ -307,3 +307,139 @@ export const mapAPIToFormatoCO = (apiData: any): any => {
     docInfoBancaria: numberToCheckbox(apiData.InfoBancariaContrato),
   };
 };
+
+/**
+ * Mapea datos del API a la estructura del formulario OS
+ */
+export const mapAPIToFormatoOS = (apiData: any): any => {
+  return {
+    buildingId: apiData.Building || "",
+    cliente: apiData.Cliente || "",
+    direccion: apiData.Direccion || "",
+    proveedor: apiData.Proveedor || "",
+    fechaInicio: apiData.Fecha_inicio || "",
+    fechaFin: apiData.FechaTerminacionFinalServ || "",
+    montoPesos: apiData.MontoMXNsubtotal || "",
+    montoDolares: apiData.MontoUSDsubtotal || "",
+    tdc: apiData.TDC || "",
+    anticipo: apiData.Anticipo || "",
+    fuerzaTrabajo: apiData.Fuerza_trabajo || "",
+    presupuesto: apiData.Presupuesto_existente || "",
+    tipoTrabajo: apiData.Tipo_trabajo || "Desarrollo",
+    recuperable: apiData.Recuperable || "REC",
+    responsable: apiData.Responsable || "",
+    fecha: apiData.Fecha || "",
+    descripcion: apiData.Descripcion_trabajo_servicio || "",
+    justificacion: apiData.Justificacion_trabajo || "",
+    sharepoint: apiData.Enlace_sharepoint || "",
+    
+    // Checkboxes comunes
+    docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
+    docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
+    docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
+    docDibujos: numberToCheckbox(apiData.DibujosEspecificaciones),
+    docProgramaObra: numberToCheckbox(apiData.ProgramaObra),
+  };
+};
+
+/**
+ * Mapea datos del API a la estructura del formulario OC
+ */
+export const mapAPIToFormatoOC = (apiData: any): any => {
+  return {
+    buildingId: apiData.Building || "",
+    cliente: apiData.Cliente || "",
+    direccion: apiData.Direccion || "",
+    proveedor: apiData.Proveedor || "",
+    fechaInicio: apiData.Fecha_inicio || "",
+    fechaFin: apiData.FechaTerminacionFinalServ || "",
+    montoPesos: apiData.MontoMXNsubtotal || "",
+    montoDolares: apiData.MontoUSDsubtotal || "",
+    tdc: apiData.TDC || "",
+    anticipo: apiData.Anticipo || "",
+    fuerzaTrabajo: apiData.Fuerza_trabajo || "",
+    presupuesto: apiData.Presupuesto_existente || "",
+    tipoTrabajo: apiData.Tipo_trabajo || "Desarrollo",
+    recuperable: apiData.Recuperable || "REC",
+    montoOriginalPesos: apiData.MontoOriginalMXN || "",
+    montoOriginalDolares: apiData.MontoOriginalUSD || "",
+    montoActualizado: apiData.MontoActualizadoMXN || "",
+    montoActualizadoUSD: apiData.MontoActualizadoUSD || "",
+    nuevaOcupacion: apiData.NuevaOcupacionBenefica || "",
+    nuevaSustancial: apiData.NuevaTerminacionSust || "",
+    nuevaFinal: apiData.NuevaTerminacionFinal || "",
+    tiempoDias: apiData.TiempoDias || "",
+    responsable: apiData.Responsable || "",
+    fecha: apiData.Fecha || "",
+    descripcion: apiData.Descripcion_trabajo_servicio || "",
+    justificacion: apiData.Justificacion_trabajo || "",
+    sharepoint: apiData.Enlace_sharepoint || "",
+    
+    // Checkboxes comunes
+    docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
+    docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
+    docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
+    docDibujos: numberToCheckbox(apiData.DibujosEspecificaciones),
+    docProgramaObra: numberToCheckbox(apiData.ProgramaObra),
+  };
+};
+
+/**
+ * Mapea datos del API a la estructura del formulario PD
+ */
+export const mapAPIToFormatoPD = (apiData: any): any => {
+  return {
+    buildingId: apiData.Building || "",
+    cliente: apiData.Cliente || "",
+    direccion: apiData.Direccion || "",
+    proveedor: apiData.Proveedor || "",
+    montoPesos: apiData.MontoMXNsubtotal || "",
+    presupuesto: apiData.Presupuesto_existente || "",
+    tipoTrabajo: apiData.Tipo_trabajo || "Desarrollo",
+    responsable: apiData.Responsable || "",
+    fecha: apiData.Fecha || "",
+    descripcion: apiData.Descripcion_trabajo_servicio || "",
+    justificacion: apiData.Justificacion_trabajo || "",
+    sharepoint: apiData.Enlace_sharepoint || "",
+    
+    // Checkboxes comunes
+    docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
+    docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
+    docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
+    docDibujos: numberToCheckbox(apiData.DibujosEspecificaciones),
+    docProgramaObra: numberToCheckbox(apiData.ProgramaObra),
+    
+    // Checkboxes exclusivos PD
+    docVOBOLegal: numberToCheckbox(apiData.VOBO_LegalPagoDep),
+    docFichaPago: numberToCheckbox(apiData.FichaPago),
+    docInfoBancaria: numberToCheckbox(apiData.InfoBancariaPagoDep),
+  };
+};
+
+/**
+ * Mapea datos del API a la estructura del formulario FD
+ */
+export const mapAPIToFormatoFD = (apiData: any): any => {
+  return {
+    buildingId: apiData.Building || "",
+    cliente: apiData.Cliente || "",
+    direccion: apiData.Direccion || "",
+    proveedor: apiData.Proveedor || "",
+    responsable: apiData.Responsable || "",
+    fecha: apiData.Fecha || "",
+    descripcion: apiData.Descripcion_trabajo_servicio || "",
+    justificacion: apiData.Justificacion_trabajo || "",
+    sharepoint: apiData.Enlace_sharepoint || "",
+    
+    // Checkboxes comunes
+    docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
+    docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
+    docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
+    docDibujos: numberToCheckbox(apiData.DibujosEspecificaciones),
+    docProgramaObra: numberToCheckbox(apiData.ProgramaObra),
+    
+    // Checkboxes exclusivos FD
+    docVOBOLegal: numberToCheckbox(apiData.VOBO_LegalFirma),
+    docDocumentoFirmar: numberToCheckbox(apiData.DocumentoFirmar),
+  };
+};
