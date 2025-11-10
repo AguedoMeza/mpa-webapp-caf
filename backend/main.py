@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.main import api_router
+from app.events.observer_initializer import initialize_observers
 
 
 app = FastAPI(title="NINTEX MRI CONNECTOR")
@@ -14,6 +15,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Inicializar observers al arrancar la aplicación
+@app.on_event("startup")
+async def startup_event():
+    """Inicializa los observers del patrón Observer al arrancar la aplicación."""
+    print("🚀 Inicializando observers del sistema...")
+    initialize_observers(frontend_base_url="http://localhost:3000")
+    print("✅ Observers inicializados correctamente")
 
 # Registrar todos los routers de la API
 app.include_router(api_router, prefix="/api/v1")

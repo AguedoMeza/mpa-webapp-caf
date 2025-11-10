@@ -6,16 +6,17 @@ from app.schemas.caf_solicitud import ApprovalRequest, ApprovalResponse
 
 
 router = APIRouter()
-service = CafSolicitudService()
 
 
 @router.post("/caf-solicitud", status_code=status.HTTP_201_CREATED)
 def create_caf_solicitud(data: dict, db: Session = Depends(get_db)):
+    service = CafSolicitudService()  # Crear instancia aquí
     solicitud = service.create(db, data)
     return solicitud
 
 @router.get("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
 def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
+    service = CafSolicitudService()  # Crear instancia aquí
     result = service.get_detail(db, solicitud_id)
     if not result:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
@@ -23,6 +24,7 @@ def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
 
 @router.put("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
 def update_caf_solicitud(solicitud_id: int, data: dict, db: Session = Depends(get_db)):
+    service = CafSolicitudService()  # Crear instancia aquí
     result = service.update(db, solicitud_id, data)
     if not result:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
@@ -44,6 +46,7 @@ def approve_or_reject_solicitud(
     }
     """
     try:
+        service = CafSolicitudService()  # Crear instancia aquí
         result = service.approve_or_reject(
             db, 
             solicitud_id, 

@@ -1,18 +1,44 @@
 from sqlalchemy.orm import Session
 from app.models.caf_solicitud import TBL_CAF_Solicitud, SolicitudStatus
+from app.events.domain_events import SolicitudCreada, SolicitudAprobada, SolicitudRechazada
+from app.events.event_dispatcher import get_event_dispatcher
+import logging
+
+logger = logging.getLogger(__name__)
 
 class CafSolicitudService:
+    def __init__(self):
+        print("🏗️ Inicializando CafSolicitudService...")
+        self.event_dispatcher = get_event_dispatcher()
+        print(f"📡 Event dispatcher obtenido con {self.event_dispatcher.get_observers_count()} observers")
+    
     def get_detail(self, db: Session, solicitud_id: int):
         solicitud = db.query(TBL_CAF_Solicitud).filter_by(id_solicitud=solicitud_id).first()
         if not solicitud:
             return None
         return solicitud
     def create(self, db: Session, data: dict) -> TBL_CAF_Solicitud:
-        # Se espera que 'approve' ya venga como entero
-        solicitud = TBL_CAF_Solicitud(**data)
+        # Remover id_solicitud si viene en los datos (es autoincrement)
+        data_clean = {k: v for k, v in data.items() if k != 'id_solicitud'}
+        print(f"🧹 Datos limpiados: removido id_solicitud, campos restantes: {len(data_clean)}")
+        
+        solicitud = TBL_CAF_Solicitud(**data_clean)
         db.add(solicitud)
         db.commit()
         db.refresh(solicitud)
+        
+        # Disparar evento de solicitud creada
+        try:
+            print(f"🔥 Creando evento SolicitudCreada para solicitud #{solicitud.id_solicitud}")
+            event = SolicitudCreada(solicitud=solicitud)
+            print(f"🚀 Despachando evento SolicitudCreada para solicitud #{solicitud.id_solicitud}")
+            self.event_dispatcher.dispatch(event)
+            print(f"✅ Evento SolicitudCreada disparado para solicitud #{solicitud.id_solicitud}")
+            logger.info(f"Evento SolicitudCreada disparado para solicitud #{solicitud.id_solicitud}")
+        except Exception as e:
+            print(f"❌ Error disparando evento SolicitudCreada: {str(e)}")
+            logger.error(f"Error disparando evento SolicitudCreada: {str(e)}")
+        
         return solicitud
 
     def update(self, db: Session, solicitud_id: int, data: dict) -> TBL_CAF_Solicitud:
@@ -69,7 +95,26 @@ class CafSolicitudService:
         db.commit()
         db.refresh(solicitud)
         
-        # TODO: Aquí se disparará el evento del patrón Observer
-        # self._dispatch_approval_event(solicitud, approve_status, comentarios)
+        # Disparar evento según el estado de aprobación
+        try:
+            if approve_status == 'aprobado':
+                event = SolicitudAprobada(
+                    solicitud=solicitud,
+                    aprobado_por="responsable@empresa.com"  # TODO: Obtener del contexto de usuario
+                )
+                self.event_dispatcher.dispatch(event)
+                logger.info(f"Evento SolicitudAprobada disparado para solicitud #{solicitud.id_solicitud}")
+                
+            elif approve_status == 'rechazado':
+                event = SolicitudRechazada(
+                    solicitud=solicitud,
+                    rechazado_por="responsable@empresa.com",  # TODO: Obtener del contexto de usuario
+                    comentarios=comentarios
+                )
+                self.event_dispatcher.dispatch(event)
+                logger.info(f"Evento SolicitudRechazada disparado para solicitud #{solicitud.id_solicitud}")
+                
+        except Exception as e:
+            logger.error(f"Error disparando evento de aprobación/rechazo: {str(e)}")
         
         return solicitud
