@@ -39,15 +39,7 @@ class EmailService:
 
     def send_mail(self, sender, to, subject, body_html, attachment_path=None):
         """
-        Envía un correo usando Microsoft Graph API.
-        Args:
-            sender: Email del remitente (usuario válido del tenant)
-            to: Email del destinatario
-            subject: Asunto del correo
-            body_html: Cuerpo en HTML
-            attachment_path: Ruta al archivo adjunto (opcional)
-        Returns:
-            dict: Resultado del envío
+        Envía un correo usando Microsoft Graph API con manejo de tokens expirados.
         """
         if not self.token:
             self.get_access_token()
@@ -90,6 +82,13 @@ class EmailService:
             message["message"]["attachments"] = [attachment]
 
         resp = requests.post(url, headers=headers, data=json.dumps(message))
+        
+        # Si el token expiró (401), renovarlo y reintentar UNA vez
+        if resp.status_code == 401:
+            print("⚠️ Token expirado, renovando y reintentando...")
+            self.get_access_token()
+            headers["Authorization"] = f"Bearer {self.token}"
+            resp = requests.post(url, headers=headers, data=json.dumps(message))
         
         if resp.status_code == 202:
             return {"status": "success", "message": "Correo enviado correctamente"}
