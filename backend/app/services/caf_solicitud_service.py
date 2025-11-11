@@ -17,10 +17,16 @@ class CafSolicitudService:
         if not solicitud:
             return None
         return solicitud
+    
     def create(self, db: Session, data: dict) -> TBL_CAF_Solicitud:
         # Remover id_solicitud si viene en los datos (es autoincrement)
         data_clean = {k: v for k, v in data.items() if k != 'id_solicitud'}
         print(f"🧹 Datos limpiados: removido id_solicitud, campos restantes: {len(data_clean)}")
+        
+        # IMPORTANTE: No establecer approve en la creación, debe quedar NULL (pendiente)
+        # Remover approve si viene en los datos para que quede NULL
+        if 'approve' in data_clean:
+            del data_clean['approve']
         
         solicitud = TBL_CAF_Solicitud(**data_clean)
         db.add(solicitud)
@@ -58,12 +64,19 @@ class CafSolicitudService:
 
     def approve_or_reject(self, db: Session, solicitud_id: int, approve_status: str, comentarios: str = None) -> TBL_CAF_Solicitud:
         """
-        Aprueba o rechaza una solicitud CAF.
+        Aprueba, rechaza o marca para correcciones una solicitud CAF.
+        
+        Flujo de estados:
+        - NULL (pendiente) -> Estado inicial cuando se crea la solicitud
+        - 'requiere_correcciones' (0) -> Rechazado temporalmente, necesita correcciones (comentarios obligatorios)
+        - 'aprobado' (1) -> Aprobado definitivamente
+        - 'rechazado_definitivo' (2) -> Rechazado definitivamente (comentarios opcionales)
+        
         Args:
             db: Sesión de base de datos
             solicitud_id: ID de la solicitud
-            approve_status: Estado ('revision', 'aprobado', 'rechazado')
-            comentarios: Comentarios del rechazo (opcional, solo para rechazos)
+            approve_status: Estado ('requiere_correcciones', 'aprobado', 'rechazado_definitivo')
+            comentarios: Comentarios (obligatorios para requiere_correcciones, opcionales para rechazado_definitivo)
         Returns:
             TBL_CAF_Solicitud: Solicitud actualizada
         """
@@ -83,14 +96,23 @@ class CafSolicitudService:
         # Actualizar el estado de aprobación
         solicitud.approve = approve_value
         
-        # Los comentarios solo se permiten y se requieren para rechazos
-        if approve_status == 'rechazado':
+        # Validación de comentarios según el estado
+        if approve_status == 'requiere_correcciones':
+            # Comentarios OBLIGATORIOS para correcciones
             if not comentarios or not comentarios.strip():
-                raise ValueError("Los comentarios son requeridos para rechazar una solicitud")
+                raise ValueError("Los comentarios son OBLIGATORIOS cuando se requieren correcciones")
             solicitud.Comentarios = comentarios.strip()
+            
         elif approve_status == 'aprobado':
             # Limpiar comentarios previos si se aprueba
             solicitud.Comentarios = None
+            
+        elif approve_status == 'rechazado_definitivo':
+            # Comentarios OPCIONALES para rechazo definitivo
+            if comentarios and comentarios.strip():
+                solicitud.Comentarios = comentarios.strip()
+            # Si no hay comentarios, dejar el campo como está o limpiarlo
+            # No forzamos comentarios en rechazo definitivo
         
         db.commit()
         db.refresh(solicitud)
@@ -105,11 +127,11 @@ class CafSolicitudService:
                 self.event_dispatcher.dispatch(event)
                 logger.info(f"Evento SolicitudAprobada disparado para solicitud #{solicitud.id_solicitud}")
                 
-            elif approve_status == 'rechazado':
+            elif approve_status in ['requiere_correcciones', 'rechazado_definitivo']:
                 event = SolicitudRechazada(
                     solicitud=solicitud,
                     rechazado_por="responsable@empresa.com",  # TODO: Obtener del contexto de usuario
-                    comentarios=comentarios
+                    comentarios=comentarios or ""
                 )
                 self.event_dispatcher.dispatch(event)
                 logger.info(f"Evento SolicitudRechazada disparado para solicitud #{solicitud.id_solicitud}")

@@ -1,12 +1,18 @@
-
 from sqlalchemy import Column, Integer, String, Date, Enum as SqlEnum
 from app.core.database import Base
 import enum
 
 class SolicitudStatus(enum.Enum):
-    revision = 0
+    """
+    Estados de una solicitud CAF:
+    - requiere_correcciones (0): Rechazado temporalmente, necesita correcciones (comentarios obligatorios)
+    - aprobado (1): Aprobado definitivamente
+    - rechazado_definitivo (2): Rechazado definitivamente (comentarios opcionales)
+    - None/NULL: Solicitud enviada, pendiente de revisión (estado inicial)
+    """
+    requiere_correcciones = 0
     aprobado = 1
-    rechazado = 2
+    rechazado_definitivo = 2
 
 
 class TBL_CAF_Solicitud(Base):
@@ -33,7 +39,7 @@ class TBL_CAF_Solicitud(Base):
     Recuperable = Column(String(100), nullable=True)
     Justificacion_trabajo = Column(String(100), nullable=True)
     Enlace_sharepoint = Column(String(1000), nullable=True)
-    approve = Column(Integer, nullable=True)
+    approve = Column(Integer, nullable=True)  # NULL = pendiente, 0 = requiere correcciones, 1 = aprobado, 2 = rechazado definitivo
     Cotizacion_MPA_CP = Column(Integer, nullable=True)
     AprobacionCorreoConcurso = Column(Integer, nullable=True)
     AnalisisRiesgosWHSE_VOBO = Column(Integer, nullable=True)

@@ -35,6 +35,7 @@ export const formatDateForAPI = (date: string | undefined): string | undefined =
 
 /**
  * Mapea datos del formulario CO a la estructura del API
+ * IMPORTANTE: NO establece approve, se deja como NULL (pendiente) por defecto
  */
 export const mapFormatoCOToAPI = (formData: any): CAFSolicitudCO => {
   return {
@@ -83,7 +84,8 @@ export const mapFormatoCOToAPI = (formData: any): CAFSolicitudCO => {
     InfoBancariaContrato: checkboxToNumber(formData.docInfoBancaria),
 
     // Metadata
-    approve: 0, // Por defecto en revisión
+    // IMPORTANTE: NO establecer approve aquí, se deja NULL en el backend
+    // approve: undefined, // Se omite para que quede NULL
     Usuario: localStorage.getItem('username') || formData.responsable,
     Mode: 'Normal',
   };
@@ -125,8 +127,7 @@ export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
     DibujosEspecificaciones: checkboxToNumber(formData.docDibujos),
     ProgramaObra: checkboxToNumber(formData.docProgramaObra),
 
-    // Metadata
-    approve: 0,
+    // Metadata - NO establecer approve
     Usuario: localStorage.getItem('username') || formData.responsable,
     Mode: 'Normal',
   };
@@ -178,8 +179,7 @@ export const mapFormatoOCToAPI = (formData: any): CAFSolicitudOC => {
     DibujosEspecificaciones: checkboxToNumber(formData.docDibujos),
     ProgramaObra: checkboxToNumber(formData.docProgramaObra),
 
-    // Metadata
-    approve: 0,
+    // Metadata - NO establecer approve
     Usuario: localStorage.getItem('username') || formData.responsable,
     Mode: 'Normal',
   };
@@ -219,8 +219,7 @@ export const mapFormatoPDToAPI = (formData: any): CAFSolicitudPD => {
     FichaPago: checkboxToNumber(formData.docFichaPago),
     InfoBancariaPagoDep: checkboxToNumber(formData.docInfoBancaria),
 
-    // Metadata
-    approve: 0,
+    // Metadata - NO establecer approve
     Usuario: localStorage.getItem('username') || formData.responsable,
     Mode: 'Normal',
   };
@@ -254,16 +253,13 @@ export const mapFormatoFDToAPI = (formData: any): CAFSolicitudFD => {
     VOBO_LegalFirma: checkboxToNumber(formData.docVOBOLegal),
     DocumentoFirmar: checkboxToNumber(formData.docDocumentoFirmar),
 
-    // Metadata
-    approve: 0,
+    // Metadata - NO establecer approve
     Usuario: localStorage.getItem('username') || formData.responsable,
     Mode: 'Normal',
   };
 };
 
-/**
- * Mapea datos del API a la estructura del formulario CO
- */
+// Las funciones de mapeo del API al formulario permanecen igual
 export const mapAPIToFormatoCO = (apiData: any): any => {
   return {
     buildingId: apiData.Building || "",
@@ -308,9 +304,6 @@ export const mapAPIToFormatoCO = (apiData: any): any => {
   };
 };
 
-/**
- * Mapea datos del API a la estructura del formulario OS
- */
 export const mapAPIToFormatoOS = (apiData: any): any => {
   return {
     buildingId: apiData.Building || "",
@@ -333,7 +326,6 @@ export const mapAPIToFormatoOS = (apiData: any): any => {
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
     
-    // Checkboxes comunes
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
     docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
     docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
@@ -342,9 +334,6 @@ export const mapAPIToFormatoOS = (apiData: any): any => {
   };
 };
 
-/**
- * Mapea datos del API a la estructura del formulario OC
- */
 export const mapAPIToFormatoOC = (apiData: any): any => {
   return {
     buildingId: apiData.Building || "",
@@ -375,7 +364,6 @@ export const mapAPIToFormatoOC = (apiData: any): any => {
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
     
-    // Checkboxes comunes
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
     docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
     docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
@@ -384,9 +372,6 @@ export const mapAPIToFormatoOC = (apiData: any): any => {
   };
 };
 
-/**
- * Mapea datos del API a la estructura del formulario PD
- */
 export const mapAPIToFormatoPD = (apiData: any): any => {
   return {
     buildingId: apiData.Building || "",
@@ -402,23 +387,18 @@ export const mapAPIToFormatoPD = (apiData: any): any => {
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
     
-    // Checkboxes comunes
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
     docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
     docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
     docDibujos: numberToCheckbox(apiData.DibujosEspecificaciones),
     docProgramaObra: numberToCheckbox(apiData.ProgramaObra),
     
-    // Checkboxes exclusivos PD
     docVOBOLegal: numberToCheckbox(apiData.VOBO_LegalPagoDep),
     docFichaPago: numberToCheckbox(apiData.FichaPago),
     docInfoBancaria: numberToCheckbox(apiData.InfoBancariaPagoDep),
   };
 };
 
-/**
- * Mapea datos del API a la estructura del formulario FD
- */
 export const mapAPIToFormatoFD = (apiData: any): any => {
   return {
     buildingId: apiData.Building || "",
@@ -431,14 +411,12 @@ export const mapAPIToFormatoFD = (apiData: any): any => {
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
     
-    // Checkboxes comunes
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
     docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
     docAnalisisRiesgos: numberToCheckbox(apiData.AnalisisRiesgosWHSE_VOBO),
     docDibujos: numberToCheckbox(apiData.DibujosEspecificaciones),
     docProgramaObra: numberToCheckbox(apiData.ProgramaObra),
     
-    // Checkboxes exclusivos FD
     docVOBOLegal: numberToCheckbox(apiData.VOBO_LegalFirma),
     docDocumentoFirmar: numberToCheckbox(apiData.DocumentoFirmar),
   };

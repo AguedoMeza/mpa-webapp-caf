@@ -10,13 +10,18 @@ router = APIRouter()
 
 @router.post("/caf-solicitud", status_code=status.HTTP_201_CREATED)
 def create_caf_solicitud(data: dict, db: Session = Depends(get_db)):
-    service = CafSolicitudService()  # Crear instancia aquí
+    """
+    Crea una nueva solicitud CAF.
+    El campo 'approve' se deja como NULL (pendiente de revisión) automáticamente.
+    """
+    service = CafSolicitudService()
     solicitud = service.create(db, data)
     return solicitud
 
 @router.get("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
 def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
-    service = CafSolicitudService()  # Crear instancia aquí
+    """Obtiene el detalle de una solicitud CAF por ID"""
+    service = CafSolicitudService()
     result = service.get_detail(db, solicitud_id)
     if not result:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
@@ -24,7 +29,8 @@ def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
 
 @router.put("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
 def update_caf_solicitud(solicitud_id: int, data: dict, db: Session = Depends(get_db)):
-    service = CafSolicitudService()  # Crear instancia aquí
+    """Actualiza una solicitud CAF existente"""
+    service = CafSolicitudService()
     result = service.update(db, solicitud_id, data)
     if not result:
         raise HTTPException(status_code=404, detail="Solicitud no encontrada")
@@ -37,16 +43,46 @@ def approve_or_reject_solicitud(
     db: Session = Depends(get_db)
 ) -> ApprovalResponse:
     """
-    Aprueba o rechaza una solicitud CAF.
+    Aprueba, rechaza o marca para correcciones una solicitud CAF.
+    
+    Flujo de estados:
+    - NULL (pendiente) -> Estado inicial cuando se crea la solicitud
+    - 'requiere_correcciones' (0) -> Rechazado temporalmente, necesita correcciones (comentarios OBLIGATORIOS)
+    - 'aprobado' (1) -> Aprobado definitivamente
+    - 'rechazado_definitivo' (2) -> Rechazado definitivamente (comentarios opcionales)
     
     Body esperado:
     {
-        "approve": "aprobado" | "rechazado" | "revision",
-        "comentarios": "string"  // Requerido solo para rechazos
+        "approve": "requiere_correcciones" | "aprobado" | "rechazado_definitivo",
+        "comentarios": "string"  // Obligatorio solo para "requiere_correcciones"
+    }
+    
+    Ejemplos:
+    
+    1. Aprobar:
+    {
+        "approve": "aprobado"
+    }
+    
+    2. Solicitar correcciones:
+    {
+        "approve": "requiere_correcciones",
+        "comentarios": "Falta información del proveedor y montos actualizados"
+    }
+    
+    3. Rechazar definitivamente (sin comentarios):
+    {
+        "approve": "rechazado_definitivo"
+    }
+    
+    4. Rechazar definitivamente (con comentarios):
+    {
+        "approve": "rechazado_definitivo",
+        "comentarios": "No cumple con los requisitos mínimos de la empresa"
     }
     """
     try:
-        service = CafSolicitudService()  # Crear instancia aquí
+        service = CafSolicitudService()
         result = service.approve_or_reject(
             db, 
             solicitud_id, 
@@ -57,13 +93,20 @@ def approve_or_reject_solicitud(
         if not result:
             raise HTTPException(status_code=404, detail="Solicitud no encontrada")
         
+        # Mapear estados a mensajes claros
+        status_messages = {
+            'requiere_correcciones': 'marcada para correcciones',
+            'aprobado': 'aprobada',
+            'rechazado_definitivo': 'rechazada definitivamente'
+        }
+        
         return ApprovalResponse(
             success=True,
             id_solicitud=result.id_solicitud,
             approve=result.approve,
             status=approval_data.approve,
             comentarios=result.Comentarios,
-            message=f"Solicitud #{result.id_solicitud} {approval_data.approve} exitosamente"
+            message=f"Solicitud #{result.id_solicitud} {status_messages[approval_data.approve]} exitosamente"
         )
         
     except ValueError as e:

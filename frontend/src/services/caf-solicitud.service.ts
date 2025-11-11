@@ -42,6 +42,7 @@ class CAFSolicitudService {
 
   /**
    * Crear una nueva solicitud CAF
+   * El campo 'approve' se deja como NULL (pendiente) automáticamente
    */
   async createSolicitud(data: CAFSolicitud): Promise<CAFSolicitudResponse> {
     try {
@@ -112,37 +113,29 @@ class CAFSolicitudService {
   }
 
   /**
-   * Aprobar o rechazar una solicitud (versión con números)
-   */
-  async updateApprovalStatus(
-    id: number,
-    approve: number, // 0=revision, 1=aprobado, 2=rechazado
-    comentarios?: string
-  ): Promise<CAFSolicitudResponse> {
-    try {
-      const response = await this.api.patch<CAFSolicitudResponse>(
-        `/caf-solicitud/${id}/approval`,
-        { approve, Comentarios: comentarios }
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Error al actualizar estatus de aprobación:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Aprobar o rechazar una solicitud (versión con strings)
+   * Aprobar, rechazar o solicitar correcciones en una solicitud
+   * 
+   * Estados:
+   * - 'requiere_correcciones': Solicita correcciones (comentarios OBLIGATORIOS)
+   * - 'aprobado': Aprueba definitivamente
+   * - 'rechazado_definitivo': Rechaza definitivamente (comentarios OPCIONALES)
    */
   async approveOrRejectSolicitud(
     id: number,
-    approve: 'aprobado' | 'rechazado' | 'revision',
+    approve: 'requiere_correcciones' | 'aprobado' | 'rechazado_definitivo',
     comentarios?: string
   ): Promise<any> {
     try {
+      const payload: any = { approve };
+      
+      // Solo incluir comentarios si se proporcionan
+      if (comentarios !== undefined && comentarios !== null) {
+        payload.comentarios = comentarios;
+      }
+      
       const response = await this.api.patch(
         `/caf-solicitud/${id}/approval`,
-        { approve, comentarios }
+        payload
       );
       return response.data;
     } catch (error) {
@@ -199,8 +192,45 @@ class CAFSolicitudService {
   async createSolicitudFD(data: CAFSolicitudFD): Promise<CAFSolicitudResponse> {
     return this.createSolicitud({ ...data, Tipo_Contratacion: 'FD' });
   }
-}
 
+  /**
+   * Helper: Obtiene la etiqueta legible del estado
+   */
+  getStatusLabel(approve: number | null | undefined): string {
+    if (approve === null || approve === undefined) {
+      return 'Pendiente de Revisión';
+    }
+    switch (approve) {
+      case 0:
+        return 'Requiere Correcciones';
+      case 1:
+        return 'Aprobado';
+      case 2:
+        return 'Rechazado Definitivamente';
+      default:
+        return 'Estado Desconocido';
+    }
+  }
+
+  /**
+   * Helper: Obtiene el color del badge según el estado
+   */
+  getStatusColor(approve: number | null | undefined): string {
+    if (approve === null || approve === undefined) {
+      return 'warning';
+    }
+    switch (approve) {
+      case 0:
+        return 'info';
+      case 1:
+        return 'success';
+      case 2:
+        return 'danger';
+      default:
+        return 'secondary';
+    }
+  }
+}
 
 // Exportar instancia única del servicio (Singleton)
 export const cafSolicitudService = new CAFSolicitudService();
