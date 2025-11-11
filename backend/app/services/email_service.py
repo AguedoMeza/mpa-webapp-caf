@@ -155,7 +155,7 @@ class EmailService:
         
         return self.send_mail(sender_email, to_email, subject, body_html)
 
-    def send_caf_approval_result(self, to_email, solicitud_id, tipo_contratacion, approved, responsable, comentarios=None):
+    def send_caf_approval_result(self, to_email, solicitud_id, tipo_contratacion, approved, responsable, comentarios=None, edit_url=None):
         """
         Envía correo con el resultado de la aprobación/rechazo.
         Args:
@@ -165,6 +165,7 @@ class EmailService:
             approved: True si fue aprobada, False si fue rechazada
             responsable: Nombre del responsable que tomó la decisión
             comentarios: Comentarios del rechazo (solo aplica cuando approved=False)
+            edit_url: URL para editar la solicitud (solo para correcciones, estado 0)
         Returns:
             dict: Resultado del envío
         """
@@ -183,6 +184,23 @@ class EmailService:
             </div>
             """
         
+        # Botón de edición solo para correcciones (cuando se proporciona edit_url)
+        edit_button_html = ""
+        if not approved and edit_url:
+            edit_button_html = f"""
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="margin-bottom: 15px;"><strong>Para realizar las correcciones solicitadas:</strong></p>
+                <a href="{edit_url}" 
+                   style="background-color: #ffc107; color: #212529; padding: 12px 24px; 
+                          text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                    Editar Solicitud CAF #{solicitud_id}
+                </a>
+                <p style="margin-top: 15px; font-size: 14px; color: #6c757d;">
+                    Haga clic en el botón para acceder al formulario y realizar las correcciones.
+                </p>
+            </div>
+            """
+        
         body_html = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: {color};">Solicitud CAF {estado}</h2>
@@ -197,9 +215,12 @@ class EmailService:
             
             {comentarios_html}
             
+            {edit_button_html}
+            
             <div style="border-top: 1px solid #dee2e6; padding-top: 20px; margin-top: 30px; 
                         color: #6c757d; font-size: 12px;">
                 <p>Este correo fue generado automáticamente por el Sistema CAF.</p>
+                {f'<p>Si no puede hacer clic en el botón de edición, copie y pegue este enlace en su navegador:</p><p>{edit_url}</p>' if edit_url else ''}
             </div>
         </div>
         """

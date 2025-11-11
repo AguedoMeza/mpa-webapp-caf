@@ -125,6 +125,11 @@ class EmailNotificationObserver(Observer):
     def _handle_solicitud_rechazada(self, event: SolicitudRechazada) -> None:
         """
         Envía correo de notificación cuando se rechaza una solicitud.
+        
+        Maneja tanto:
+        - Estado 0 (requiere_correcciones): Solicita correcciones al usuario
+        - Estado 2 (rechazado_definitivo): Rechazo definitivo de la solicitud
+        
         Args:
             event: Evento de solicitud rechazada
         """
@@ -134,6 +139,25 @@ class EmailNotificationObserver(Observer):
         solicitante_email = event.solicitud.Usuario or "jose.serna@mpagroup.mx"
         logger.info(f"Enviando correo de rechazo/correcciones al solicitante: {solicitante_email}")
         
+        # Determinar si requiere correcciones o es rechazo definitivo
+        requiere_correcciones = event.solicitud.approve == 0
+        
+        # Construir URL de edición solo para correcciones (estado 0)
+        edit_url = None
+        if requiere_correcciones:
+            tipo_map = {
+                'CO': 'formato-co',
+                'OS': 'solicitud-caf',
+                'OC': 'formato-oc',
+                'PD': 'formato-pd',
+                'FD': 'formato-fd'
+            }
+            tipo_ruta = tipo_map.get(event.solicitud.Tipo_Contratacion, 'solicitud-caf')
+            edit_url = f"{self.frontend_base_url}/#/{tipo_ruta}/{event.solicitud_id}"
+            logger.info(f"Estado 0 - Requiere correcciones. URL de edición: {edit_url}")
+        else:
+            logger.info(f"Estado 2 - Rechazo definitivo. Sin URL de edición.")
+        
         try:
             result = email_service.send_caf_approval_result(
                 to_email=solicitante_email,
@@ -141,11 +165,13 @@ class EmailNotificationObserver(Observer):
                 tipo_contratacion=event.tipo_contratacion,
                 approved=False,
                 responsable=event.rechazado_por,
-                comentarios=event.comentarios
+                comentarios=event.comentarios,
+                edit_url=edit_url
             )
             
             if result.get("status") == "success":
-                logger.info(f"Correo de rechazo enviado exitosamente para solicitud #{event.solicitud_id}")
+                tipo_email = "correcciones" if requiere_correcciones else "rechazo definitivo"
+                logger.info(f"Correo de {tipo_email} enviado exitosamente para solicitud #{event.solicitud_id}")
             else:
                 logger.error(f"Error enviando correo de rechazo: {result}")
                 
