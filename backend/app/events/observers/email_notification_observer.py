@@ -70,9 +70,8 @@ class EmailNotificationObserver(Observer):
         """
         logger.info(f"Enviando correo de notificación para solicitud creada #{event.solicitud_id}")
         
-        # TODO: Obtener email del responsable desde la base de datos o configuración
-        # Por ahora usar el email del responsable de la solicitud
-        responsable_email = event.responsable or "jose.serna@mpagroup.mx"  # Usar el responsable real
+        # Usar el email del responsable de la solicitud (quien debe revisar/aprobar)
+        responsable_email = event.responsable or "jose.serna@mpagroup.mx"
         
         try:
             result = email_service.send_caf_notification(
@@ -100,8 +99,9 @@ class EmailNotificationObserver(Observer):
         """
         logger.info(f"Enviando correo de aprobación para solicitud #{event.solicitud_id}")
         
-        # TODO: Obtener email del solicitante original desde la base de datos
-        solicitante_email = "jose.serna@mpagroup.mx"  # Por ahora usar email fijo
+        # Usar el campo Usuario dinámicamente (quien creó la solicitud)
+        solicitante_email = event.solicitud.Usuario or "jose.serna@mpagroup.mx"
+        logger.info(f"Enviando correo de aprobación al solicitante: {solicitante_email}")
         
         try:
             result = email_service.send_caf_approval_result(
@@ -130,8 +130,9 @@ class EmailNotificationObserver(Observer):
         """
         logger.info(f"Enviando correo de rechazo para solicitud #{event.solicitud_id}")
         
-        # TODO: Obtener email del solicitante original desde la base de datos
-        solicitante_email = "jose.serna@mpagroup.mx"  # Por ahora usar email fijo
+        # Usar el campo Usuario dinámicamente (quien creó la solicitud)
+        solicitante_email = event.solicitud.Usuario or "jose.serna@mpagroup.mx"
+        logger.info(f"Enviando correo de rechazo/correcciones al solicitante: {solicitante_email}")
         
         try:
             result = email_service.send_caf_approval_result(
