@@ -5,6 +5,7 @@ import "./FormatoCO.css";
 // Servicios y utilidades
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoCOToAPI, mapAPIToFormatoCO } from "../../../utils/caf-solicitud.utils";
+import ApprovalActions from "./ApprovalActions";
 
 interface Props {
   tipoContrato: string;
@@ -152,6 +153,14 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
       setError(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApprovalComplete = (result: any) => {
+    console.log("Aprobación completada:", result);
+    // Opcional: recargar datos, redirigir, etc.
+    if (id) {
+      loadExistingData(parseInt(id));
     }
   };
 
@@ -385,6 +394,18 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
           </Button>
         </div>
       </Form>
+
+      {/* Mostrar botones de aprobación solo en modo edición */}
+      {isEditMode && (
+        <div className="my-4">
+          <ApprovalActions
+            solicitudId={parseInt(id!)}
+            tipoContratacion={tipoContrato}
+            responsable={formData.responsable}
+            onApprovalComplete={handleApprovalComplete}
+          />
+        </div>
+      )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
     </div>

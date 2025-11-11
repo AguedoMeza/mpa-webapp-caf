@@ -112,7 +112,7 @@ class CAFSolicitudService {
   }
 
   /**
-   * Aprobar o rechazar una solicitud
+   * Aprobar o rechazar una solicitud (versión con números)
    */
   async updateApprovalStatus(
     id: number,
@@ -127,6 +127,26 @@ class CAFSolicitudService {
       return response.data;
     } catch (error) {
       console.error('Error al actualizar estatus de aprobación:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Aprobar o rechazar una solicitud (versión con strings)
+   */
+  async approveOrRejectSolicitud(
+    id: number,
+    approve: 'aprobado' | 'rechazado' | 'revision',
+    comentarios?: string
+  ): Promise<any> {
+    try {
+      const response = await this.api.patch(
+        `/caf-solicitud/${id}/approval`,
+        { approve, comentarios }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error al aprobar/rechazar solicitud:', error);
       throw error;
     }
   }
@@ -180,6 +200,7 @@ class CAFSolicitudService {
     return this.createSolicitud({ ...data, Tipo_Contratacion: 'FD' });
   }
 }
+
 
 // Exportar instancia única del servicio (Singleton)
 export const cafSolicitudService = new CAFSolicitudService();

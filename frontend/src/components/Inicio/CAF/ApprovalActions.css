@@ -1,0 +1,30 @@
+/* frontend/src/components/CAF/ApprovalActions.css */
+
+.approval-actions-card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  margin-bottom: 2rem;
+}
+
+.approval-button {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.approval-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.approval-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Asegurar que los iconos de Bootstrap Icons estén disponibles */
+/* Si no tienes Bootstrap Icons, agrega esto al index.html:
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+*/
