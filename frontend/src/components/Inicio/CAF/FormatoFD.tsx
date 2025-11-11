@@ -5,7 +5,13 @@ import "./FormatoFD.css";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoFDToAPI, mapAPIToFormatoFD } from "../../../utils/caf-solicitud.utils";
 
-const FormatoFD: React.FC = () => {
+// ✅ Interface agregada para aceptar la prop tipoContrato
+interface Props {
+  tipoContrato: string;
+}
+
+// ✅ Componente ahora recibe la prop tipoContrato
+const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
 
@@ -149,7 +155,10 @@ const FormatoFD: React.FC = () => {
         <Row>
           {/* -------- IZQUIERDA -------- */}
           <Col md={6}>
-            <h6 className="fw-semibold">Tipo de Contratación</h6>
+            {/* ✅ Ahora muestra el tipo de contrato que viene de la prop */}
+            <h6 className="fw-semibold">
+              Tipo de Contratación: <span className="text-primary">{tipoContrato}</span>
+            </h6>
 
             <h6 className="mt-3">Información General</h6>
             {[

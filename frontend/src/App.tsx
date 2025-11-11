@@ -1,6 +1,3 @@
-
-
-
 import React from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -24,9 +21,9 @@ const App: React.FC = () => {
           <Route path="/" element={<Bienvenida />} /> 
           <Route path="/solicitud-caf/:id?" element={<ProtectedRoute><FormatoOS tipoContrato="Orden de Servicio" /></ProtectedRoute>} />
           <Route path="/formato-co/:id?" element={<ProtectedRoute><FormatoCO tipoContrato="Contrato de Obra" /></ProtectedRoute>} />
-          <Route path="/formato-oc/:id?" element={<ProtectedRoute><FormatoOC tipoContrato="Contrato de Servicio" /></ProtectedRoute>} />
-          <Route path="/formato-pd/:id?" element={<ProtectedRoute><FormatoPD tipoContrato="Contrato de Suministro" /></ProtectedRoute>} />
-          <Route path="/formato-fd/:id?" element={<ProtectedRoute><FormatoFD/></ProtectedRoute>} />
+          <Route path="/formato-oc/:id?" element={<ProtectedRoute><FormatoOC tipoContrato="Orden de Cambio" /></ProtectedRoute>} />
+          <Route path="/formato-pd/:id?" element={<ProtectedRoute><FormatoPD tipoContrato="Pago a Dependencia" /></ProtectedRoute>} />
+          <Route path="/formato-fd/:id?" element={<ProtectedRoute><FormatoFD tipoContrato="Firma de Documento" /></ProtectedRoute>} />
         </Routes>
       </NavBar>
     </HashRouter>
