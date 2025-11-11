@@ -86,7 +86,7 @@ export const mapFormatoCOToAPI = (formData: any): CAFSolicitudCO => {
     // Metadata
     // IMPORTANTE: NO establecer approve aquí, se deja NULL en el backend
     // approve: undefined, // Se omite para que quede NULL
-    Usuario: localStorage.getItem('username') || formData.responsable,
+    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'usuario@mpagroup.mx',
     Mode: 'Normal',
   };
 };
@@ -128,7 +128,7 @@ export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
     ProgramaObra: checkboxToNumber(formData.docProgramaObra),
 
     // Metadata - NO establecer approve
-    Usuario: localStorage.getItem('username') || formData.responsable,
+    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'usuario@mpagroup.mx',
     Mode: 'Normal',
   };
 };
@@ -180,7 +180,7 @@ export const mapFormatoOCToAPI = (formData: any): CAFSolicitudOC => {
     ProgramaObra: checkboxToNumber(formData.docProgramaObra),
 
     // Metadata - NO establecer approve
-    Usuario: localStorage.getItem('username') || formData.responsable,
+    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'usuario@mpagroup.mx',
     Mode: 'Normal',
   };
 };
@@ -220,7 +220,7 @@ export const mapFormatoPDToAPI = (formData: any): CAFSolicitudPD => {
     InfoBancariaPagoDep: checkboxToNumber(formData.docInfoBancaria),
 
     // Metadata - NO establecer approve
-    Usuario: localStorage.getItem('username') || formData.responsable,
+    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'usuario@mpagroup.mx',
     Mode: 'Normal',
   };
 };
@@ -254,7 +254,7 @@ export const mapFormatoFDToAPI = (formData: any): CAFSolicitudFD => {
     DocumentoFirmar: checkboxToNumber(formData.docDocumentoFirmar),
 
     // Metadata - NO establecer approve
-    Usuario: localStorage.getItem('username') || formData.responsable,
+    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'usuario@mpagroup.mx',
     Mode: 'Normal',
   };
 };
