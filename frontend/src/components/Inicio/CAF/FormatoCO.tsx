@@ -341,20 +341,20 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha Ocupación Benéfica</Form.Label>
-                  <Form.Control type="date" name="fechaOcupacion" value={formData.fechaOcupacion} onChange={handleChange} />
+                  <Form.Control type="date" name="fechaOcupacion" value={formData.fechaOcupacion} onChange={handleChange} {...getFieldProps()} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha Terminación Sustancial</Form.Label>
-                  <Form.Control type="date" name="fechaSustancial" value={formData.fechaSustancial} onChange={handleChange} />
+                  <Form.Control type="date" name="fechaSustancial" value={formData.fechaSustancial} onChange={handleChange} {...getFieldProps()} />
                 </Form.Group>
               </Col>
             </Row>
 
             <Form.Group className="mb-2">
               <Form.Label>Fecha Terminación Final Contratos</Form.Label>
-              <Form.Control type="date" name="fechaFinalContratos" value={formData.fechaFinalContratos} onChange={handleChange} />
+              <Form.Control type="date" name="fechaFinalContratos" value={formData.fechaFinalContratos} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             {[
@@ -364,7 +364,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             ].map((f, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{f.label}</Form.Label>
-                <Form.Control name={f.name} value={(formData as any)[f.name]} onChange={handleChange} />
+                <Form.Control name={f.name} value={(formData as any)[f.name]} onChange={handleChange} {...getFieldProps()} />
               </Form.Group>
             ))}
           </Col>
@@ -373,17 +373,17 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
           <Col md={6}>
             <Form.Group className="mb-2">
               <Form.Label>Responsable</Form.Label>
-              <Form.Control name="responsable" value={formData.responsable} onChange={handleChange} />
+              <Form.Control name="responsable" value={formData.responsable} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>Fecha</Form.Label>
-              <Form.Control type="date" name="fecha" value={formData.fecha} onChange={handleChange} />
+              <Form.Control type="date" name="fecha" value={formData.fecha} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Descripción de los Trabajos/Servicios Solicitados</Form.Label>
-              <Form.Control as="textarea" rows={2} name="descripcion" value={formData.descripcion} onChange={handleChange} />
+              <Form.Control as="textarea" rows={2} name="descripcion" value={formData.descripcion} onChange={handleChange} {...getFieldProps()}  />
             </Form.Group>
 
             <h6>Documentos a Enviar</h6>
@@ -402,12 +402,13 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
                 checked={(formData as any)[d.name]}
                 onChange={handleChange}
                 className="mb-1"
+                {...getFieldProps()}
               />
             ))}
 
             <Form.Group className="mt-4 mb-3">
               <Form.Label>Justificación de Trabajos</Form.Label>
-              <Form.Control as="textarea" rows={2} name="justificacion" value={formData.justificacion} onChange={handleChange} />
+              <Form.Control as="textarea" rows={2} name="justificacion" value={formData.justificacion} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <h6>Documentos Exclusivos para Contratos</h6>
@@ -426,12 +427,13 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
                 checked={(formData as any)[d.name]}
                 onChange={handleChange}
                 className="mb-1"
+                {...getFieldProps()}
               />
             ))}
 
             <Form.Group className="mt-4">
               <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
-              <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} />
+              <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
           </Col>
 
