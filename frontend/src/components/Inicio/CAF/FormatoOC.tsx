@@ -41,6 +41,7 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
     nuevaFinal: "",
     tiempoDias: "",
     sharepoint: "",
+    tipo_contratacion: "",
     // Checkboxes
     docCotizacion: false,
     docAprobacion: false,
@@ -172,7 +173,7 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
         <div className="form-columns">
           {/* -------- COLUMNA IZQUIERDA -------- */}
           <div className="form-column">
-            <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{tipoContrato}</span></h6>
+            <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{formData.tipo_contratacion || tipoContrato}</span></h6>
 
             <h6 className="mt-3">Información General</h6>
             {["buildingId", "cliente", "direccion", "proveedor"].map((name, i) => (

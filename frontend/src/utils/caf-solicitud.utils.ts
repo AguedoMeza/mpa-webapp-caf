@@ -287,6 +287,7 @@ export const mapAPIToFormatoCO = (apiData: any): any => {
     descripcion: apiData.Descripcion_trabajo_servicio || "",
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
+    tipo_contratacion: apiData.Tipo_Contratacion || "",
     
     // Checkboxes comunes
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
@@ -325,6 +326,7 @@ export const mapAPIToFormatoOS = (apiData: any): any => {
     descripcion: apiData.Descripcion_trabajo_servicio || "",
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
+    tipo_contratacion: apiData.Tipo_Contratacion || "",
     
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
     docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
@@ -363,6 +365,7 @@ export const mapAPIToFormatoOC = (apiData: any): any => {
     descripcion: apiData.Descripcion_trabajo_servicio || "",
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
+    tipo_contratacion: apiData.Tipo_Contratacion || "",
     
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
     docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
@@ -386,6 +389,7 @@ export const mapAPIToFormatoPD = (apiData: any): any => {
     descripcion: apiData.Descripcion_trabajo_servicio || "",
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
+    tipo_contratacion: apiData.Tipo_Contratacion || "",
     
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
     docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),
@@ -410,6 +414,7 @@ export const mapAPIToFormatoFD = (apiData: any): any => {
     descripcion: apiData.Descripcion_trabajo_servicio || "",
     justificacion: apiData.Justificacion_trabajo || "",
     sharepoint: apiData.Enlace_sharepoint || "",
+    tipo_contratacion: apiData.Tipo_Contratacion || "",
     
     docCotizacion: numberToCheckbox(apiData.Cotizacion_MPA_CP),
     docAprobacion: numberToCheckbox(apiData.AprobacionCorreoConcurso),

@@ -33,6 +33,7 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
     justificacion: "",
     sharepoint: "",
     fecha: "",
+    tipo_contratacion: "",
     // Checkboxes
     docCotizacion: false,
     docAprobacion: false,
@@ -164,7 +165,7 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
         {/* --- SECCIÓN GENERAL --- */}
         <Row>
           <Col md={6}>
-            <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{tipoContrato}</span></h6>
+            <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{formData.tipo_contratacion || tipoContrato}</span></h6>
             <h6 className="mt-3">Información General</h6>
 
             <Form.Group className="mb-2">
