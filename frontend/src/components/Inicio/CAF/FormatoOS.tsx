@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import "./FormatoOS.css";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoOSToAPI, mapAPIToFormatoOS } from "../../../utils/caf-solicitud.utils";
+import ApprovalActions from "./ApprovalActions";
 
 interface Props {
   tipoContrato: string;
@@ -46,6 +47,9 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  
+  // Estado para controlar edición según Mode y datos de solicitud
+  const [solicitudData, setSolicitudData] = useState<any>(null);
 
   useEffect(() => {
     if (id) {
@@ -61,6 +65,7 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
       const response = await cafSolicitudService.getSolicitudById(solicitudId);
       const mappedData = mapAPIToFormatoOS(response);
       setFormData(mappedData);
+      setSolicitudData(response); // Guardar datos originales para acceso a Mode y approve
       console.log("Datos cargados:", response);
     } catch (err: any) {
       console.error("Error al cargar solicitud:", err);
@@ -129,6 +134,14 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
       setError(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApprovalComplete = (result: any) => {
+    console.log("Aprobación completada:", result);
+    // Opcional: recargar datos, redirigir, etc.
+    if (id) {
+      loadExistingData(parseInt(id));
     }
   };
 
@@ -342,6 +355,19 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
           </Button>
         </div>
       </Form>
+
+      {/* Mostrar botones de aprobación solo en modo edición */}
+      {isEditMode && (
+        <div className="my-4">
+          <ApprovalActions
+            solicitudId={parseInt(id!)}
+            currentStatus={solicitudData?.approve}
+            tipoContratacion={tipoContrato}
+            responsable={formData.responsable}
+            onApprovalComplete={handleApprovalComplete}
+          />
+        </div>
+      )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
     </div>

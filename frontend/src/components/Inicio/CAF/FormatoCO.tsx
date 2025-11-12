@@ -473,6 +473,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
         <div className="my-4">
           <ApprovalActions
             solicitudId={parseInt(id!)}
+            currentStatus={solicitudData?.approve}
             tipoContratacion={tipoContrato}
             responsable={formData.responsable}
             onApprovalComplete={handleApprovalComplete}
