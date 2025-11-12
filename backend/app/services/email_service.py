@@ -95,7 +95,8 @@ class EmailService:
         else:
             return {"status": "error", "code": resp.status_code, "message": resp.text}
 
-    def send_caf_notification(self, to_email, solicitud_id, tipo_contratacion, responsable, frontend_base_url):
+    def send_caf_notification(self, to_email, solicitud_id, tipo_contratacion, responsable, 
+                          frontend_base_url, is_update_from_corrections=False):
         """
         Envía correo de notificación de nueva solicitud CAF al responsable.
         Args:
@@ -104,6 +105,7 @@ class EmailService:
             tipo_contratacion: Tipo de contratación (CO, OS, OC, PD, FD)
             responsable: Nombre del responsable
             frontend_base_url: URL base del frontend
+            is_update_from_corrections: True si es actualización desde correcciones, False si es nueva
         Returns:
             dict: Resultado del envío
         """
@@ -119,25 +121,40 @@ class EmailService:
         route = tipo_routes.get(tipo_contratacion, 'solicitud-caf')
         approval_url = f"{frontend_base_url}/#/{route}/{solicitud_id}"
         
-        subject = f"Nueva Solicitud CAF #{solicitud_id} - Requiere Aprobación"
+        # Personalizar mensaje según el contexto
+        if is_update_from_corrections:
+            subject = f"Solicitud CAF #{solicitud_id} - Correcciones Realizadas"
+            header_text = "Solicitud CAF Actualizada - Correcciones Completadas"
+            header_color = "#17a2b8"  # Color info/cyan para actualizaciones
+            intro_text = "La solicitud CAF ha sido actualizada con las correcciones que usted solicitó."
+            button_text = "Revisar Correcciones Realizadas"
+            icon = "🔄"
+        else:
+            subject = f"Nueva Solicitud CAF #{solicitud_id} - Requiere Aprobación"
+            header_text = "Nueva Solicitud CAF - Requiere Aprobación"
+            header_color = "#2c5aa0"  # Color azul para nuevas
+            intro_text = "Se ha creado una nueva solicitud CAF que requiere su revisión y aprobación."
+            button_text = f"Revisar Solicitud CAF #{solicitud_id}"
+            icon = "📝"
         
         body_html = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2c5aa0;">Nueva Solicitud CAF - Requiere Aprobación</h2>
+            <h2 style="color: {header_color};">{icon} {header_text}</h2>
             
             <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
-                <h3>Detalles de la Solicitud</h3>
+                <p style="margin-bottom: 15px;">{intro_text}</p>
+                <h3 style="margin-bottom: 10px;">Detalles de la Solicitud</h3>
                 <p><strong>ID:</strong> #{solicitud_id}</p>
                 <p><strong>Tipo:</strong> {tipo_contratacion}</p>
                 <p><strong>Responsable:</strong> {responsable}</p>
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
-                <p>Haga clic en el enlace siguiente para revisar y aprobar/rechazar la solicitud:</p>
+                <p style="margin-bottom: 15px;">Haga clic en el botón siguiente para revisar la solicitud:</p>
                 <a href="{approval_url}" 
-                   style="background-color: #007bff; color: white; padding: 12px 24px; 
-                          text-decoration: none; border-radius: 5px; display: inline-block;">
-                    Revisar Solicitud CAF #{solicitud_id}
+                style="background-color: {header_color}; color: white; padding: 12px 24px; 
+                        text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                    {button_text}
                 </a>
             </div>
             
@@ -145,7 +162,7 @@ class EmailService:
                         color: #6c757d; font-size: 12px;">
                 <p>Este correo fue generado automáticamente por el Sistema CAF.</p>
                 <p>Si no puede hacer clic en el botón, copie y pegue este enlace en su navegador:</p>
-                <p>{approval_url}</p>
+                <p style="word-break: break-all;">{approval_url}</p>
             </div>
         </div>
         """

@@ -48,18 +48,47 @@ class CafSolicitudService:
         return solicitud
 
     def update(self, db: Session, solicitud_id: int, data: dict) -> TBL_CAF_Solicitud:
+        """
+        Actualiza una solicitud CAF existente.
+        
+        IMPORTANTE: Si la solicitud estaba en estado 'requiere_correcciones' (0),
+        al actualizarse se resetea a NULL (pendiente) y se notifica al responsable.
+        """
         # Buscar la solicitud existente
         solicitud = db.query(TBL_CAF_Solicitud).filter_by(id_solicitud=solicitud_id).first()
         if not solicitud:
             return None
+        
+        # Guardar estado anterior para detectar si estaba en correcciones
+        was_in_corrections = solicitud.approve == 0
         
         # Actualizar campos que lleguen en data
         for field, value in data.items():
             if hasattr(solicitud, field):
                 setattr(solicitud, field, value)
         
+        # FLUJO CÍCLICO: Si estaba en correcciones, resetear a pendiente
+        if was_in_corrections:
+            solicitud.approve = None  # Volver a estado pendiente
+            solicitud.Mode = 'Normal'  # Cambiar a modo normal
+            logger.info(f"Solicitud #{solicitud_id} actualizada desde correcciones. Reseteando a pendiente.")
+        
         db.commit()
         db.refresh(solicitud)
+        
+        # DISPARAR EVENTO: Si estaba en correcciones, notificar al responsable
+        if was_in_corrections:
+            try:
+                print(f"🔄 Solicitud #{solicitud.id_solicitud} actualizada desde correcciones")
+                event = SolicitudCreada(solicitud=solicitud)  # Reutilizar evento de creación
+                print(f"🚀 Notificando al responsable sobre las correcciones realizadas")
+                self.event_dispatcher.dispatch(event)
+                print(f"✅ Responsable notificado sobre correcciones en solicitud #{solicitud.id_solicitud}")
+                logger.info(f"Responsable notificado sobre correcciones en solicitud #{solicitud.id_solicitud}")
+            except Exception as e:
+                print(f"❌ Error notificando al responsable: {str(e)}")
+                logger.error(f"Error notificando al responsable: {str(e)}")
+        
         return solicitud
 
     def approve_or_reject(self, db: Session, solicitud_id: int, approve_status: str, comentarios: str = None) -> TBL_CAF_Solicitud:
