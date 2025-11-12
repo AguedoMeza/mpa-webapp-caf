@@ -1,27 +1,160 @@
 /* frontend/src/components/CAF/ApprovalActions.css */
 
 .approval-actions-card {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: none;
-  margin-bottom: 2rem;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+  background-color: #ffffff !important;
+}
+
+.approval-actions-card .card-header {
+  background-color: #2F58A7 !important;
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 0.9rem 1.25rem;
+}
+
+/* === Contenedor de botones === */
+.approval-actions-card .d-grid {
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* === Tipografía y espaciado === */
+.approval-actions-card .card-body {
+  padding: 1.75rem !important;
+  font-size: 0.95rem;
+  color: #2E2E2E;
+}
+
+.approval-actions-card p {
+  margin-bottom: 0.4rem;
+  line-height: 1.7;
+}
+
+.approval-actions-card strong {
+  color: #000;
+}
+
+/* === Badges de estado === */
+.approval-actions-card .badge {
+  font-size: 0.9rem !important;
+  padding: 0.4rem 0.7rem !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+}
+
+.badge.bg-warning {
+  background-color: #F2B705 !important;
+  color: #000 !important;
+}
+
+/* === Bloque del flujo de estados === */
+.approval-actions-card .alert-info {
+  background-color: #f5f7fb !important;
+  border: 1px solid #dbe3f3 !important;
+  border-left: 4px solid #2F58A7 !important;
+  color: #2E2E2E !important;
+  border-radius: 8px !important;
+  padding: 1rem 1.3rem !important;
+}
+
+.approval-actions-card .alert-info strong {
+  color: #2F58A7 !important;
+}
+
+.approval-actions-card .alert-info ul {
+  margin: 0.6rem 0 0 0 !important;
+  padding-left: 1rem;
 }
 
 .approval-button {
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  border: none !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease-in-out;
+  padding: 0.9rem !important;
+}
+/* Botón Aprobar */
+.approval-button.btn-success {
+  background-color: #2F58A7 !important;
+  color: #fff !important;
+}
+.approval-button.btn-success:hover {
+  background-color: #3c6bc0 !important;
 }
 
-.approval-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Botón Correcciones */
+.approval-button.btn-warning {
+  background-color: #E0E0E0 !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+}
+.approval-button.btn-warning:hover {
+  background-color: #d4d4d4 !important;
 }
 
-.approval-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+/* Botón Rechazar (tono sobrio, no agresivo) */
+.approval-button.btn-danger {
+  background-color: #C64141 !important;
+  color: #fff !important;
+}
+.approval-button.btn-danger:hover {
+  background-color: #b53737 !important;
+}
+
+/* === Alertas dinámicas === */
+.alert-success {
+  background-color: #e7f6ed !important;
+  border: 1px solid #b7e0c2 !important;
+  color: #1e6f3f !important;
+}
+
+.alert-danger {
+  background-color: #fcebea !important;
+  border: 1px solid #f5c6cb !important;
+  color: #842029 !important;
+}
+
+/* === Spinner centrado visualmente === */
+.spinner-border {
+  vertical-align: middle !important;
+}
+
+/* === Diseño responsive === */
+
+/* Para laptops y pantallas grandes */
+@media (min-width: 992px) {
+  .approval-actions-card .d-grid {
+    flex-direction: row !important;
+    justify-content: right !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding-top: 2%;
+  }
+
+  .approval-button {
+    flex: 1;
+    max-width: 250px;
+    font-size: 0.95rem !important;
+    padding: 0.7rem 1rem !important;
+  }
+}
+
+/* Para pantallas pequeñas (tablets y móviles) */
+@media (max-width: 991px) {
+  .approval-actions-card .d-grid {
+    flex-direction: column !important;
+  }
+
+  .approval-button {
+    width: 100%;
+    font-size: 1rem !important;
+  }
 }
 
 /* Asegurar que los iconos de Bootstrap Icons estén disponibles */
