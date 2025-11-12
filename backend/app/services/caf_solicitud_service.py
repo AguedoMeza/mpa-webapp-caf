@@ -96,6 +96,12 @@ class CafSolicitudService:
         # Actualizar el estado de aprobación
         solicitud.approve = approve_value
         
+        # Actualizar Mode según el estado de aprobación
+        if approve_status == 'requiere_correcciones':
+            solicitud.Mode = 'Edit'  # Formulario editable para correcciones
+        elif approve_status in ['aprobado', 'rechazado_definitivo']:
+            solicitud.Mode = 'View'  # Formulario bloqueado (solo vista)
+        
         # Validación de comentarios según el estado
         if approve_status == 'requiere_correcciones':
             # Comentarios OBLIGATORIOS para correcciones

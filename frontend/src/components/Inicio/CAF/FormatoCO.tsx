@@ -60,6 +60,25 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  
+  // Estado para controlar edición según Mode
+  const [solicitudData, setSolicitudData] = useState<any>(null);
+  
+  // Determinar si el formulario debe estar bloqueado
+  const isReadOnly = () => {
+    if (!isEditMode) return false; // En modo creación, siempre editable
+    if (!solicitudData) return false; // Si no hay datos, permitir edición
+    
+    const mode = solicitudData.Mode;
+    // REGLA: Solo editable cuando Mode = "Edit"
+    return mode !== 'Edit';
+  };
+  
+  // Helper para aplicar props de solo lectura
+  const getFieldProps = () => ({
+    readOnly: isReadOnly(),
+    disabled: isReadOnly(),
+  });
 
   // Cargar datos existentes si hay ID en la URL
   useEffect(() => {
@@ -76,6 +95,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
       const response = await cafSolicitudService.getSolicitudById(solicitudId);
       const mappedData = mapAPIToFormatoCO(response);
       setFormData(mappedData);
+      setSolicitudData(response); // Guardar datos originales para acceso a Mode
       console.log("Datos cargados:", response);
     } catch (err: any) {
       console.error("Error al cargar solicitud:", err);
@@ -166,9 +186,27 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
-      <h2 className="text-center fw-bold mb-5">
+      <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
+      
+      {/* Indicador de estado del formulario */}
+      {isEditMode && solicitudData && (
+        <div className="text-center mb-4">
+          {isReadOnly() ? (
+            <Alert variant="info" className="d-inline-flex align-items-center">
+              <i className="fas fa-lock me-2"></i>
+              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'} 
+              | Estado: {cafSolicitudService.getStatusLabel(solicitudData.approve)}
+            </Alert>
+          ) : (
+            <Alert variant="warning" className="d-inline-flex align-items-center">
+              <i className="fas fa-edit me-2"></i>
+              <strong>Formulario Editable</strong> - Modo: Edit | Requiere Correcciones
+            </Alert>
+          )}
+        </div>
+      )}
 
       {/* Alertas de éxito o error */}
       {error && (
@@ -210,7 +248,12 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             ].map((f, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{f.label}</Form.Label>
-                <Form.Control name={f.name} value={(formData as any)[f.name]} onChange={handleChange} />
+                <Form.Control 
+                  name={f.name} 
+                  value={(formData as any)[f.name]} 
+                  onChange={handleChange}
+                  {...getFieldProps()}
+                />
               </Form.Group>
             ))}
 
@@ -219,13 +262,25 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de inicio</Form.Label>
-                  <Form.Control type="date" name="fechaInicio" value={formData.fechaInicio} onChange={handleChange} />
+                  <Form.Control 
+                    type="date" 
+                    name="fechaInicio" 
+                    value={formData.fechaInicio} 
+                    onChange={handleChange}
+                    {...getFieldProps()}
+                  />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de Terminación Final</Form.Label>
-                  <Form.Control type="date" name="fechaFin" value={formData.fechaFin} onChange={handleChange} />
+                  <Form.Control 
+                    type="date" 
+                    name="fechaFin" 
+                    value={formData.fechaFin} 
+                    onChange={handleChange}
+                    {...getFieldProps()}
+                  />
                 </Form.Group>
               </Col>
             </Row>
@@ -240,7 +295,12 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             ].map((f, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{f.label}</Form.Label>
-                <Form.Control name={f.name} value={(formData as any)[f.name]} onChange={handleChange} />
+                <Form.Control 
+                  name={f.name} 
+                  value={(formData as any)[f.name]} 
+                  onChange={handleChange}
+                  {...getFieldProps()}
+                />
               </Form.Group>
             ))}
 
@@ -248,7 +308,12 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Tipo de trabajo</Form.Label>
-                  <Form.Select name="tipoTrabajo" value={formData.tipoTrabajo} onChange={handleChange}>
+                  <Form.Select 
+                    name="tipoTrabajo" 
+                    value={formData.tipoTrabajo} 
+                    onChange={handleChange}
+                    {...getFieldProps()}
+                  >
                     <option>Desarrollo</option>
                     <option>Mantenimiento</option>
                     <option>Supervisión</option>
@@ -258,7 +323,12 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-4">
                   <Form.Label>Es recuperable o No Recuperable</Form.Label>
-                  <Form.Select name="recuperable" value={formData.recuperable} onChange={handleChange}>
+                  <Form.Select 
+                    name="recuperable" 
+                    value={formData.recuperable} 
+                    onChange={handleChange}
+                    {...getFieldProps()}
+                  >
                     <option>REC</option>
                     <option>NO REC</option>
                   </Form.Select>
@@ -374,7 +444,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             type="submit"
             variant="primary"
             className="px-4"
-            disabled={loading || loadingData}
+            disabled={loading || loadingData || isReadOnly()}
           >
             {loading ? (
               <>

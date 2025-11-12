@@ -116,4 +116,5 @@ export interface CAFSolicitudResponse {
   Cliente?: string;
   // ... incluir todos los campos según necesites
   approve?: number;
+  Mode?: string;  // Campo para control de edición
 }

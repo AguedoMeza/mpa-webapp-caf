@@ -87,7 +87,7 @@ export const mapFormatoCOToAPI = (formData: any): CAFSolicitudCO => {
     // IMPORTANTE: NO establecer approve aquí, se deja NULL en el backend
     // approve: undefined, // Se omite para que quede NULL
     Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
-    Mode: 'Normal',
+    Mode: '',
   };
 };
 
@@ -96,7 +96,7 @@ export const mapFormatoCOToAPI = (formData: any): CAFSolicitudCO => {
  */
 export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
   return {
-    // Información base
+    // Campos base
     Tipo_Contratacion: 'OS',
     Responsable: formData.responsable,
     Fecha: formatDateForAPI(formData.fecha),
@@ -108,7 +108,7 @@ export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
     Justificacion_trabajo: formData.justificacion,
     Enlace_sharepoint: formData.sharepoint,
 
-    // Datos de trabajos/servicios
+    // Datos de trabajo/servicio (sin datos de contrato)
     Fecha_inicio: formatDateForAPI(formData.fechaInicio),
     FechaTerminacionFinalServ: formatDateForAPI(formData.fechaFin),
     MontoMXNsubtotal: formData.montoPesos,
@@ -120,7 +120,7 @@ export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
     Tipo_trabajo: formData.tipoTrabajo,
     Recuperable: formData.recuperable,
 
-    // Documentos
+    // Documentos comunes (sin documentos de contrato)
     Cotizacion_MPA_CP: checkboxToNumber(formData.docCotizacion),
     AprobacionCorreoConcurso: checkboxToNumber(formData.docAprobacion),
     AnalisisRiesgosWHSE_VOBO: checkboxToNumber(formData.docAnalisisRiesgos),
@@ -129,7 +129,7 @@ export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
 
     // Metadata - NO establecer approve
     Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
-    Mode: 'Normal',
+    Mode: '',
   };
 };
 
@@ -181,7 +181,7 @@ export const mapFormatoOCToAPI = (formData: any): CAFSolicitudOC => {
 
     // Metadata - NO establecer approve
     Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
-    Mode: 'Normal',
+    Mode: '',
   };
 };
 
@@ -221,7 +221,7 @@ export const mapFormatoPDToAPI = (formData: any): CAFSolicitudPD => {
 
     // Metadata - NO establecer approve
     Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
-    Mode: 'Normal',
+    Mode: '',
   };
 };
 
@@ -255,7 +255,7 @@ export const mapFormatoFDToAPI = (formData: any): CAFSolicitudFD => {
 
     // Metadata - NO establecer approve
     Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
-    Mode: 'Normal',
+    Mode: '',
   };
 };
 
