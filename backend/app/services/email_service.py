@@ -96,7 +96,7 @@ class EmailService:
             return {"status": "error", "code": resp.status_code, "message": resp.text}
 
     def send_caf_notification(self, to_email, solicitud_id, tipo_contratacion, responsable, 
-                          frontend_base_url, is_update_from_corrections=False):
+                          frontend_base_url, is_update_from_corrections=False, building=None, cliente=None, proveedor=None, usuario_solicitante=None):
         """
         Envía correo de notificación de nueva solicitud CAF al responsable.
         Args:
@@ -138,31 +138,32 @@ class EmailService:
             icon = "📝"
         
         body_html = f"""
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: {header_color};">{icon} {header_text}</h2>
-            
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
-                <p style="margin-bottom: 15px;">{intro_text}</p>
-                <h3 style="margin-bottom: 10px;">Detalles de la Solicitud</h3>
+        <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">
+            <h2 style=\"color: {header_color};\">{icon} {header_text}</h2>
+            <div style=\"background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;\">
+                <p style=\"margin-bottom: 15px;\">{intro_text}</p>
+                <h3 style=\"margin-bottom: 10px;\">Detalles de la Solicitud</h3>
                 <p><strong>ID:</strong> #{solicitud_id}</p>
                 <p><strong>Tipo:</strong> {tipo_contratacion}</p>
                 <p><strong>Responsable:</strong> {responsable}</p>
+                <p><strong>Usuario Solicitante:</strong> {usuario_solicitante if usuario_solicitante else '-'} </p>
+                <p><strong>Building:</strong> {building if building else '-'} </p>
+                <p><strong>Cliente:</strong> {cliente if cliente else '-'} </p>
+                <p><strong>Proveedor:</strong> {proveedor if proveedor else '-'} </p>
             </div>
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <p style="margin-bottom: 15px;">Haga clic en el botón siguiente para revisar la solicitud:</p>
-                <a href="{approval_url}" 
-                style="background-color: {header_color}; color: white; padding: 12px 24px; 
-                        text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+            <div style=\"text-align: center; margin: 30px 0;\">
+                <p style=\"margin-bottom: 15px;\">Haga clic en el botón siguiente para revisar la solicitud:</p>
+                <a href=\"{approval_url}\" 
+                style=\"background-color: {header_color}; color: white; padding: 12px 24px; 
+                        text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;\">
                     {button_text}
                 </a>
             </div>
-            
-            <div style="border-top: 1px solid #dee2e6; padding-top: 20px; margin-top: 30px; 
-                        color: #6c757d; font-size: 12px;">
+            <div style=\"border-top: 1px solid #dee2e6; padding-top: 20px; margin-top: 30px; 
+                        color: #6c757d; font-size: 12px;\">
                 <p>Este correo fue generado automáticamente por el Sistema CAF.</p>
                 <p>Si no puede hacer clic en el botón, copie y pegue este enlace en su navegador:</p>
-                <p style="word-break: break-all;">{approval_url}</p>
+                <p style=\"word-break: break-all;\">{approval_url}</p>
             </div>
         </div>
         """
@@ -172,7 +173,7 @@ class EmailService:
         
         return self.send_mail(sender_email, to_email, subject, body_html)
 
-    def send_caf_approval_result(self, to_email, solicitud_id, tipo_contratacion, approved, responsable, comentarios=None, edit_url=None):
+    def send_caf_approval_result(self, to_email, solicitud_id, tipo_contratacion, approved, responsable, comentarios=None, edit_url=None, building=None, cliente=None, proveedor=None, usuario_solicitante=None):
         """
         Envía correo con el resultado de la aprobación/rechazo.
         Args:
@@ -219,23 +220,23 @@ class EmailService:
             """
         
         body_html = f"""
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: {color};">Solicitud CAF {estado}</h2>
-            
-            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;">
+        <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">
+            <h2 style=\"color: {color};\">Solicitud CAF {estado}</h2>
+            <div style=\"background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0;\">
                 <h3>Detalles de la Decisión</h3>
                 <p><strong>ID:</strong> #{solicitud_id}</p>
                 <p><strong>Tipo:</strong> {tipo_contratacion}</p>
-                <p><strong>Estado:</strong> <span style="color: {color}; font-weight: bold;">{estado}</span></p>
+                <p><strong>Estado:</strong> <span style=\"color: {color}; font-weight: bold;\">{estado}</span></p>
                 <p><strong>Decidido por:</strong> {responsable}</p>
+                <p><strong>Usuario Solicitante:</strong> {usuario_solicitante if usuario_solicitante else '-'} </p>
+                <p><strong>Building:</strong> {building if building else '-'} </p>
+                <p><strong>Cliente:</strong> {cliente if cliente else '-'} </p>
+                <p><strong>Proveedor:</strong> {proveedor if proveedor else '-'} </p>
             </div>
-            
             {comentarios_html}
-            
             {edit_button_html}
-            
-            <div style="border-top: 1px solid #dee2e6; padding-top: 20px; margin-top: 30px; 
-                        color: #6c757d; font-size: 12px;">
+            <div style=\"border-top: 1px solid #dee2e6; padding-top: 20px; margin-top: 30px; 
+                        color: #6c757d; font-size: 12px;\">
                 <p>Este correo fue generado automáticamente por el Sistema CAF.</p>
                 {f'<p>Si no puede hacer clic en el botón de edición, copie y pegue este enlace en su navegador:</p><p>{edit_url}</p>' if edit_url else ''}
             </div>

@@ -83,7 +83,11 @@ class EmailNotificationObserver(Observer):
                 solicitud_id=event.solicitud_id,
                 tipo_contratacion=event.tipo_contratacion,
                 responsable=event.responsable,
-                frontend_base_url=self.frontend_base_url
+                frontend_base_url=self.frontend_base_url,
+                building=event.solicitud.Building,
+                cliente=event.solicitud.Cliente,
+                proveedor=event.solicitud.Proveedor,
+                usuario_solicitante=event.solicitud.Usuario
             )
             
             if result.get("status") == "success":
@@ -113,8 +117,12 @@ class EmailNotificationObserver(Observer):
                 solicitud_id=event.solicitud_id,
                 tipo_contratacion=event.tipo_contratacion,
                 approved=True,
-                responsable=event.aprobado_por,
-                comentarios=None
+                responsable=event.solicitud.Responsable or event.aprobado_por,
+                comentarios=None,
+                building=event.solicitud.Building,
+                cliente=event.solicitud.Cliente,
+                proveedor=event.solicitud.Proveedor,
+                usuario_solicitante=event.solicitud.Usuario
             )
             
             if result.get("status") == "success":
@@ -168,9 +176,13 @@ class EmailNotificationObserver(Observer):
                 solicitud_id=event.solicitud_id,
                 tipo_contratacion=event.tipo_contratacion,
                 approved=False,
-                responsable=event.rechazado_por,
+                responsable=event.solicitud.Responsable or event.rechazado_por,
                 comentarios=event.comentarios,
-                edit_url=edit_url
+                edit_url=edit_url,
+                building=event.solicitud.Building,
+                cliente=event.solicitud.Cliente,
+                proveedor=event.solicitud.Proveedor,
+                usuario_solicitante=event.solicitud.Usuario
             )
             
             if result.get("status") == "success":
@@ -201,7 +213,11 @@ class EmailNotificationObserver(Observer):
                 tipo_contratacion=event.tipo_contratacion,
                 responsable=event.responsable,
                 frontend_base_url=self.frontend_base_url,
-                is_update_from_corrections=True  # Marcar como actualización desde correcciones
+                is_update_from_corrections=True,  # Marcar como actualización desde correcciones
+                building=event.solicitud.Building,
+                cliente=event.solicitud.Cliente,
+                proveedor=event.solicitud.Proveedor,
+                usuario_solicitante=event.solicitud.Usuario
             )
             
             if result.get("status") == "success":
