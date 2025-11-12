@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.caf_solicitud import TBL_CAF_Solicitud, SolicitudStatus
-from app.events.domain_events import SolicitudCreada, SolicitudAprobada, SolicitudRechazada
+from app.events.domain_events import SolicitudCreada, SolicitudAprobada, SolicitudRechazada, SolicitudCorreccionesRealizadas
 from app.events.event_dispatcher import get_event_dispatcher
 import logging
 
@@ -80,7 +80,7 @@ class CafSolicitudService:
         if was_in_corrections:
             try:
                 print(f"🔄 Solicitud #{solicitud.id_solicitud} actualizada desde correcciones")
-                event = SolicitudCreada(solicitud=solicitud)  # Reutilizar evento de creación
+                event = SolicitudCorreccionesRealizadas(solicitud=solicitud)  # Evento específico para correcciones
                 print(f"🚀 Notificando al responsable sobre las correcciones realizadas")
                 self.event_dispatcher.dispatch(event)
                 print(f"✅ Responsable notificado sobre correcciones en solicitud #{solicitud.id_solicitud}")

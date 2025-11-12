@@ -76,3 +76,23 @@ class SolicitudActualizada(DomainEvent):
     @property
     def solicitud_id(self) -> int:
         return self.solicitud.id_solicitud
+
+
+class SolicitudCorreccionesRealizadas(DomainEvent):
+    """Evento disparado cuando se actualizan las correcciones solicitadas en una solicitud CAF."""
+    
+    def __init__(self, solicitud: TBL_CAF_Solicitud, timestamp: Optional[datetime] = None):
+        super().__init__(timestamp)
+        self.solicitud = solicitud
+    
+    @property
+    def solicitud_id(self) -> int:
+        return self.solicitud.id_solicitud
+    
+    @property
+    def tipo_contratacion(self) -> str:
+        return self.solicitud.Tipo_Contratacion or "N/A"
+    
+    @property
+    def responsable(self) -> str:
+        return self.solicitud.Responsable or "N/A"

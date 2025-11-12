@@ -5,7 +5,8 @@ from app.events.domain_events import (
     DomainEvent, 
     SolicitudCreada, 
     SolicitudAprobada, 
-    SolicitudRechazada
+    SolicitudRechazada,
+    SolicitudCorreccionesRealizadas
 )
 from app.services.email_service import email_service
 
@@ -29,7 +30,8 @@ class EmailNotificationObserver(Observer):
         self.supported_events = {
             SolicitudCreada,
             SolicitudAprobada, 
-            SolicitudRechazada
+            SolicitudRechazada,
+            SolicitudCorreccionesRealizadas
         }
         logger.info(f"EmailNotificationObserver inicializado con frontend: {frontend_base_url}")
     
@@ -56,6 +58,8 @@ class EmailNotificationObserver(Observer):
                 self._handle_solicitud_aprobada(event)
             elif isinstance(event, SolicitudRechazada):
                 self._handle_solicitud_rechazada(event)
+            elif isinstance(event, SolicitudCorreccionesRealizadas):
+                self._handle_solicitud_correcciones_realizadas(event)
             else:
                 logger.warning(f"Tipo de evento no soportado: {type(event).__name__}")
         except Exception as e:
@@ -177,4 +181,34 @@ class EmailNotificationObserver(Observer):
                 
         except Exception as e:
             logger.error(f"Excepción enviando correo de rechazo: {str(e)}")
+            raise
+    
+    def _handle_solicitud_correcciones_realizadas(self, event: SolicitudCorreccionesRealizadas) -> None:
+        """
+        Envía correo de notificación cuando se realizan las correcciones solicitadas.
+        Args:
+            event: Evento de correcciones realizadas
+        """
+        logger.info(f"Enviando correo de correcciones realizadas para solicitud #{event.solicitud_id}")
+        
+        # Usar el email del responsable de la solicitud (quien debe revisar las correcciones)
+        responsable_email = event.responsable or "jose.serna@mpagroup.mx"
+        
+        try:
+            result = email_service.send_caf_notification(
+                to_email=responsable_email,
+                solicitud_id=event.solicitud_id,
+                tipo_contratacion=event.tipo_contratacion,
+                responsable=event.responsable,
+                frontend_base_url=self.frontend_base_url,
+                is_update_from_corrections=True  # Marcar como actualización desde correcciones
+            )
+            
+            if result.get("status") == "success":
+                logger.info(f"Correo de correcciones realizadas enviado exitosamente para solicitud #{event.solicitud_id}")
+            else:
+                logger.error(f"Error enviando correo de correcciones realizadas: {result}")
+                
+        except Exception as e:
+            logger.error(f"Excepción enviando correo de correcciones realizadas: {str(e)}")
             raise
