@@ -162,35 +162,35 @@ class CAFSolicitudService {
    * Crear solicitud de Contrato (CO)
    */
   async createSolicitudCO(data: CAFSolicitudCO): Promise<CAFSolicitudResponse> {
-    return this.createSolicitud({ ...data, Tipo_Contratacion: 'CO' });
+    return this.createSolicitud({ ...data, Tipo_Contratacion: 'Contrato de Obra' });
   }
 
   /**
    * Crear solicitud de Orden de Servicio (OS)
    */
   async createSolicitudOS(data: CAFSolicitudOS): Promise<CAFSolicitudResponse> {
-    return this.createSolicitud({ ...data, Tipo_Contratacion: 'OS' });
+    return this.createSolicitud({ ...data, Tipo_Contratacion: 'Orden de Servicio' });
   }
 
   /**
    * Crear solicitud de Orden de Cambio (OC)
    */
   async createSolicitudOC(data: CAFSolicitudOC): Promise<CAFSolicitudResponse> {
-    return this.createSolicitud({ ...data, Tipo_Contratacion: 'OC' });
+    return this.createSolicitud({ ...data, Tipo_Contratacion: 'Orden de Cambio' });
   }
 
   /**
    * Crear solicitud de Pago a Dependencias (PD)
    */
   async createSolicitudPD(data: CAFSolicitudPD): Promise<CAFSolicitudResponse> {
-    return this.createSolicitud({ ...data, Tipo_Contratacion: 'PD' });
+    return this.createSolicitud({ ...data, Tipo_Contratacion: 'Pago a Dependencia' });
   }
 
   /**
    * Crear solicitud de Firma de Documento (FD)
    */
   async createSolicitudFD(data: CAFSolicitudFD): Promise<CAFSolicitudResponse> {
-    return this.createSolicitud({ ...data, Tipo_Contratacion: 'FD' });
+    return this.createSolicitud({ ...data, Tipo_Contratacion: 'Firma de Documento' });
   }
 
   /**

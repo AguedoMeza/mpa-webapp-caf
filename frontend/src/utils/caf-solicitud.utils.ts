@@ -40,7 +40,7 @@ export const formatDateForAPI = (date: string | undefined): string | undefined =
 export const mapFormatoCOToAPI = (formData: any): CAFSolicitudCO => {
   return {
     // Información base
-    Tipo_Contratacion: 'CO',
+    Tipo_Contratacion: 'Contrato de Obra',
     Responsable: formData.responsable,
     Fecha: formatDateForAPI(formData.fecha),
     Cliente: formData.cliente,
@@ -97,7 +97,7 @@ export const mapFormatoCOToAPI = (formData: any): CAFSolicitudCO => {
 export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
   return {
     // Campos base
-    Tipo_Contratacion: 'OS',
+    Tipo_Contratacion: 'Orden de Servicio',
     Responsable: formData.responsable,
     Fecha: formatDateForAPI(formData.fecha),
     Cliente: formData.cliente,
@@ -139,7 +139,7 @@ export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
 export const mapFormatoOCToAPI = (formData: any): CAFSolicitudOC => {
   return {
     // Información base
-    Tipo_Contratacion: 'OC',
+    Tipo_Contratacion: 'Orden de Cambio',
     Responsable: formData.responsable,
     Fecha: formatDateForAPI(formData.fecha),
     Cliente: formData.cliente,
@@ -191,7 +191,7 @@ export const mapFormatoOCToAPI = (formData: any): CAFSolicitudOC => {
 export const mapFormatoPDToAPI = (formData: any): CAFSolicitudPD => {
   return {
     // Información base
-    Tipo_Contratacion: 'PD',
+    Tipo_Contratacion: 'Pago a Dependencia',
     Responsable: formData.responsable,
     Fecha: formatDateForAPI(formData.fecha),
     Cliente: formData.cliente,
@@ -231,7 +231,7 @@ export const mapFormatoPDToAPI = (formData: any): CAFSolicitudPD => {
 export const mapFormatoFDToAPI = (formData: any): CAFSolicitudFD => {
   return {
     // Información base
-    Tipo_Contratacion: 'FD',
+    Tipo_Contratacion: 'Firma de Documento',
     Responsable: formData.responsable,
     Fecha: formatDateForAPI(formData.fecha),
     Cliente: formData.cliente,
