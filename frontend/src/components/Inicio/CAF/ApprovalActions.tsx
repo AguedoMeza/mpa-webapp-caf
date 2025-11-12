@@ -228,6 +228,28 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
           {/* Botones de acción */}
           <div className="d-grid gap-2">
             <Button
+              variant="danger"
+              size="lg"
+              onClick={handleRejectDefinitively}
+              disabled={loading || currentStatus === 2}
+              className="approval-button"
+            >
+              <i className="bi bi-x-circle me-2"></i>
+              Rechazar Definitivamente
+            </Button>
+
+            <Button
+              variant="warning"
+              size="lg"
+              onClick={handleRequestCorrections}
+              disabled={loading}
+              className="approval-button"
+            >
+              <i className="bi bi-pencil-square me-2"></i>
+              Solicitar Correcciones
+            </Button>
+
+            <Button
               variant="success"
               size="lg"
               onClick={handleApprove}
@@ -254,27 +276,6 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
               )}
             </Button>
 
-            <Button
-              variant="warning"
-              size="lg"
-              onClick={handleRequestCorrections}
-              disabled={loading}
-              className="approval-button"
-            >
-              <i className="bi bi-pencil-square me-2"></i>
-              Solicitar Correcciones
-            </Button>
-
-            <Button
-              variant="danger"
-              size="lg"
-              onClick={handleRejectDefinitively}
-              disabled={loading || currentStatus === 2}
-              className="approval-button"
-            >
-              <i className="bi bi-x-circle me-2"></i>
-              Rechazar Definitivamente
-            </Button>
           </div>
         </Card.Body>
       </Card>
