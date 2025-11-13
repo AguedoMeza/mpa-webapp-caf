@@ -7,6 +7,24 @@ import {
 } from '../types/caf-solicitud.types';
 
 /**
+ * Obtener email del usuario autenticado desde localStorage
+ */
+export const getAuthenticatedUserEmail = (): string => {
+  try {
+    const samlUser = localStorage.getItem('saml_user');
+    if (samlUser) {
+      const userData = JSON.parse(samlUser);
+      return userData.email || userData.name || 'usuario@mpagroup.mx';
+    }
+  } catch (error) {
+    console.error('Error al obtener email del usuario:', error);
+  }
+  
+  // Fallback a los métodos anteriores si no hay datos SAML
+  return localStorage.getItem('username') || localStorage.getItem('userEmail') || 'usuario@mpagroup.mx';
+};
+
+/**
  * Convierte valores de checkbox a número (1 o 0)
  */
 export const checkboxToNumber = (value: boolean | undefined): number => {
@@ -86,7 +104,7 @@ export const mapFormatoCOToAPI = (formData: any): CAFSolicitudCO => {
     // Metadata
     // IMPORTANTE: NO establecer approve aquí, se deja NULL en el backend
     // approve: undefined, // Se omite para que quede NULL
-    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
+    Usuario: getAuthenticatedUserEmail(),
     Mode: '',
   };
 };
@@ -128,7 +146,7 @@ export const mapFormatoOSToAPI = (formData: any): CAFSolicitudOS => {
     ProgramaObra: checkboxToNumber(formData.docProgramaObra),
 
     // Metadata - NO establecer approve
-    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
+    Usuario: getAuthenticatedUserEmail(),
     Mode: '',
   };
 };
@@ -180,7 +198,7 @@ export const mapFormatoOCToAPI = (formData: any): CAFSolicitudOC => {
     ProgramaObra: checkboxToNumber(formData.docProgramaObra),
 
     // Metadata - NO establecer approve
-    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
+    Usuario: getAuthenticatedUserEmail(),
     Mode: '',
   };
 };
@@ -220,7 +238,7 @@ export const mapFormatoPDToAPI = (formData: any): CAFSolicitudPD => {
     InfoBancariaPagoDep: checkboxToNumber(formData.docInfoBancaria),
 
     // Metadata - NO establecer approve
-    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
+    Usuario: getAuthenticatedUserEmail(),
     Mode: '',
   };
 };
@@ -254,7 +272,7 @@ export const mapFormatoFDToAPI = (formData: any): CAFSolicitudFD => {
     DocumentoFirmar: checkboxToNumber(formData.docDocumentoFirmar),
 
     // Metadata - NO establecer approve
-    Usuario: localStorage.getItem('username') || localStorage.getItem('userEmail') || 'samuel.lopez@mpagroup.mx',
+    Usuario: getAuthenticatedUserEmail(),
     Mode: '',
   };
 };
