@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Col, Form, Row, Alert, Spinner } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../../hooks/useAuth";
 import "./FormatoPD.css";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoPDToAPI, mapAPIToFormatoPD } from "../../../utils/caf-solicitud.utils";
@@ -10,8 +11,12 @@ interface Props {
 }
 
 const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
+  const { user } = useAuth();
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
+
+  // Definir nombre del usuario responsable
+  const nombreUsuario = user ? `${user.given_name || ''} ${user.family_name || ''}`.trim() : '';
 
   const [formData, setFormData] = useState({
     buildingId: "",
@@ -21,7 +26,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
     montoPesos: "",
     presupuesto: "",
     tipoTrabajo: "Desarrollo",
-    responsable: "",
+    responsable: nombreUsuario,
     fecha: "",
     descripcion: "",
     justificacion: "",
@@ -43,6 +48,16 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
       loadExistingData(parseInt(id));
     }
   }, [id]);
+
+  // Actualizar responsable cuando cambien los datos del usuario
+  useEffect(() => {
+    if (nombreUsuario && !isEditMode) {
+      setFormData(prev => ({
+        ...prev,
+        responsable: nombreUsuario
+      }));
+    }
+  }, [nombreUsuario, isEditMode]);
 
   const loadExistingData = async (solicitudId: number) => {
     setLoadingData(true);

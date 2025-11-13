@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Navbar, Nav, Button } from 'react-bootstrap';
+import { useAuth } from '../hooks/useAuth';
 import './NavBar.css';
 import SideMenu from './SideMenu';
 
@@ -10,6 +11,7 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const { user, logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -22,23 +24,39 @@ const NavBar: React.FC<NavBarProps> = ({ children }) => {
   }, []);
 
   const handleLogout = async () => {
-    // Aquí puedes agregar lógica de logout si la implementas en el futuro
-    alert('Cerrar sesión (demo)');
-  };
-
-  const getInitials = (name: string) => {
-    if (!name) return '';
-    const names = name.split(' ');
-    if (names.length > 1) {
-      return names[0].charAt(0) + names[1].charAt(0);
-    } else {
-      return name.charAt(0) + (name.charAt(1) || '');
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
     }
   };
 
-  // Usuario de ejemplo para desarrollo
-  const showUser = { given_name: 'Usuario', family_name: 'Demo', name: 'Usuario Demo' };
+  // Usuario actual o datos de ejemplo para desarrollo
+  const showUser = user || { given_name: 'Usuario', family_name: 'Demo', name: 'Usuario Demo' };
 
+  // Si no está autenticado y no está en la página de login, mostrar solo el contenido (que será redirigido al login)
+  if (!isAuthenticated && !window.location.hash.includes('/login')) {
+    return (
+      <div className="app-container">
+        <main className="main-content">
+          {children}
+        </main>
+      </div>
+    );
+  }
+
+  // Si está en la página de login, mostrar solo el contenido sin navbar
+  if (window.location.hash.includes('/login')) {
+    return (
+      <div className="app-container">
+        <main className="main-content">
+          {children}
+        </main>
+      </div>
+    );
+  }
+
+  // Usuario autenticado - mostrar navbar completo
   return (
     <div className="app-container">
       <>

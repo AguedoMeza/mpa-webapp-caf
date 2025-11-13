@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SolicitudCAFForm from './CAF/FormatoOS';
-import FormatoCO from './CAF/FormatoCO';
-import FormatoOC from './CAF/FormatoOC';
-import FormatoPD from './CAF/FormatoPD';
-import FormatoFD from './CAF/FormatoFD';
 import { Button, Form } from 'react-bootstrap';
+import { useAuth } from '../../hooks/useAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Bienvenida.css';
 
 const Bienvenida: React.FC = () => {
+  const { user } = useAuth();
   const [tipoContrato, setTipoContrato] = useState('Contrato de Obra');
   const navigate = useNavigate();
 
+  // Definir nombre del usuario reutilizable
+  const nombreUsuario = user ? `${user.given_name || ''} ${user.family_name || ''}`.trim() : 'Usuario';
+
   return (
     <div className="container py-5 text-center">
+      <div className="mb-4">
+        <h1 className="fw-bold mb-3">Bienvenido, {nombreUsuario}</h1>
+        <p className="text-muted">Sistema de Solicitudes CAF - MPA Group</p>
+      </div>
+      
       <h2 className="fw-bold mb-5">SOLICITUD DE CAF PARA CONTRATACIÓN</h2>
 
       <div className="d-flex justify-content-center align-items-center mb-4">
