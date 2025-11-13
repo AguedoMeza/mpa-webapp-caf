@@ -158,11 +158,11 @@ class EmailNotificationObserver(Observer):
         edit_url = None
         if requiere_correcciones:
             tipo_map = {
-                'CO': 'formato-co',
-                'OS': 'solicitud-caf',
-                'OC': 'formato-oc',
-                'PD': 'formato-pd',
-                'FD': 'formato-fd'
+                'Contrato de Obra': 'formato-co',
+                'Orden de Servicio': 'solicitud-caf',
+                'Orden de Cambio': 'formato-oc',
+                'Pago a Dependencia': 'formato-pd',
+                'Firma de Documento': 'formato-fd'
             }
             tipo_ruta = tipo_map.get(event.solicitud.Tipo_Contratacion, 'solicitud-caf')
             edit_url = f"{self.frontend_base_url}/#/{tipo_ruta}/{event.solicitud_id}"

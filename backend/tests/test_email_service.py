@@ -161,14 +161,14 @@ class TestEmailService:
         """
         Prueba el mapeo correcto de tipos de contratación a rutas del frontend.
         """
-        # Datos de prueba para todos los tipos
-        tipos_test = ['CO', 'OS', 'OC', 'PD', 'FD']
+        # Datos de prueba para todos los tipos (usando nombres completos)
+        tipos_test = ['Contrato de Obra', 'Orden de Servicio', 'Orden de Cambio', 'Pago a Dependencia', 'Firma de Documento']
         expected_routes = {
-            'CO': 'formato-co',
-            'OS': 'solicitud-caf',
-            'OC': 'formato-oc',
-            'PD': 'formato-pd',
-            'FD': 'formato-fd'
+            'Contrato de Obra': 'formato-co',
+            'Orden de Servicio': 'solicitud-caf',
+            'Orden de Cambio': 'formato-oc',
+            'Pago a Dependencia': 'formato-pd',
+            'Firma de Documento': 'formato-fd'
         }
 
         for tipo in tipos_test:
@@ -177,11 +177,11 @@ class TestEmailService:
             # Este test no envía correo, solo verifica la lógica interna
             # Simulamos la lógica del método sin ejecutar el envío
             tipo_routes = {
-                'CO': 'formato-co',
-                'OS': 'solicitud-caf',
-                'OC': 'formato-oc', 
-                'PD': 'formato-pd',
-                'FD': 'formato-fd'
+                'Contrato de Obra': 'formato-co',
+                'Orden de Servicio': 'solicitud-caf',
+                'Orden de Cambio': 'formato-oc', 
+                'Pago a Dependencia': 'formato-pd',
+                'Firma de Documento': 'formato-fd'
             }
             
             route = tipo_routes.get(tipo, 'solicitud-caf')

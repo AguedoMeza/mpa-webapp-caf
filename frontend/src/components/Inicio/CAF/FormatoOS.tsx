@@ -50,6 +50,25 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
   
   // Estado para controlar edición según Mode y datos de solicitud
   const [solicitudData, setSolicitudData] = useState<any>(null);
+  
+  // Determinar si el formulario debe estar bloqueado
+  const isReadOnly = () => {
+    if (!isEditMode) return false; // En modo creación, siempre editable
+    if (!solicitudData) return false; // Si no hay datos cargados, permitir edición
+    
+    const mode = solicitudData.Mode;
+    // REGLA: Solo editable cuando Mode = "Edit" (requiere correcciones)
+    // - Mode = null/undefined → BLOQUEADO (pendiente de revisión)
+    // - Mode = "Edit" → EDITABLE (requiere correcciones)  
+    // - Mode = "View" → BLOQUEADO (aprobado/rechazado definitivo)
+    return mode !== 'Edit';
+  };
+  
+  // Helper para aplicar props de solo lectura
+  const getFieldProps = () => ({
+    readOnly: isReadOnly(),
+    disabled: isReadOnly(),
+  });
 
   useEffect(() => {
     if (id) {
@@ -147,9 +166,27 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
-      <h2 className="text-center fw-bold mb-5">
+      <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
+      
+      {/* Indicador de estado del formulario */}
+      {isEditMode && solicitudData && (
+        <div className="text-center mb-4">
+          {isReadOnly() ? (
+            <Alert variant="info" className="d-inline-flex align-items-center">
+              <i className="fas fa-lock me-2"></i>
+              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'} 
+              | Estado: {cafSolicitudService.getStatusLabel(solicitudData.approve)}
+            </Alert>
+          ) : (
+            <Alert variant="warning" className="d-inline-flex align-items-center">
+              <i className="fas fa-edit me-2"></i>
+              <strong>Formulario Editable</strong> - Modo: Edit | Requiere Correcciones
+            </Alert>
+          )}
+        </div>
+      )}
 
       {error && (
         <Alert variant="danger" onClose={() => setError(null)} dismissible>
@@ -183,22 +220,22 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
 
             <Form.Group className="mb-2">
               <Form.Label>Building ID</Form.Label>
-              <Form.Control name="buildingId" value={formData.buildingId} onChange={handleChange} />
+              <Form.Control name="buildingId" value={formData.buildingId} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>Cliente/Desarrollo</Form.Label>
-              <Form.Control name="cliente" value={formData.cliente} onChange={handleChange} />
+              <Form.Control name="cliente" value={formData.cliente} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>Dirección</Form.Label>
-              <Form.Control name="direccion" value={formData.direccion} onChange={handleChange} />
+              <Form.Control name="direccion" value={formData.direccion} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-4">
               <Form.Label>Proveedor</Form.Label>
-              <Form.Control name="proveedor" value={formData.proveedor} onChange={handleChange} />
+              <Form.Control name="proveedor" value={formData.proveedor} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <h6>Datos de los Trabajos / Servicios</h6>
@@ -207,45 +244,45 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de inicio</Form.Label>
-                  <Form.Control type="date" name="fechaInicio" value={formData.fechaInicio} onChange={handleChange} />
+                  <Form.Control type="date" name="fechaInicio" value={formData.fechaInicio} onChange={handleChange} {...getFieldProps()} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de Terminación Final</Form.Label>
-                  <Form.Control type="date" name="fechaFin" value={formData.fechaFin} onChange={handleChange} />
+                  <Form.Control type="date" name="fechaFin" value={formData.fechaFin} onChange={handleChange} {...getFieldProps()} />
                 </Form.Group>
               </Col>
             </Row>
 
             <Form.Group className="mb-2">
               <Form.Label>Monto en pesos (subtotal)</Form.Label>
-              <Form.Control name="montoPesos" value={formData.montoPesos} onChange={handleChange} />
+              <Form.Control name="montoPesos" value={formData.montoPesos} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>Monto en dólares (subtotal)</Form.Label>
-              <Form.Control name="montoDolares" value={formData.montoDolares} onChange={handleChange} />
+              <Form.Control name="montoDolares" value={formData.montoDolares} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>TDC</Form.Label>
-              <Form.Control name="tdc" value={formData.tdc} onChange={handleChange} />
+              <Form.Control name="tdc" value={formData.tdc} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>Anticipo %</Form.Label>
-              <Form.Control name="anticipo" value={formData.anticipo} onChange={handleChange} />
+              <Form.Control name="anticipo" value={formData.anticipo} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>Fuerza de trabajo aproximada</Form.Label>
-              <Form.Control name="fuerzaTrabajo" value={formData.fuerzaTrabajo} onChange={handleChange} />
+              <Form.Control name="fuerzaTrabajo" value={formData.fuerzaTrabajo} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>Presupuesto existente</Form.Label>
-              <Form.Control name="presupuesto" value={formData.presupuesto} onChange={handleChange} />
+              <Form.Control name="presupuesto" value={formData.presupuesto} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Row>

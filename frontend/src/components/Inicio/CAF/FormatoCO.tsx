@@ -68,10 +68,13 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
   // Determinar si el formulario debe estar bloqueado
   const isReadOnly = () => {
     if (!isEditMode) return false; // En modo creación, siempre editable
-    if (!solicitudData) return false; // Si no hay datos, permitir edición
+    if (!solicitudData) return false; // Si no hay datos cargados, permitir edición
     
     const mode = solicitudData.Mode;
-    // REGLA: Solo editable cuando Mode = "Edit"
+    // REGLA: Solo editable cuando Mode = "Edit" (requiere correcciones)
+    // - Mode = null/undefined → BLOQUEADO (pendiente de revisión)
+    // - Mode = "Edit" → EDITABLE (requiere correcciones)  
+    // - Mode = "View" → BLOQUEADO (aprobado/rechazado definitivo)
     return mode !== 'Edit';
   };
   

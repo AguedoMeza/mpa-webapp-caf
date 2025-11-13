@@ -109,13 +109,13 @@ class EmailService:
         Returns:
             dict: Resultado del envío
         """
-        # Mapeo de tipos a rutas del frontend
+        # Mapeo de tipos a rutas del frontend (usando nombres completos)
         tipo_routes = {
-            'CO': 'formato-co',
-            'OS': 'solicitud-caf',
-            'OC': 'formato-oc', 
-            'PD': 'formato-pd',
-            'FD': 'formato-fd'
+            'Contrato de Obra': 'formato-co',
+            'Orden de Servicio': 'solicitud-caf',
+            'Orden de Cambio': 'formato-oc', 
+            'Pago a Dependencia': 'formato-pd',
+            'Firma de Documento': 'formato-fd'
         }
         
         route = tipo_routes.get(tipo_contratacion, 'solicitud-caf')
