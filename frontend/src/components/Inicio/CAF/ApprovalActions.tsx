@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Button, Modal, Form, Alert, Spinner, Card, Badge } from "react-bootstrap";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
+import { canUserApprove, getUserPermissions } from "../../../utils/caf-solicitud.utils";
 import "./ApprovalActions.css";
 
 interface ApprovalActionsProps {
@@ -10,6 +11,7 @@ interface ApprovalActionsProps {
   currentStatus?: number | null; // NULL, 0, 1, 2
   tipoContratacion?: string;
   responsable?: string;
+  solicitudData?: any; // Datos completos de la solicitud para validación de permisos
   onApprovalComplete?: (result: any) => void;
 }
 
@@ -18,6 +20,7 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
   currentStatus,
   tipoContratacion,
   responsable,
+  solicitudData,
   onApprovalComplete,
 }) => {
   const [showCorrectionsModal, setShowCorrectionsModal] = useState(false);
@@ -27,7 +30,11 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Mapear estado numérico a etiqueta
+  // Verificar permisos del usuario actual
+  const userPermissions = getUserPermissions(solicitudData);
+  const canApprove = canUserApprove(responsable);
+
+  // Mapear estado numérico a etiqueta (necesario para ambos casos)
   const getStatusBadge = () => {
     if (currentStatus === null || currentStatus === undefined) {
       return <Badge bg="warning">Pendiente de Revisión</Badge>;
@@ -43,6 +50,52 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
         return <Badge bg="secondary">Estado Desconocido</Badge>;
     }
   };
+
+  // Si el usuario no puede aprobar, no mostrar el componente
+  if (!canApprove) {
+    return (
+      <Card className="approval-actions-card">
+        <Card.Header className="bg-secondary text-white">
+          <h5 className="mb-0">Información de Aprobación</h5>
+        </Card.Header>
+        <Card.Body>
+          <Alert variant="info" className="mb-3">
+            <i className="fas fa-info-circle me-2"></i>
+            <strong>Acceso restringido:</strong> Solo el responsable asignado puede aprobar o rechazar esta solicitud.
+            <br />
+            <small className="mt-2 d-block">
+              <strong>Responsable asignado:</strong> {responsable}<br />
+              <strong>Tu usuario:</strong> {userPermissions.currentUser} ({userPermissions.permissionRole})
+            </small>
+            {userPermissions.isOriginalRequester && (
+              <small className="mt-1 d-block text-muted">
+                <i className="fas fa-user me-1"></i>
+                Eres el solicitante original de esta CAF
+              </small>
+            )}
+          </Alert>
+          <div className="mb-3">
+            <p className="mb-1">
+              <strong>Solicitud:</strong> #{solicitudId}
+            </p>
+            {tipoContratacion && (
+              <p className="mb-1">
+                <strong>Tipo:</strong> {tipoContratacion}
+              </p>
+            )}
+            {responsable && (
+              <p className="mb-1">
+                <strong>Responsable:</strong> {responsable}
+              </p>
+            )}
+            <p className="mb-1">
+              <strong>Estado:</strong> {getStatusBadge()}
+            </p>
+          </div>
+        </Card.Body>
+      </Card>
+    );
+  }
 
   const handleApprove = async () => {
     if (!window.confirm("¿Está seguro de aprobar esta solicitud definitivamente?")) {

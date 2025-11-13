@@ -403,6 +403,7 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
             currentStatus={solicitudData?.approve}
             tipoContratacion={tipoContrato}
             responsable={formData.responsable}
+            solicitudData={solicitudData}
             onApprovalComplete={handleApprovalComplete}
           />
         </div>

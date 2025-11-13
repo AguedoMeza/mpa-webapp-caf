@@ -25,6 +25,38 @@ export const getAuthenticatedUserEmail = (): string => {
 };
 
 /**
+ * Verificar si el usuario autenticado es el responsable asignado de la solicitud
+ * REGLA DE SEGURIDAD: Solo el responsable asignado puede ver/usar los controles de aprobación
+ */
+export const canUserApprove = (responsableEmail: string | undefined): boolean => {
+  if (!responsableEmail) return false;
+  
+  const currentUser = getAuthenticatedUserEmail();
+  
+  // Comparación case-insensitive para mayor flexibilidad
+  return currentUser.toLowerCase() === responsableEmail.toLowerCase();
+};
+
+/**
+ * Obtener información de permisos del usuario actual para una solicitud
+ */
+export const getUserPermissions = (solicitudData: any) => {
+  const currentUser = getAuthenticatedUserEmail();
+  const responsable = solicitudData?.Responsable;
+  const usuario = solicitudData?.Usuario;
+  
+  return {
+    currentUser,
+    responsable,
+    usuario,
+    canApprove: canUserApprove(responsable),
+    isOriginalRequester: currentUser.toLowerCase() === usuario?.toLowerCase(),
+    permissionRole: canUserApprove(responsable) ? 'responsable' : 
+                   (currentUser.toLowerCase() === usuario?.toLowerCase() ? 'solicitante' : 'viewer')
+  };
+};
+
+/**
  * Convierte valores de checkbox a número (1 o 0)
  */
 export const checkboxToNumber = (value: boolean | undefined): number => {

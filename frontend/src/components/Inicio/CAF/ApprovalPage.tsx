@@ -80,8 +80,10 @@ const ApprovalPage: React.FC = () => {
       {/* Componente de aprobación */}
       <ApprovalActions
         solicitudId={solicitud.id_solicitud}
+        currentStatus={solicitud.approve}
         tipoContratacion={solicitud.Tipo_Contratacion}
         responsable={solicitud.Responsable}
+        solicitudData={solicitud}
         onApprovalComplete={handleApprovalComplete}
       />
     </Container>
