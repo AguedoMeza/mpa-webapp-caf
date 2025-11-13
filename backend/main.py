@@ -21,7 +21,7 @@ app.add_middleware(
 async def startup_event():
     """Inicializa los observers del patrón Observer al arrancar la aplicación."""
     print("🚀 Inicializando observers del sistema...")
-    initialize_observers(frontend_base_url="http://localhost:3000")
+    initialize_observers()  # Ahora usa FRONTEND_BASE_URL del .env automáticamente
     print("✅ Observers inicializados correctamente")
 
 # Registrar todos los routers de la API
