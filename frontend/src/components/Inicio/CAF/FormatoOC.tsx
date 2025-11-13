@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import "./FormatoOC.css";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoOCToAPI, mapAPIToFormatoOC } from "../../../utils/caf-solicitud.utils";
+import ApprovalActions from "./ApprovalActions";
 
 interface Props {
   tipoContrato: string;
@@ -54,6 +55,28 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  
+  // Estado para controlar edición según Mode
+  const [solicitudData, setSolicitudData] = useState<any>(null);
+  
+  // Determinar si el formulario debe estar bloqueado
+  const isReadOnly = () => {
+    if (!isEditMode) return false; // En modo creación, siempre editable
+    if (!solicitudData) return false; // Si no hay datos cargados, permitir edición
+    
+    const mode = solicitudData.Mode;
+    // REGLA: Solo editable cuando Mode = "Edit" (requiere correcciones)
+    // - Mode = null/undefined → BLOQUEADO (pendiente de revisión)
+    // - Mode = "Edit" → EDITABLE (requiere correcciones)  
+    // - Mode = "View" → BLOQUEADO (aprobado/rechazado definitivo)
+    return mode !== 'Edit';
+  };
+  
+  // Helper para aplicar props de solo lectura
+  const getFieldProps = () => ({
+    readOnly: isReadOnly(),
+    disabled: isReadOnly(),
+  });
 
   useEffect(() => {
     if (id) {
@@ -71,6 +94,7 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
       const response = await cafSolicitudService.getSolicitudById(solicitudId);
       const mappedData = mapAPIToFormatoOC(response);
       setFormData(mappedData);
+      setSolicitudData(response); // Guardar datos originales para acceso a Mode
       console.log("Datos cargados:", response);
     } catch (err: any) {
       console.error("Error al cargar solicitud:", err);
@@ -142,11 +166,37 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
     }
   };
 
+  const handleApprovalComplete = (result: any) => {
+    console.log("Aprobación completada:", result);
+    // Opcional: recargar datos, redirigir, etc.
+    if (id) {
+      loadExistingData(parseInt(id));
+    }
+  };
+
   return (
     <div className="container py-5">
-      <h2 className="text-center fw-bold mb-5">
+      <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
+      
+      {/* Indicador de estado del formulario */}
+      {isEditMode && solicitudData && (
+        <div className="text-center mb-4">
+          {isReadOnly() ? (
+            <Alert variant="info" className="d-inline-flex align-items-center">
+              <i className="fas fa-lock me-2"></i>
+              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'} 
+              | Estado: {cafSolicitudService.getStatusLabel(solicitudData.approve)}
+            </Alert>
+          ) : (
+            <Alert variant="warning" className="d-inline-flex align-items-center">
+              <i className="fas fa-edit me-2"></i>
+              <strong>Formulario Editable</strong> - Modo: Edit | Requiere Correcciones
+            </Alert>
+          )}
+        </div>
+      )}
 
       {error && (
         <Alert variant="danger" onClose={() => setError(null)} dismissible>
@@ -181,7 +231,7 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
             {["buildingId", "cliente", "direccion", "proveedor"].map((name, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{name === "cliente" ? "Cliente/Desarrollo" : name.charAt(0).toUpperCase() + name.slice(1)}</Form.Label>
-                <Form.Control name={name} value={(formData as any)[name]} onChange={handleChange} />
+                <Form.Control name={name} value={(formData as any)[name]} onChange={handleChange} {...getFieldProps()} />
               </Form.Group>
             ))}
 
@@ -190,13 +240,13 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
                
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de inicio</Form.Label>
-                  <Form.Control type="date" name="fechaInicio" value={formData.fechaInicio} onChange={handleChange} />
+                  <Form.Control type="date" name="fechaInicio" value={formData.fechaInicio} onChange={handleChange} {...getFieldProps()} />
                 </Form.Group>
                
                
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de Terminación Final</Form.Label>
-                  <Form.Control type="date" name="fechaFin" value={formData.fechaFin} onChange={handleChange} />
+                  <Form.Control type="date" name="fechaFin" value={formData.fechaFin} onChange={handleChange} {...getFieldProps()} />
                 </Form.Group>
                
             </div>
@@ -254,17 +304,17 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
           <Col md={6}>
             <Form.Group className="mb-2">
               <Form.Label>Responsable</Form.Label>
-              <Form.Control name="responsable" value={formData.responsable} onChange={handleChange} />
+              <Form.Control name="responsable" value={formData.responsable} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-2">
               <Form.Label>Fecha</Form.Label>
-              <Form.Control type="date" name="fecha" value={formData.fecha} onChange={handleChange} />
+              <Form.Control type="date" name="fecha" value={formData.fecha} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Descripción de los Trabajos/Servicios Solicitados</Form.Label>
-              <Form.Control as="textarea" rows={2} name="descripcion" value={formData.descripcion} onChange={handleChange} />
+              <Form.Control as="textarea" rows={2} name="descripcion" value={formData.descripcion} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <h6>Documentos a Enviar</h6>
@@ -283,12 +333,13 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
                 checked={(formData as any)[d.name]}
                 onChange={handleChange}
                 className="mb-1" 
+                {...getFieldProps()}
               />
             ))}
 
             <Form.Group className="mt-4 mb-3">
               <Form.Label>Justificación de Trabajos</Form.Label>
-              <Form.Control as="textarea" rows={2} name="justificacion" value={formData.justificacion} onChange={handleChange} />
+              <Form.Control as="textarea" rows={2} name="justificacion" value={formData.justificacion} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <h6>Fechas de Órdenes de Cambio</h6>
@@ -305,7 +356,7 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
             ))}
                     <Form.Group className="mt-4">
           <Form.Label>Enlace de Sharepoint para acceder a documentos</Form.Label>
-          <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} />
+          <Form.Control name="sharepoint" value={formData.sharepoint} onChange={handleChange} {...getFieldProps()} />
         </Form.Group>
           </Col>
         </div> 
@@ -317,7 +368,7 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
             variant="primary" 
             type="submit" 
             className="px-4"
-            disabled={loading || loadingData}
+            disabled={loading || loadingData || isReadOnly()}
           >
             {loading && (
               <Spinner
@@ -333,6 +384,20 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
           </Button>
         </div>
       </Form>
+
+      {/* Mostrar botones de aprobación solo en modo edición */}
+      {isEditMode && (
+        <div className="my-4">
+          <ApprovalActions
+            solicitudId={parseInt(id!)}
+            currentStatus={solicitudData?.approve}
+            tipoContratacion={tipoContrato}
+            responsable={formData.responsable}
+            solicitudData={solicitudData}
+            onApprovalComplete={handleApprovalComplete}
+          />
+        </div>
+      )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
     </div>

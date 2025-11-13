@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import "./FormatoFD.css";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoFDToAPI, mapAPIToFormatoFD } from "../../../utils/caf-solicitud.utils";
+import ApprovalActions from "./ApprovalActions";
 
 // ✅ Interface agregada para aceptar la prop tipoContrato
 interface Props {
@@ -35,6 +36,28 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  
+  // Estado para controlar edición según Mode
+  const [solicitudData, setSolicitudData] = useState<any>(null);
+  
+  // Determinar si el formulario debe estar bloqueado
+  const isReadOnly = () => {
+    if (!isEditMode) return false; // En modo creación, siempre editable
+    if (!solicitudData) return false; // Si no hay datos cargados, permitir edición
+    
+    const mode = solicitudData.Mode;
+    // REGLA: Solo editable cuando Mode = "Edit" (requiere correcciones)
+    // - Mode = null/undefined → BLOQUEADO (pendiente de revisión)
+    // - Mode = "Edit" → EDITABLE (requiere correcciones)  
+    // - Mode = "View" → BLOQUEADO (aprobado/rechazado definitivo)
+    return mode !== 'Edit';
+  };
+  
+  // Helper para aplicar props de solo lectura
+  const getFieldProps = () => ({
+    readOnly: isReadOnly(),
+    disabled: isReadOnly(),
+  });
 
   useEffect(() => {
     if (id) {
@@ -52,6 +75,7 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
       const response = await cafSolicitudService.getSolicitudById(solicitudId);
       const mappedData = mapAPIToFormatoFD(response);
       setFormData(mappedData);
+      setSolicitudData(response); // Guardar datos originales para acceso a Mode
       console.log("Datos cargados:", response);
     } catch (err: any) {
       console.error("Error al cargar solicitud:", err);
@@ -125,11 +149,37 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
     }
   };
 
+  const handleApprovalComplete = (result: any) => {
+    console.log("Aprobación completada:", result);
+    // Opcional: recargar datos, redirigir, etc.
+    if (id) {
+      loadExistingData(parseInt(id));
+    }
+  };
+
   return (
     <div className="container py-5">
-      <h2 className="text-center fw-bold mb-5">
+      <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
+      
+      {/* Indicador de estado del formulario */}
+      {isEditMode && solicitudData && (
+        <div className="text-center mb-4">
+          {isReadOnly() ? (
+            <Alert variant="info" className="d-inline-flex align-items-center">
+              <i className="fas fa-lock me-2"></i>
+              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'} 
+              | Estado: {cafSolicitudService.getStatusLabel(solicitudData.approve)}
+            </Alert>
+          ) : (
+            <Alert variant="warning" className="d-inline-flex align-items-center">
+              <i className="fas fa-edit me-2"></i>
+              <strong>Formulario Editable</strong> - Modo: Edit | Requiere Correcciones
+            </Alert>
+          )}
+        </div>
+      )}
 
       {error && (
         <Alert variant="danger" onClose={() => setError(null)} dismissible>
@@ -257,6 +307,7 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
                 name="sharepoint"
                 value={formData.sharepoint}
                 onChange={handleChange}
+                {...getFieldProps()}
               />
             </Form.Group>
           </Col>
@@ -266,7 +317,7 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
             type="submit" 
             variant="primary" 
             className="px-4"
-            disabled={loading || loadingData}
+            disabled={loading || loadingData || isReadOnly()}
           >
             {loading && (
               <Spinner
@@ -282,6 +333,20 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
           </Button>
         </div>
       </Form>
+
+      {/* Mostrar botones de aprobación solo en modo edición */}
+      {isEditMode && (
+        <div className="my-4">
+          <ApprovalActions
+            solicitudId={parseInt(id!)}
+            currentStatus={solicitudData?.approve}
+            tipoContratacion={tipoContrato}
+            responsable={formData.responsable}
+            solicitudData={solicitudData}
+            onApprovalComplete={handleApprovalComplete}
+          />
+        </div>
+      )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
     </div>
