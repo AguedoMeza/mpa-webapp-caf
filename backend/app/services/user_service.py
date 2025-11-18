@@ -52,7 +52,7 @@ class UserService:
         headers = {"Authorization": f"Bearer {self.token}"}
         
         params = {
-            "$select": "id,displayName,mail,userPrincipalName,jobTitle",
+            "$select": "id,displayName,mail,userPrincipalName,jobTitle,department",
             "$orderby": "displayName",
             "$top": 999
         }
@@ -102,7 +102,8 @@ class UserService:
                 "id": user["id"],
                 "display_name": user.get("displayName", ""),
                 "email": user.get("mail") or user.get("userPrincipalName"),
-                "job_title": user.get("jobTitle")
+                "job_title": user.get("jobTitle"),
+                "department": user.get("department")
             }
             for user in filtered_users
         ]

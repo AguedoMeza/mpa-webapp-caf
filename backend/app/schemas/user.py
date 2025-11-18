@@ -8,6 +8,7 @@ class User(BaseModel):
     display_name: str
     email: str | None
     job_title: str | None
+    department: str | None  # ← Agregar department
 
 
 class UserListResponse(BaseModel):

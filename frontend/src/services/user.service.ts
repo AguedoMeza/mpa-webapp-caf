@@ -5,6 +5,7 @@ export interface User {
   display_name: string;
   email: string | null;
   job_title: string | null;
+  department: string | null; 
 }
 
 export interface UserListResponse {

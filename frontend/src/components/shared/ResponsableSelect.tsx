@@ -18,6 +18,7 @@ interface OptionType {
   value: string;
   label: string;
   email: string | null;
+  department: string | null;
 }
 
 /**
@@ -38,8 +39,9 @@ const ResponsableSelect: React.FC<ResponsableSelectProps> = ({
   // Convertir usuarios a formato de opciones para react-select
   const options: OptionType[] = users.map((user) => ({
     value: user.email || user.display_name,
-    label: `${user.display_name}${user.email ? ` (${user.email})` : ''}`,
+    label: `${user.display_name}${user.department ? ` - ${user.department}` : ''}${user.email ? ` (${user.email})` : ''}`,
     email: user.email,
+    department: user.department,
   }));
 
   // Encontrar la opción seleccionada actual
