@@ -31,9 +31,12 @@ class UserService:
         else:
             raise Exception(f"Error al obtener token: {result.get('error_description')}")
 
-    def list_users(self):
+    def list_users(self, max_results: int = 999):
         """
-        Lista usuarios del directorio de Azure AD.
+        Lista usuarios del directorio de Azure AD con soporte de paginación.
+        
+        Args:
+            max_results: Número máximo de usuarios a retornar (default: 999, usa None para todos)
         
         Returns:
             dict: {"total": int, "users": List[dict]}
@@ -45,40 +48,60 @@ class UserService:
         headers = {"Authorization": f"Bearer {self.token}"}
         
         # Seleccionar solo los campos necesarios
+        # $top controla cuántos usuarios por página (máx 999)
         params = {
             "$select": "id,displayName,mail,jobTitle",
-            "$orderby": "displayName"
+            "$orderby": "displayName",
+            "$top": min(max_results, 999) if max_results else 999  # Graph API máximo 999 por página
         }
         
-        response = requests.get(url, headers=headers, params=params)
+        all_users = []
         
-        # Si el token expiró, renovarlo y reintentar
-        if response.status_code == 401:
-            self.get_access_token()
-            headers["Authorization"] = f"Bearer {self.token}"
-            response = requests.get(url, headers=headers, params=params)
+        # Iterar a través de todas las páginas
+        while url:
+            response = requests.get(url, headers=headers, params=params if url.startswith("https://graph.microsoft.com/v1.0/users") else None)
+            
+            # Si el token expiró, renovarlo y reintentar
+            if response.status_code == 401:
+                self.get_access_token()
+                headers["Authorization"] = f"Bearer {self.token}"
+                response = requests.get(url, headers=headers, params=params if url.startswith("https://graph.microsoft.com/v1.0/users") else None)
+            
+            if response.status_code == 200:
+                data = response.json()
+                users = data.get("value", [])
+                
+                # Agregar usuarios de esta página
+                all_users.extend(users)
+                
+                # Verificar si hay más páginas
+                url = data.get("@odata.nextLink")
+                
+                # Si se alcanzó el límite máximo, detener
+                if max_results and len(all_users) >= max_results:
+                    all_users = all_users[:max_results]
+                    break
+                    
+                # Limpiar params después de la primera llamada (nextLink ya incluye params)
+                params = None
+            else:
+                raise Exception(f"Error al listar usuarios: {response.status_code} - {response.text}")
         
-        if response.status_code == 200:
-            data = response.json()
-            users = data.get("value", [])
-            
-            # Normalizar estructura de respuesta
-            normalized_users = [
-                {
-                    "id": user["id"],
-                    "display_name": user.get("displayName", ""),
-                    "email": user.get("mail"),
-                    "job_title": user.get("jobTitle")
-                }
-                for user in users
-            ]
-            
-            return {
-                "total": len(normalized_users),
-                "users": normalized_users
+        # Normalizar estructura de respuesta
+        normalized_users = [
+            {
+                "id": user["id"],
+                "display_name": user.get("displayName", ""),
+                "email": user.get("mail"),
+                "job_title": user.get("jobTitle")
             }
-        else:
-            raise Exception(f"Error al listar usuarios: {response.status_code} - {response.text}")
+            for user in all_users
+        ]
+        
+        return {
+            "total": len(normalized_users),
+            "users": normalized_users
+        }
 
 
 # Instancia singleton
