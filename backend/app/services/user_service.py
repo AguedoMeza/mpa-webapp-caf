@@ -1,13 +1,17 @@
 import msal
 import requests
+from typing import List
 from app.core.config import settings
 
 
 class UserService:
     """
     Servicio para consultar usuarios del directorio de Azure AD.
-    Reutiliza la configuración de Graph API existente.
+    Filtra usuarios por dominios permitidos.
     """
+    
+    # Dominios permitidos
+    ALLOWED_DOMAINS = ["@mpagroup.mx", "@macquarie.com"]
     
     def __init__(self):
         self.client_id = settings.GRAPH_CONFIG["client_id"]
@@ -33,10 +37,10 @@ class UserService:
 
     def list_users(self, max_results: int = 999):
         """
-        Lista usuarios del directorio de Azure AD con soporte de paginación.
+        Lista usuarios del directorio de Azure AD filtrados por dominios permitidos.
         
         Args:
-            max_results: Número máximo de usuarios a retornar (default: 999, usa None para todos)
+            max_results: Número máximo de usuarios a retornar (default: 999)
         
         Returns:
             dict: {"total": int, "users": List[dict]}
@@ -47,55 +51,60 @@ class UserService:
         url = "https://graph.microsoft.com/v1.0/users"
         headers = {"Authorization": f"Bearer {self.token}"}
         
-        # Seleccionar solo los campos necesarios
-        # $top controla cuántos usuarios por página (máx 999)
         params = {
-            "$select": "id,displayName,mail,jobTitle",
+            "$select": "id,displayName,mail,userPrincipalName,jobTitle",
             "$orderby": "displayName",
-            "$top": min(max_results, 999) if max_results else 999  # Graph API máximo 999 por página
+            "$top": 999
         }
         
         all_users = []
         
-        # Iterar a través de todas las páginas
+        # Paginación: iterar todas las páginas
         while url:
-            response = requests.get(url, headers=headers, params=params if url.startswith("https://graph.microsoft.com/v1.0/users") else None)
+            response = requests.get(
+                url, 
+                headers=headers, 
+                params=params if url.startswith("https://graph.microsoft.com/v1.0/users") else None
+            )
             
-            # Si el token expiró, renovarlo y reintentar
+            # Renovar token si expiró
             if response.status_code == 401:
                 self.get_access_token()
                 headers["Authorization"] = f"Bearer {self.token}"
-                response = requests.get(url, headers=headers, params=params if url.startswith("https://graph.microsoft.com/v1.0/users") else None)
+                response = requests.get(
+                    url, 
+                    headers=headers, 
+                    params=params if url.startswith("https://graph.microsoft.com/v1.0/users") else None
+                )
             
             if response.status_code == 200:
                 data = response.json()
-                users = data.get("value", [])
-                
-                # Agregar usuarios de esta página
-                all_users.extend(users)
-                
-                # Verificar si hay más páginas
+                all_users.extend(data.get("value", []))
                 url = data.get("@odata.nextLink")
-                
-                # Si se alcanzó el límite máximo, detener
-                if max_results and len(all_users) >= max_results:
-                    all_users = all_users[:max_results]
-                    break
-                    
-                # Limpiar params después de la primera llamada (nextLink ya incluye params)
-                params = None
+                params = None  # nextLink ya incluye los params
             else:
                 raise Exception(f"Error al listar usuarios: {response.status_code} - {response.text}")
+        
+        # Filtrar por dominios permitidos (mail O userPrincipalName)
+        filtered_users = [
+            user for user in all_users
+            if (user.get("mail") and any(user["mail"].endswith(domain) for domain in self.ALLOWED_DOMAINS)) or
+               (user.get("userPrincipalName") and any(user["userPrincipalName"].endswith(domain) for domain in self.ALLOWED_DOMAINS))
+        ]
+        
+        # Limitar resultados si se especifica
+        if max_results:
+            filtered_users = filtered_users[:max_results]
         
         # Normalizar estructura de respuesta
         normalized_users = [
             {
                 "id": user["id"],
                 "display_name": user.get("displayName", ""),
-                "email": user.get("mail"),
+                "email": user.get("mail") or user.get("userPrincipalName"),
                 "job_title": user.get("jobTitle")
             }
-            for user in all_users
+            for user in filtered_users
         ]
         
         return {
