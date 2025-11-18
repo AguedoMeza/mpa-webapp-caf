@@ -7,11 +7,17 @@ from app.core.config import settings
 class UserService:
     """
     Servicio para consultar usuarios del directorio de Azure AD.
-    Filtra usuarios por dominios permitidos.
+    Filtra usuarios por dominios y departamentos permitidos.
     """
     
     # Dominios permitidos
     ALLOWED_DOMAINS = ["@mpagroup.mx", "@macquarie.com"]
+    
+    # Departamentos permitidos (el orden define la prioridad en los resultados)
+    ALLOWED_DEPARTMENTS = [
+        "Property Management",      # ← Aparecerá primero
+        "Information Technology"    # ← Aparecerá después
+    ]
     
     def __init__(self):
         self.client_id = settings.GRAPH_CONFIG["client_id"]
@@ -35,9 +41,29 @@ class UserService:
         else:
             raise Exception(f"Error al obtener token: {result.get('error_description')}")
 
+    def _get_department_priority(self, department: str | None) -> int:
+        """
+        Obtiene la prioridad de un departamento para ordenamiento.
+        Departamentos al inicio de ALLOWED_DEPARTMENTS tienen mayor prioridad (menor número).
+        
+        Args:
+            department: Nombre del departamento
+        
+        Returns:
+            int: Índice de prioridad (0 = mayor prioridad)
+        """
+        if not department:
+            return 999  # Sin departamento va al final
+        
+        try:
+            return self.ALLOWED_DEPARTMENTS.index(department)
+        except ValueError:
+            return 999  # Departamento no encontrado va al final
+
     def list_users(self, max_results: int = 999):
         """
-        Lista usuarios del directorio de Azure AD filtrados por dominios permitidos.
+        Lista usuarios del directorio de Azure AD filtrados por dominios y departamentos permitidos.
+        Ordenados por departamento (Property Management primero) y luego por nombre.
         
         Args:
             max_results: Número máximo de usuarios a retornar (default: 999)
@@ -53,7 +79,7 @@ class UserService:
         
         params = {
             "$select": "id,displayName,mail,userPrincipalName,jobTitle,department",
-            "$orderby": "displayName",
+            "$orderby": "displayName",  # Ordenamiento inicial por nombre
             "$top": 999
         }
         
@@ -81,16 +107,30 @@ class UserService:
                 data = response.json()
                 all_users.extend(data.get("value", []))
                 url = data.get("@odata.nextLink")
-                params = None  # nextLink ya incluye los params
+                params = None
             else:
                 raise Exception(f"Error al listar usuarios: {response.status_code} - {response.text}")
         
-        # Filtrar por dominios permitidos (mail O userPrincipalName)
-        filtered_users = [
+        # FILTRO 1: Por dominios permitidos
+        filtered_by_domain = [
             user for user in all_users
             if (user.get("mail") and any(user["mail"].endswith(domain) for domain in self.ALLOWED_DOMAINS)) or
                (user.get("userPrincipalName") and any(user["userPrincipalName"].endswith(domain) for domain in self.ALLOWED_DOMAINS))
         ]
+        
+        # FILTRO 2: Por departamentos permitidos
+        filtered_users = [
+            user for user in filtered_by_domain
+            if user.get("department") and user["department"] in self.ALLOWED_DEPARTMENTS
+        ]
+        
+        # ORDENAMIENTO: Primero por departamento (prioridad), luego por nombre
+        filtered_users.sort(
+            key=lambda user: (
+                self._get_department_priority(user.get("department")),  # Prioridad por departamento
+                user.get("displayName", "").lower()  # Luego alfabéticamente por nombre
+            )
+        )
         
         # Limitar resultados si se especifica
         if max_results:
