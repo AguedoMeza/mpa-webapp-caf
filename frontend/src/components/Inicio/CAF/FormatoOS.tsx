@@ -5,6 +5,7 @@ import "./FormatoOS.css";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoOSToAPI, mapAPIToFormatoOS } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
+import ResponsableSelect from "../../shared/ResponsableSelect";
 
 interface Props {
   tipoContrato: string;
@@ -312,10 +313,12 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
 
           {/* --- SECCIÓN DERECHA --- */}
           <Col md={6}>
-            <Form.Group className="mb-2">
-              <Form.Label>Responsable</Form.Label>
-              <Form.Control name="responsable" value={formData.responsable} onChange={handleChange} />
-            </Form.Group>
+            <ResponsableSelect
+              value={formData.responsable}
+              onChange={handleChange}
+              {...getFieldProps()}
+              required
+            />
 
             <Form.Group className="mb-2">
               <Form.Label>Fecha</Form.Label>
