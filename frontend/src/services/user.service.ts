@@ -16,7 +16,7 @@ class UserService {
   private api: AxiosInstance;
 
   constructor() {
-    const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8002';
+    const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
     
     this.api = axios.create({
       baseURL: `${baseURL}/api/v1`,
