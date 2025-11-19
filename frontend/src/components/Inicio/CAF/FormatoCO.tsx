@@ -195,57 +195,6 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
     }
   };
 
-    const handleDownloadPDF = async () => {
-    try {
-      setLoading(true);
-      
-      // Generar el PDF
-      const blob = await pdf(
-        generatePDFCO({ formData, solicitudData })
-      ).toBlob();
-      
-      // Crear enlace de descarga
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `CAF_CO_${id}_${new Date().toISOString().split('T')[0]}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      
-      setSuccess('PDF descargado exitosamente');
-    } catch (error) {
-      console.error('Error al generar PDF:', error);
-      setError('Error al generar el PDF');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleViewPDF = async () => {
-    try {
-      setLoading(true);
-      
-      // Generar el PDF
-      const blob = await pdf(
-        generatePDFCO({ formData, solicitudData })
-      ).toBlob();
-      
-      // Abrir en nueva pestaña
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-      
-      // Limpiar después de un tiempo
-      setTimeout(() => URL.revokeObjectURL(url), 100);
-    } catch (error) {
-      console.error('Error al generar PDF:', error);
-      setError('Error al generar el PDF');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="container py-5">
       <h2 className="text-center fw-bold mb-3">
@@ -548,9 +497,12 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
       {/* Mostrar botón de PDF solo cuando está aprobado */}
       {isEditMode && solicitudData && solicitudData.approve === 1 && (
         <ApprovedPDFDownload
-          loading={loading}
-          onDownload={handleDownloadPDF}
-          onView={handleViewPDF}
+          generatePDF={generatePDFCO}
+          formData={formData}
+          solicitudData={solicitudData}
+          tipo="CO"
+          onSuccess={setSuccess}
+          onError={setError}
         />
       )}
 
