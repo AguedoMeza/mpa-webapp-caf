@@ -339,30 +339,37 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
         onHide={() => setShowCorrectionsModal(false)}
         backdrop="static"
         centered
+        dialogClassName="caf-modal"
       >
-        <Modal.Header closeButton className="bg-warning">
-          <Modal.Title>Solicitar Correcciones - Solicitud #{solicitudId}</Modal.Title>
+        <Modal.Header closeButton className="caf-modal-header">
+          <Modal.Title className="caf-modal-title">Solicitar Correcciones - Solicitud #{solicitudId}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="caf-modal-body">
           {error && (
             <Alert variant="danger" className="mb-3">
               {error}
             </Alert>
           )}
 
-          <Alert variant="info" className="mb-3">
+          <div className="caf-alert-warning mb-4">
+            Los comentarios son <strong>OBLIGATORIOS</strong> cuando se solicitan
+            correcciones. El solicitante recibirá un correo con las correcciones requeridas.
+          </div>
+
+          {/* <Alert variant="info" className="mb-3">
             <i className="bi bi-info-circle me-2"></i>
             Los comentarios son <strong>OBLIGATORIOS</strong> cuando se solicitan correcciones.
             El solicitante recibirá un correo con las correcciones requeridas.
-          </Alert>
+          </Alert> */}
 
           <Form.Group className="mb-3">
-            <Form.Label>
-              <strong>Correcciones Requeridas *</strong>
+            <Form.Label className="caf-label">
+              Correcciones Requeridas *
             </Form.Label>
             <Form.Control
               as="textarea"
               rows={5}
+              className="caf-textarea"
               placeholder="Describa detalladamente las correcciones necesarias..."
               value={comentarios}
               onChange={(e) => setComentarios(e.target.value)}
@@ -375,16 +382,16 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
             </Form.Text>
           </Form.Group>
         </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
+        <Modal.Footer className="caf-modal-footer">
+          <Button 
+            className="caf-btn-secondary"
             onClick={() => setShowCorrectionsModal(false)}
             disabled={loading}
           >
             Cancelar
           </Button>
-          <Button
-            variant="warning"
+          <Button 
+            className="caf-btn-warning"
             onClick={handleCorrectionsConfirm}
             disabled={loading || !comentarios.trim()}
           >
@@ -416,30 +423,38 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
         onHide={() => setShowRejectModal(false)}
         backdrop="static"
         centered
+        dialogClassName="caf-modal"
       >
-        <Modal.Header closeButton className="bg-danger text-white">
-          <Modal.Title>Rechazar Definitivamente - Solicitud #{solicitudId}</Modal.Title>
+        <Modal.Header closeButton className="caf-modal-header">
+          <Modal.Title className="caf-modal-title">Rechazar Definitivamente - Solicitud #{solicitudId}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+
+        <Modal.Body className="caf-modal-body">
           {error && (
             <Alert variant="danger" className="mb-3">
               {error}
             </Alert>
           )}
 
-          <Alert variant="warning" className="mb-3">
+          {/* <Alert variant="warning" className="mb-3">
             <i className="bi bi-exclamation-triangle me-2"></i>
             Esta acción rechazará la solicitud definitivamente.
             Los comentarios son <strong>opcionales</strong>.
-          </Alert>
+          </Alert> */}
+
+          <div className="caf-alert-warning mb-4">
+            Esta acción rechazará la solicitud definitivamente.
+            Los comentarios son <strong>opcionales</strong>.
+          </div>
 
           <Form.Group className="mb-3">
-            <Form.Label>
-              <strong>Motivo del Rechazo (Opcional)</strong>
+            <Form.Label className="caf-label">
+              Motivo del Rechazo (Opcional)
             </Form.Label>
             <Form.Control
+              className="caf-textarea"
               as="textarea"
-              rows={4}
+              rows={5}
               placeholder="Ingrese el motivo del rechazo (opcional)..."
               value={comentarios}
               onChange={(e) => setComentarios(e.target.value)}
@@ -451,9 +466,11 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
             </Form.Text>
           </Form.Group>
         </Modal.Body>
-        <Modal.Footer>
+
+        <Modal.Footer className="caf-modal-footer">
           <Button
             variant="secondary"
+            className="caf-btn-secondary"
             onClick={() => setShowRejectModal(false)}
             disabled={loading}
           >
@@ -461,6 +478,7 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
           </Button>
           <Button
             variant="danger"
+            className="caf-btn-danger"
             onClick={handleRejectConfirm}
             disabled={loading}
           >
@@ -478,7 +496,6 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
               </>
             ) : (
               <>
-                <i className="bi bi-x-circle me-2"></i>
                 Confirmar Rechazo
               </>
             )}
