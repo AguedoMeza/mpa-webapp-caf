@@ -113,17 +113,18 @@ class EmailNotificationObserver(Observer):
         
         try:
             result = email_service.send_caf_approval_result(
-                to_email=solicitante_email,
-                solicitud_id=event.solicitud_id,
-                tipo_contratacion=event.tipo_contratacion,
-                approved=True,
-                responsable=event.solicitud.Responsable or event.aprobado_por,
-                comentarios=None,
-                building=event.solicitud.Building,
-                cliente=event.solicitud.Cliente,
-                proveedor=event.solicitud.Proveedor,
-                usuario_solicitante=event.solicitud.Usuario
-            )
+            to_email=solicitante_email,
+            solicitud_id=event.solicitud_id,
+            tipo_contratacion=event.tipo_contratacion,
+            approved=True,
+            responsable=event.solicitud.Responsable or event.aprobado_por,
+            comentarios=None,
+            # ⭐ Ya no necesitas pasar edit_url aquí porque se construye internamente
+            building=event.solicitud.Building,
+            cliente=event.solicitud.Cliente,
+            proveedor=event.solicitud.Proveedor,
+            usuario_solicitante=event.solicitud.Usuario
+        )
             
             if result.get("status") == "success":
                 logger.info(f"Correo de aprobación enviado exitosamente para solicitud #{event.solicitud_id}")

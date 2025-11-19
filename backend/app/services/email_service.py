@@ -176,16 +176,6 @@ class EmailService:
     def send_caf_approval_result(self, to_email, solicitud_id, tipo_contratacion, approved, responsable, comentarios=None, edit_url=None, building=None, cliente=None, proveedor=None, usuario_solicitante=None):
         """
         Envía correo con el resultado de la aprobación/rechazo.
-        Args:
-            to_email: Email del destinatario
-            solicitud_id: ID de la solicitud
-            tipo_contratacion: Tipo de contratación
-            approved: True si fue aprobada, False si fue rechazada
-            responsable: Nombre del responsable que tomó la decisión
-            comentarios: Comentarios del rechazo (solo aplica cuando approved=False)
-            edit_url: URL para editar la solicitud (solo para correcciones, estado 0)
-        Returns:
-            dict: Resultado del envío
         """
         estado = "Aprobada" if approved else "Rechazada"
         color = "#28a745" if approved else "#dc3545"
@@ -202,6 +192,38 @@ class EmailService:
             </div>
             """
         
+        # ⭐ NUEVO: Botón para ver solicitud APROBADA
+        view_button_html = ""
+        if approved:
+            # Mapeo de tipos a rutas (igual que en send_caf_notification)
+            tipo_routes = {
+                'Contrato de Obra': 'formato-co',
+                'Orden de Servicio': 'solicitud-caf',
+                'Orden de Cambio': 'formato-oc', 
+                'Pago a Dependencia': 'formato-pd',
+                'Firma de Documento': 'formato-fd'
+            }
+            # Obtener frontend_base_url desde settings
+            from app.core.config import settings
+            frontend_base_url = settings.FRONTEND_BASE_URL
+            
+            route = tipo_routes.get(tipo_contratacion, 'solicitud-caf')
+            view_url = f"{frontend_base_url}/#/{route}/{solicitud_id}"
+            
+            view_button_html = f"""
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="margin-bottom: 15px;"><strong>Ver solicitud aprobada y descargar PDF oficial:</strong></p>
+                <a href="{view_url}" 
+                style="background-color: #28a745; color: white; padding: 12px 24px; 
+                        text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                    📄 Ver Solicitud Aprobada
+                </a>
+                <p style="margin-top: 15px; font-size: 14px; color: #6c757d;">
+                    Haga clic para ver la solicitud y descargar el PDF oficial.
+                </p>
+            </div>
+            """
+        
         # Botón de edición solo para correcciones (cuando se proporciona edit_url)
         edit_button_html = ""
         if not approved and edit_url:
@@ -209,8 +231,8 @@ class EmailService:
             <div style="text-align: center; margin: 30px 0;">
                 <p style="margin-bottom: 15px;"><strong>Para realizar las correcciones solicitadas:</strong></p>
                 <a href="{edit_url}" 
-                   style="background-color: #ffc107; color: #212529; padding: 12px 24px; 
-                          text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
+                style="background-color: #ffc107; color: #212529; padding: 12px 24px; 
+                        text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">
                     Editar Solicitud CAF #{solicitud_id}
                 </a>
                 <p style="margin-top: 15px; font-size: 14px; color: #6c757d;">
@@ -234,11 +256,12 @@ class EmailService:
                 <p><strong>Proveedor:</strong> {proveedor if proveedor else '-'} </p>
             </div>
             {comentarios_html}
+            {view_button_html}
             {edit_button_html}
             <div style=\"border-top: 1px solid #dee2e6; padding-top: 20px; margin-top: 30px; 
                         color: #6c757d; font-size: 12px;\">
                 <p>Este correo fue generado automáticamente por el Sistema CAF.</p>
-                {f'<p>Si no puede hacer clic en el botón de edición, copie y pegue este enlace en su navegador:</p><p>{edit_url}</p>' if edit_url else ''}
+                {f'<p>Si no puede hacer clic en el botón, copie y pegue este enlace en su navegador:</p><p>{view_url if approved else edit_url}</p>' if (approved or edit_url) else ''}
             </div>
         </div>
         """
