@@ -1,0 +1,163 @@
+// frontend/src/utils/pdf/generatePDFFD.tsx
+
+import React from 'react';
+import { Document, Page, View, Text } from '@react-pdf/renderer';
+import { pdfStyles as styles } from './pdfStyles'; 
+
+interface GeneratePDFFDProps {
+  formData: any;
+  solicitudData: any;
+}
+
+export const generatePDFFD = ({ formData, solicitudData }: GeneratePDFFDProps) => {
+  const getStatus = () => {
+    const approve = solicitudData?.approve;
+    if (approve === null || approve === undefined) {
+      return { text: 'PENDIENTE DE REVISIÓN', color: '#fff3cd', textColor: '#856404' };
+    }
+    switch (approve) {
+      case 0:
+        return { text: 'REQUIERE CORRECCIONES', color: '#d1ecf1', textColor: '#0c5460' };
+      case 1:
+        return { text: '✓ APROBADO', color: '#d4edda', textColor: '#155724' };
+      case 2:
+        return { text: '✗ RECHAZADO', color: '#f8d7da', textColor: '#721c24' };
+      default:
+        return { text: 'ESTADO DESCONOCIDO', color: '#e0e0e0', textColor: '#666' };
+    }
+  };
+
+  const status = getStatus();
+  const currentDate = new Date().toLocaleString('es-MX', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* ===== HEADER ===== */}
+        <View style={styles.header}>
+          <Text style={styles.title}>
+            SOLICITUD CAF #{solicitudData?.id_solicitud || 'N/A'}
+          </Text>
+          <Text style={styles.subtitle}>
+            {solicitudData?.Tipo_Contratacion || 'Firma de Documento'}
+          </Text>
+          <View style={styles.statusContainer}>
+            <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
+              <Text style={[styles.statusText, { color: status.textColor }]}>
+                {status.text}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* ===== INFORMACIÓN GENERAL ===== */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>INFORMACIÓN GENERAL</Text>
+          {[
+            { label: 'Responsable', value: formData.responsable },
+            { label: 'Usuario Solicitante', value: solicitudData?.Usuario },
+            { label: 'Fecha', value: formData.fecha },
+            { label: 'Building ID', value: formData.buildingId },
+            { label: 'Cliente/Desarrollo', value: formData.cliente },
+            { label: 'Dirección', value: formData.direccion },
+            { label: 'Proveedor', value: formData.proveedor },
+          ].map((row, index) => (
+            <View
+              key={index}
+              style={[styles.tableRow, index % 2 === 1 ? styles.tableRowEven : {}]}
+            >
+              <Text style={styles.tableLabel}>{row.label}:</Text>
+              <Text style={styles.tableValue}>{row.value || 'N/A'}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* ===== DESCRIPCIÓN ===== */}
+        {formData.descripcion && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>DESCRIPCIÓN DE TRABAJOS/SERVICIOS</Text>
+            <Text style={styles.text}>{formData.descripcion}</Text>
+          </View>
+        )}
+
+        {/* ===== JUSTIFICACIÓN ===== */}
+        {formData.justificacion && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>JUSTIFICACIÓN DE TRABAJOS</Text>
+            <Text style={styles.text}>{formData.justificacion}</Text>
+          </View>
+        )}
+
+        {/* ===== DOCUMENTOS A ENVIAR ===== */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>DOCUMENTOS A ENVIAR</Text>
+          
+          <Text style={[styles.text, { fontWeight: 'bold', marginBottom: 5, marginTop: 5 }]}>
+            Documentos Comunes:
+          </Text>
+          <View style={styles.checkboxContainer}>
+            {[
+              { label: 'Cotización MPA y VOBO de C&P', value: 'docCotizacion' },
+              { label: 'Aprobación (correo) si no hay concurso', value: 'docAprobacion' },
+              { label: 'Análisis de Riesgo WHSE y VOBO', value: 'docAnalisisRiesgos' },
+              { label: 'Dibujos y/o especificaciones', value: 'docDibujos' },
+              { label: 'Programa de Obra', value: 'docProgramaObra' },
+            ].map((doc, index) => (
+              <View key={index} style={styles.checkboxRow}>
+                <View style={styles.checkbox} />
+                <Text style={styles.checkboxLabel}>{doc.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          <Text style={[styles.text, { fontWeight: 'bold', marginBottom: 5, marginTop: 8 }]}>
+            Documentos Exclusivos para Firma de Documento:
+          </Text>
+          <View style={styles.checkboxContainer}>
+            {[
+              { label: 'VOBO Legal', checked: formData.docVOBOLegal },
+              { label: 'Documento a Firmar', checked: formData.docDocumentoFirmar },
+            ].map((doc, index) => (
+              <View key={index} style={styles.checkboxRow}>
+                <View style={[styles.checkbox, doc.checked ? styles.checkboxChecked : {}]} />
+                <Text style={styles.checkboxLabel}>{doc.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* ===== ENLACE SHAREPOINT ===== */}
+        {formData.sharepoint && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>ENLACE SHAREPOINT</Text>
+            <Text style={[styles.text, { color: '#2c5aa0' }]}>
+              {formData.sharepoint}
+            </Text>
+          </View>
+        )}
+
+        {/* ===== COMENTARIOS ===== */}
+        {solicitudData?.Comentarios && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>COMENTARIOS</Text>
+            <View style={styles.commentBox}>
+              <Text style={styles.commentText}>{solicitudData.Comentarios}</Text>
+            </View>
+          </View>
+        )}
+
+        {/* ===== FOOTER ===== */}
+        <View style={styles.footer} fixed>
+          <Text>Generado el {currentDate} - Sistema CAF MPA</Text>
+          <Text style={{ marginTop: 3 }}>Admin MPA LDAP</Text>
+        </View>
+      </Page>
+    </Document>
+  );
+};

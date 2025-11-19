@@ -6,6 +6,8 @@ import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoPDToAPI, mapAPIToFormatoPD } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import ApprovedPDFDownload from "./ApprovedPDFDownload";
+import { generatePDFPD } from "../../../utils/pdf/generatePDFPD";
 
 interface Props {
   tipoContrato: string;
@@ -350,6 +352,18 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
             onApprovalComplete={handleApprovalComplete}
           />
         </div>
+      )}
+
+      {/* Mostrar botón de PDF solo cuando está aprobado */}
+      {isEditMode && solicitudData && solicitudData.approve === 1 && (
+        <ApprovedPDFDownload
+          generatePDF={generatePDFPD}
+          formData={formData}
+          solicitudData={solicitudData}
+          tipo="PD"
+          onSuccess={setSuccess}
+          onError={setError}
+        />
       )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
