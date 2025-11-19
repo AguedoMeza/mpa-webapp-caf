@@ -9,6 +9,8 @@ import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect"; 
 import { pdf } from '@react-pdf/renderer';
 import { generatePDFCO } from '../../../utils/pdf/generatePDFCO';
+import ApprovedPDFDownload from './ApprovedPDFDownload';
+
 
 interface Props {
   tipoContrato: string;
@@ -545,52 +547,11 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
       {/* Mostrar botón de PDF solo cuando está aprobado */}
       {isEditMode && solicitudData && solicitudData.approve === 1 && (
-        <Alert variant="success" className="my-4">
-          <div className="text-center">
-            <h4 className="mb-3">
-              <i className="fas fa-check-circle me-2"></i>
-              Solicitud Aprobada
-            </h4>
-            <p className="mb-3">
-              Esta solicitud ha sido aprobada. 
-              Puedes descargar el PDF oficial para firma.
-            </p>
-            <div className="d-flex gap-2 justify-content-center">
-              <Button 
-                variant="success" 
-                size="lg"
-                onClick={handleDownloadPDF}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Spinner
-                      as="span"
-                      animation="border"
-                      size="sm"
-                      className="me-2"
-                    />
-                    Generando...
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-download me-2"></i>
-                    Descargar PDF Oficial
-                  </>
-                )}
-              </Button>
-              <Button 
-                variant="outline-success" 
-                size="lg"
-                onClick={handleViewPDF}
-                disabled={loading}
-              >
-                <i className="bi bi-eye me-2"></i>
-                Ver PDF
-              </Button>
-            </div>
-          </div>
-        </Alert>
+        <ApprovedPDFDownload
+          loading={loading}
+          onDownload={handleDownloadPDF}
+          onView={handleViewPDF}
+        />
       )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
