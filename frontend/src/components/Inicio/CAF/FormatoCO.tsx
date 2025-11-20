@@ -458,7 +458,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
           <Button
             type="submit"
             variant="primary"
-            className="px-4"
+            className="px-4 btn-orange"
             disabled={loading || loadingData || isReadOnly()}
           >
             {loading ? (

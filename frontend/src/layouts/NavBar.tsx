@@ -72,9 +72,9 @@ const NavBar: React.FC<NavBarProps> = ({ children }) => {
               </div>
               <Button 
                 onClick={handleLogout}
-                className="logout-btn-header"
+                className="btn-orange"
               > 
-                {!isMobile && <span className="ms-2"> Cerrar sesión</span>}
+                {!isMobile && <span> Cerrar sesión </span>}
               </Button>
             </div>
           </Nav>

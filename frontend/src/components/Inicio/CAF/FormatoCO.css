@@ -66,6 +66,19 @@ textarea.form-control {
   border-color: #1d3f7c;
 }
 
+.btn-orange {
+  background-color: #F7931F !important;
+  border-color: #F7931F !important;
+  color: #fff !important;
+}
+
+.btn-orange:hover,
+.btn-orange:focus {
+  background-color: #d97f18 !important; /* tono más oscuro */
+  border-color: #d97f18 !important;
+}
+
+
 /* ====== SECCIONES ====== */
 hr {
   border-top: 1px solid #d9e2f3;
