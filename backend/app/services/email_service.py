@@ -4,6 +4,8 @@ import mimetypes
 import base64
 import requests
 from app.core.config import settings
+ # ⭐ FIX: Importar settings al inicio del método
+from app.core.config import settings
 
 class EmailService:
     """
@@ -177,6 +179,8 @@ class EmailService:
         """
         Envía correo con el resultado de la aprobación/rechazo.
         """
+       
+        
         estado = "Aprobada" if approved else "Rechazada"
         color = "#28a745" if approved else "#dc3545"
         
@@ -192,7 +196,7 @@ class EmailService:
             </div>
             """
         
-        # ⭐ NUEVO: Botón para ver solicitud APROBADA
+        # Botón para ver solicitud APROBADA
         view_button_html = ""
         if approved:
             # Mapeo de tipos a rutas (igual que en send_caf_notification)
@@ -203,10 +207,8 @@ class EmailService:
                 'Pago a Dependencia': 'formato-pd',
                 'Firma de Documento': 'formato-fd'
             }
-            # Obtener frontend_base_url desde settings
-            from app.core.config import settings
-            frontend_base_url = settings.FRONTEND_BASE_URL
             
+            frontend_base_url = settings.FRONTEND_BASE_URL
             route = tipo_routes.get(tipo_contratacion, 'solicitud-caf')
             view_url = f"{frontend_base_url}/#/{route}/{solicitud_id}"
             
