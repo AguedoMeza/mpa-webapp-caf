@@ -30,7 +30,13 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
     justificacion: "",
     sharepoint: "",
     tipo_contratacion: "",
-    // Checkboxes
+    // ✅ Checkboxes comunes - AGREGAR ESTOS
+    docCotizacion: false,
+    docAprobacion: false,
+    docAnalisisRiesgos: false,
+    docDibujos: false,
+    docProgramaObra: false,
+    // Checkboxes exclusivos FD
     docVOBOLegal: false,
     docDocumentoFirmar: false,
   });
@@ -235,13 +241,22 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
 
             <h6 className="mt-3">Documentos a Enviar</h6>
             {[
-              "Cotización MPA y VOBO de C&P",
-              "Aprobación (correo) si no hay concurso",
-              "Análisis de Riesgo WHSE y VOBO",
-              "Dibujos y/o especificaciones",
-              "Programa de Obra",
+              { label: "Cotización MPA y VOBO de C&P", name: "docCotizacion" },
+              { label: "Aprobación (correo) si no hay concurso", name: "docAprobacion" },
+              { label: "Análisis de Riesgo WHSE y VOBO", name: "docAnalisisRiesgos" },
+              { label: "Dibujos y/o especificaciones", name: "docDibujos" },
+              { label: "Programa de Obra", name: "docProgramaObra" },
             ].map((doc, i) => (
-              <Form.Check key={i} type="checkbox" label={doc} className="mb-1" />
+              <Form.Check 
+                key={i} 
+                type="checkbox" 
+                label={doc.label}
+                name={doc.name}
+                checked={(formData as any)[doc.name]}
+                onChange={handleChange}
+                {...getFieldProps()}
+                className="mb-1" 
+              />
             ))}
 
             <h6 className="mt-3">Documentos Exclusivos para Firma de Documento</h6>
