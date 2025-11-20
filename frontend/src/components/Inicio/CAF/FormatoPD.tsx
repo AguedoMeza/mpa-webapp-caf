@@ -47,15 +47,15 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   // Estado para controlar edición según Mode
   const [solicitudData, setSolicitudData] = useState<any>(null);
-  
+
   // Determinar si el formulario debe estar bloqueado
   const isReadOnly = () => {
     if (!isEditMode) return false; // En modo creación, siempre editable
     if (!solicitudData) return false; // Si no hay datos cargados, permitir edición
-    
+
     const mode = solicitudData.Mode;
     // REGLA: Solo editable cuando Mode = "Edit" (requiere correcciones)
     // - Mode = null/undefined → BLOQUEADO (pendiente de revisión)
@@ -63,7 +63,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
     // - Mode = "View" → BLOQUEADO (aprobado/rechazado definitivo)
     return mode !== 'Edit';
   };
-  
+
   // Helper para aplicar props de solo lectura
   const getFieldProps = () => ({
     readOnly: isReadOnly(),
@@ -103,7 +103,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
-    
+
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData({ ...formData, [name]: checked });
@@ -135,7 +135,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
 
     try {
       const solicitudData = mapFormatoPDToAPI(formData);
-      
+
       if (isEditMode && id) {
         const response = await cafSolicitudService.updateSolicitud(parseInt(id), solicitudData);
         setSuccess(`Solicitud CAF actualizada exitosamente con ID: ${response.id_solicitud}`);
@@ -168,17 +168,29 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
+      
+      {/* Mostrar botón de PDF solo cuando está aprobado */}
+      {isEditMode && solicitudData && solicitudData.approve === 1 && (
+        <ApprovedPDFDownload
+          generatePDF={generatePDFPD}
+          formData={formData}
+          solicitudData={solicitudData}
+          tipo="PD"
+          onSuccess={setSuccess}
+          onError={setError}
+        />
+      )}
       <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
-      
+
       {/* Indicador de estado del formulario */}
       {isEditMode && solicitudData && (
         <div className="text-center mb-4">
           {isReadOnly() ? (
             <Alert variant="info" className="d-inline-flex align-items-center">
               <i className="fas fa-lock me-2"></i>
-              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'} 
+              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'}
               | Estado: {cafSolicitudService.getStatusLabel(solicitudData.approve)}
             </Alert>
           ) : (
@@ -290,24 +302,24 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
             </Form.Group>
 
             <h6 className="mt-3">Documentos a Enviar</h6>
-              {[
-                { label: "Cotización MPA y VOBO de C&P", name: "docCotizacion" },
-                { label: "Aprobación (correo) si no hay concurso", name: "docAprobacion" },
-                { label: "Análisis de Riesgo WHSE y VOBO", name: "docAnalisisRiesgos" },
-                { label: "Dibujos y/o especificaciones", name: "docDibujos" },
-                { label: "Programa de Obra", name: "docProgramaObra" },
-              ].map((doc, i) => (
-                <Form.Check 
-                  key={i} 
-                  type="checkbox" 
-                  label={doc.label}
-                  name={doc.name}
-                  checked={(formData as any)[doc.name]}
-                  onChange={handleChange}
-                  {...getFieldProps()}
-                  className="mb-1" 
-                />
-              ))}
+            {[
+              { label: "Cotización MPA y VOBO de C&P", name: "docCotizacion" },
+              { label: "Aprobación (correo) si no hay concurso", name: "docAprobacion" },
+              { label: "Análisis de Riesgo WHSE y VOBO", name: "docAnalisisRiesgos" },
+              { label: "Dibujos y/o especificaciones", name: "docDibujos" },
+              { label: "Programa de Obra", name: "docProgramaObra" },
+            ].map((doc, i) => (
+              <Form.Check
+                key={i}
+                type="checkbox"
+                label={doc.label}
+                name={doc.name}
+                checked={(formData as any)[doc.name]}
+                onChange={handleChange}
+                {...getFieldProps()}
+                className="mb-1"
+              />
+            ))}
 
             <h6 className="mt-4">Documentos exclusivos para Pagos a Dependencias</h6>
             {[
@@ -315,14 +327,14 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
               { label: "Ficha de pago", name: "docFichaPago" },
               { label: "Información bancaria", name: "docInfoBancaria" },
             ].map((d, i) => (
-              <Form.Check 
-                key={i} 
-                type="checkbox" 
+              <Form.Check
+                key={i}
+                type="checkbox"
                 label={d.label}
                 name={d.name}
                 checked={(formData as any)[d.name]}
                 onChange={handleChange}
-                className="mb-1" 
+                className="mb-1"
               />
             ))}
 
@@ -332,11 +344,11 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
             </Form.Group>
           </Col>
         </Row>
-        
+
         <div className="text-center mt-4">
-          <Button 
-            type="submit" 
-            variant="primary" 
+          <Button
+            type="submit"
+            variant="primary"
             className="px-4"
             disabled={loading || loadingData || isReadOnly()}
           >
@@ -361,7 +373,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
           <ApprovalActions
             solicitudId={parseInt(id!)}
             currentStatus={solicitudData?.approve}
-            tipoContratacion={tipoContrato}
+            tipoContratacion={tipoContrato} 
             responsable={formData.responsable}
             solicitudData={solicitudData}
             onApprovalComplete={handleApprovalComplete}
@@ -369,17 +381,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
         </div>
       )}
 
-      {/* Mostrar botón de PDF solo cuando está aprobado */}
-      {isEditMode && solicitudData && solicitudData.approve === 1 && (
-        <ApprovedPDFDownload
-          generatePDF={generatePDFPD}
-          formData={formData}
-          solicitudData={solicitudData}
-          tipo="PD"
-          onSuccess={setSuccess}
-          onError={setError}
-        />
-      )}
+
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
     </div>

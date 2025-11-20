@@ -45,15 +45,15 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   // Estado para controlar edición según Mode
   const [solicitudData, setSolicitudData] = useState<any>(null);
-  
+
   // Determinar si el formulario debe estar bloqueado
   const isReadOnly = () => {
     if (!isEditMode) return false; // En modo creación, siempre editable
     if (!solicitudData) return false; // Si no hay datos cargados, permitir edición
-    
+
     const mode = solicitudData.Mode;
     // REGLA: Solo editable cuando Mode = "Edit" (requiere correcciones)
     // - Mode = null/undefined → BLOQUEADO (pendiente de revisión)
@@ -61,7 +61,7 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
     // - Mode = "View" → BLOQUEADO (aprobado/rechazado definitivo)
     return mode !== 'Edit';
   };
-  
+
   // Helper para aplicar props de solo lectura
   const getFieldProps = () => ({
     readOnly: isReadOnly(),
@@ -103,7 +103,7 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target as HTMLInputElement;
-    
+
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData({ ...formData, [name]: checked });
@@ -135,7 +135,7 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
 
     try {
       const solicitudData = mapFormatoFDToAPI(formData);
-      
+
       if (isEditMode && id) {
         const response = await cafSolicitudService.updateSolicitud(parseInt(id), solicitudData);
         setSuccess(`Solicitud CAF actualizada exitosamente con ID: ${response.id_solicitud}`);
@@ -168,17 +168,30 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
+
+      {/* Mostrar botón de PDF solo cuando está aprobado */}
+      {isEditMode && solicitudData && solicitudData.approve === 1 && (
+        <ApprovedPDFDownload
+          generatePDF={generatePDFFD}
+          formData={formData}
+          solicitudData={solicitudData}
+          tipo="FD"
+          onSuccess={setSuccess}
+          onError={setError}
+        />
+      )}
+
       <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
-      
+
       {/* Indicador de estado del formulario */}
       {isEditMode && solicitudData && (
         <div className="text-center mb-4">
           {isReadOnly() ? (
             <Alert variant="info" className="d-inline-flex align-items-center">
               <i className="fas fa-lock me-2"></i>
-              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'} 
+              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'}
               | Estado: {cafSolicitudService.getStatusLabel(solicitudData.approve)}
             </Alert>
           ) : (
@@ -247,15 +260,15 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
               { label: "Dibujos y/o especificaciones", name: "docDibujos" },
               { label: "Programa de Obra", name: "docProgramaObra" },
             ].map((doc, i) => (
-              <Form.Check 
-                key={i} 
-                type="checkbox" 
+              <Form.Check
+                key={i}
+                type="checkbox"
                 label={doc.label}
                 name={doc.name}
                 checked={(formData as any)[doc.name]}
                 onChange={handleChange}
                 {...getFieldProps()}
-                className="mb-1" 
+                className="mb-1"
               />
             ))}
 
@@ -264,14 +277,14 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
               { label: "VOBO Legal", name: "docVOBOLegal" },
               { label: "Documento a firmar", name: "docDocumentoFirmar" },
             ].map((d, i) => (
-              <Form.Check 
-                key={i} 
-                type="checkbox" 
+              <Form.Check
+                key={i}
+                type="checkbox"
                 label={d.label}
                 name={d.name}
                 checked={(formData as any)[d.name]}
                 onChange={handleChange}
-                className="mb-1" 
+                className="mb-1"
               />
             ))}
           </Col>
@@ -329,9 +342,9 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
           </Col>
         </Row>
         <div className="text-center mt-4">
-          <Button 
-            type="submit" 
-            variant="primary" 
+          <Button
+            type="submit"
+            variant="primary"
             className="px-4"
             disabled={loading || loadingData || isReadOnly()}
           >
@@ -362,18 +375,6 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
             onApprovalComplete={handleApprovalComplete}
           />
         </div>
-      )}
-
-      {/* Mostrar botón de PDF solo cuando está aprobado */}
-      {isEditMode && solicitudData && solicitudData.approve === 1 && (
-        <ApprovedPDFDownload
-          generatePDF={generatePDFFD}
-          formData={formData}
-          solicitudData={solicitudData}
-          tipo="FD"
-          onSuccess={setSuccess}
-          onError={setError}
-        />
       )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
