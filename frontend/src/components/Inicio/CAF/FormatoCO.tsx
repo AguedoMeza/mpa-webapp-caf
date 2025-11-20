@@ -6,7 +6,7 @@ import "./FormatoCO.css";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoCOToAPI, mapAPIToFormatoCO } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
-import ResponsableSelect from "../../shared/ResponsableSelect"; 
+import ResponsableSelect from "../../shared/ResponsableSelect";
 import { pdf } from '@react-pdf/renderer';
 import { generatePDFCO } from '../../../utils/pdf/generatePDFCO';
 import ApprovedPDFDownload from './ApprovedPDFDownload';
@@ -66,15 +66,15 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   // Estado para controlar edición según Mode
   const [solicitudData, setSolicitudData] = useState<any>(null);
-  
+
   // Determinar si el formulario debe estar bloqueado
   const isReadOnly = () => {
     if (!isEditMode) return false; // En modo creación, siempre editable
     if (!solicitudData) return false; // Si no hay datos cargados, permitir edición
-    
+
     const mode = solicitudData.Mode;
     // REGLA: Solo editable cuando Mode = "Edit" (requiere correcciones)
     // - Mode = null/undefined → BLOQUEADO (pendiente de revisión)
@@ -82,7 +82,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
     // - Mode = "View" → BLOQUEADO (aprobado/rechazado definitivo)
     return mode !== 'Edit';
   };
-  
+
   // Helper para aplicar props de solo lectura
   const getFieldProps = () => ({
     readOnly: isReadOnly(),
@@ -157,7 +157,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
     try {
       const solicitudData = mapFormatoCOToAPI(formData);
-      
+
       if (isEditMode && id) {
         // Modo edición: actualizar solicitud existente
         const response = await cafSolicitudService.updateSolicitud(parseInt(id), solicitudData);
@@ -197,17 +197,29 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
+      {/* Mostrar botón de PDF solo cuando está aprobado */}
+      {isEditMode && solicitudData && solicitudData.approve === 1 && (
+        <ApprovedPDFDownload
+          generatePDF={generatePDFCO}
+          formData={formData}
+          solicitudData={solicitudData}
+          tipo="CO"
+          onSuccess={setSuccess}
+          onError={setError}
+        />
+      )}
+
       <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
-      
+
       {/* Indicador de estado del formulario */}
       {isEditMode && solicitudData && (
         <div className="text-center mb-4">
           {isReadOnly() ? (
             <Alert variant="info" className="d-inline-flex align-items-center">
               <i className="fas fa-lock me-2"></i>
-              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'} 
+              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'}
               | Estado: {cafSolicitudService.getStatusLabel(solicitudData.approve)}
             </Alert>
           ) : (
@@ -259,9 +271,9 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             ].map((f, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{f.label}</Form.Label>
-                <Form.Control 
-                  name={f.name} 
-                  value={(formData as any)[f.name]} 
+                <Form.Control
+                  name={f.name}
+                  value={(formData as any)[f.name]}
                   onChange={handleChange}
                   {...getFieldProps()}
                 />
@@ -273,10 +285,10 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de inicio</Form.Label>
-                  <Form.Control 
-                    type="date" 
-                    name="fechaInicio" 
-                    value={formData.fechaInicio} 
+                  <Form.Control
+                    type="date"
+                    name="fechaInicio"
+                    value={formData.fechaInicio}
                     onChange={handleChange}
                     {...getFieldProps()}
                   />
@@ -285,10 +297,10 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Fecha de Terminación Final</Form.Label>
-                  <Form.Control 
-                    type="date" 
-                    name="fechaFin" 
-                    value={formData.fechaFin} 
+                  <Form.Control
+                    type="date"
+                    name="fechaFin"
+                    value={formData.fechaFin}
                     onChange={handleChange}
                     {...getFieldProps()}
                   />
@@ -306,9 +318,9 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             ].map((f, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{f.label}</Form.Label>
-                <Form.Control 
-                  name={f.name} 
-                  value={(formData as any)[f.name]} 
+                <Form.Control
+                  name={f.name}
+                  value={(formData as any)[f.name]}
                   onChange={handleChange}
                   {...getFieldProps()}
                 />
@@ -319,9 +331,9 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Tipo de trabajo</Form.Label>
-                  <Form.Select 
-                    name="tipoTrabajo" 
-                    value={formData.tipoTrabajo} 
+                  <Form.Select
+                    name="tipoTrabajo"
+                    value={formData.tipoTrabajo}
                     onChange={handleChange}
                     {...getFieldProps()}
                   >
@@ -334,9 +346,9 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-4">
                   <Form.Label>Es recuperable o No Recuperable</Form.Label>
-                  <Form.Select 
-                    name="recuperable" 
-                    value={formData.recuperable} 
+                  <Form.Select
+                    name="recuperable"
+                    value={formData.recuperable}
                     onChange={handleChange}
                     {...getFieldProps()}
                   >
@@ -396,7 +408,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
             <Form.Group className="mb-3">
               <Form.Label>Descripción de los Trabajos/Servicios Solicitados</Form.Label>
-              <Form.Control as="textarea" rows={2} name="descripcion" value={formData.descripcion} onChange={handleChange} {...getFieldProps()}  />
+              <Form.Control as="textarea" rows={2} name="descripcion" value={formData.descripcion} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
             <h6>Documentos a Enviar</h6>
@@ -494,17 +506,6 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
         </div>
       )}
 
-      {/* Mostrar botón de PDF solo cuando está aprobado */}
-      {isEditMode && solicitudData && solicitudData.approve === 1 && (
-        <ApprovedPDFDownload
-          generatePDF={generatePDFCO}
-          formData={formData}
-          solicitudData={solicitudData}
-          tipo="CO"
-          onSuccess={setSuccess}
-          onError={setError}
-        />
-      )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
     </div>

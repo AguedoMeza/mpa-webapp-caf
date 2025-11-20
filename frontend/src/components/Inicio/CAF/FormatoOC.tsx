@@ -179,6 +179,19 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
+
+      {/* Mostrar botón de PDF solo cuando está aprobado */}
+      {isEditMode && solicitudData && solicitudData.approve === 1 && (
+        <ApprovedPDFDownload
+          generatePDF={generatePDFOC}
+          formData={formData}
+          solicitudData={solicitudData}
+          tipo="OC"
+          onSuccess={setSuccess}
+          onError={setError}
+        />
+      )}
+
       <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
@@ -404,21 +417,9 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
         </div>
       )}
 
-      {/* Mostrar botón de PDF solo cuando está aprobado */}
-      {isEditMode && solicitudData && solicitudData.approve === 1 && (
-        <ApprovedPDFDownload
-          generatePDF={generatePDFOC}
-          formData={formData}
-          solicitudData={solicitudData}
-          tipo="OC"
-          onSuccess={setSuccess}
-          onError={setError}
-        />
-      )}
-
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
     </div>
   );
-};
+}; 
 
 export default FormatoOC;

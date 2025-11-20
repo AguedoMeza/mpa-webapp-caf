@@ -50,15 +50,15 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
   const [loadingData, setLoadingData] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  
+
   // Estado para controlar edición según Mode y datos de solicitud
   const [solicitudData, setSolicitudData] = useState<any>(null);
-  
+
   // Determinar si el formulario debe estar bloqueado
   const isReadOnly = () => {
     if (!isEditMode) return false; // En modo creación, siempre editable
     if (!solicitudData) return false; // Si no hay datos cargados, permitir edición
-    
+
     const mode = solicitudData.Mode;
     // REGLA: Solo editable cuando Mode = "Edit" (requiere correcciones)
     // - Mode = null/undefined → BLOQUEADO (pendiente de revisión)
@@ -66,7 +66,7 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
     // - Mode = "View" → BLOQUEADO (aprobado/rechazado definitivo)
     return mode !== 'Edit';
   };
-  
+
   // Helper para aplicar props de solo lectura
   const getFieldProps = () => ({
     readOnly: isReadOnly(),
@@ -106,7 +106,7 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
-    
+
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData({ ...formData, [name]: checked });
@@ -138,7 +138,7 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
 
     try {
       const solicitudData = mapFormatoOSToAPI(formData);
-      
+
       if (isEditMode && id) {
         const response = await cafSolicitudService.updateSolicitud(parseInt(id), solicitudData);
         setSuccess(`Solicitud CAF actualizada exitosamente con ID: ${response.id_solicitud}`);
@@ -171,17 +171,30 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
+
+      {/* Mostrar botón de PDF solo cuando está aprobado */}
+      {isEditMode && solicitudData && solicitudData.approve === 1 && (
+        <ApprovedPDFDownload
+          generatePDF={generatePDFOS}
+          formData={formData}
+          solicitudData={solicitudData}
+          tipo="OS"
+          onSuccess={setSuccess}
+          onError={setError}
+        />
+      )}
+
       <h2 className="text-center fw-bold mb-3">
         {isEditMode ? `EDITAR SOLICITUD CAF #${id}` : 'SOLICITUD DE CAF PARA CONTRATACIÓN'}
       </h2>
-      
+
       {/* Indicador de estado del formulario */}
       {isEditMode && solicitudData && (
         <div className="text-center mb-4">
           {isReadOnly() ? (
             <Alert variant="info" className="d-inline-flex align-items-center">
               <i className="fas fa-lock me-2"></i>
-              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'} 
+              <strong>Formulario Bloqueado</strong> - Modo: {solicitudData.Mode || 'View'}
               | Estado: {cafSolicitudService.getStatusLabel(solicitudData.approve)}
             </Alert>
           ) : (
@@ -375,9 +388,9 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
         </Row>
 
         <div className="text-center mt-4">
-          <Button 
-            variant="primary" 
-            type="submit" 
+          <Button
+            variant="primary"
+            type="submit"
             className="px-4"
             disabled={loading || loadingData}
           >
@@ -412,18 +425,6 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
             onApprovalComplete={handleApprovalComplete}
           />
         </div>
-      )}
-
-      {/* Mostrar botón de PDF solo cuando está aprobado */}
-      {isEditMode && solicitudData && solicitudData.approve === 1 && (
-        <ApprovedPDFDownload
-          generatePDF={generatePDFOS}
-          formData={formData}
-          solicitudData={solicitudData}
-          tipo="OS"
-          onSuccess={setSuccess}
-          onError={setError}
-        />
       )}
 
       <div className="text-center small text-muted mt-4">Admin MPA LDAP</div>
