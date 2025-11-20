@@ -18,18 +18,19 @@ export const useAuth = () => {
 
   // Monitoreo periódico de la sesión (cada 5 minutos)
   useEffect(() => {
-    const interval = setInterval(() => {
+  const interval = setInterval(() => {
       if (isAuthenticated) {
-        checkAuthStatus();
+        checkAuthStatus(true); // ← Silent: no afecta isLoading
       }
-    }, 5 * 60 * 1000); // 5 minutos
-
+    }, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [isAuthenticated]);
 
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = async (silent: boolean = false) => {
     try {
-      setIsLoading(true);
+      // Solo mostrar loading en verificaciones explícitas (login inicial)
+      if (!silent) setIsLoading(true);
+      
       const authStatus = await AuthService.checkAuthStatus();
       
       setIsAuthenticated(authStatus.authenticated);
@@ -39,7 +40,7 @@ export const useAuth = () => {
       setIsAuthenticated(false);
       setUser(null);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   };
 
