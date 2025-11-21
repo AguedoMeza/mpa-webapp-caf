@@ -1,8 +1,9 @@
 // frontend/src/utils/pdf/generatePDFCO.tsx
 
 import React from 'react';
-import { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
-import { pdfStyles as styles } from './pdfStyles'; 
+import { Document, Page, View, Text, Image } from '@react-pdf/renderer';
+import { pdfStyles as styles } from './pdfStyles';
+import MPAlogo from '../../assets/MPA500px.png';
 
 
 interface GeneratePDFCOProps {
@@ -43,17 +44,35 @@ export const generatePDFCO = ({ formData, solicitudData }: GeneratePDFCOProps) =
       <Page size="A4" style={styles.page}>
         {/* ===== HEADER ===== */}
         <View style={styles.header}>
+          {/* LOGO MPA */}
+          <Image
+            src={MPAlogo}
+            style={{
+              width: 150,
+              alignSelf: 'flex-start',
+            }}
+          />
           <Text style={styles.title}>
             SOLICITUD CAF #{solicitudData?.id_solicitud || 'N/A'}
           </Text>
-          <Text style={styles.subtitle}>
-            {solicitudData?.Tipo_Contratacion || 'Contrato de Obra'}
-          </Text>
-          <View style={styles.statusContainer}>
-            <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
-              <Text style={[styles.statusText, { color: status.textColor }]}>
-                {status.text}
-              </Text>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+            }}
+          >
+            <Text style={styles.subtitle}>
+              {solicitudData?.Tipo_Contratacion || 'Contrato de Obra'}
+            </Text>
+            <View style={styles.statusContainer}>
+              <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
+                <Text style={[styles.statusText, { color: status.textColor }]}>
+                  {status.text}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
@@ -145,7 +164,7 @@ export const generatePDFCO = ({ formData, solicitudData }: GeneratePDFCOProps) =
         {/* ===== DOCUMENTOS A ENVIAR ===== */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>DOCUMENTOS A ENVIAR</Text>
-          
+
           <Text style={[styles.text, { fontWeight: 'bold', marginBottom: 5, marginTop: 5 }]}>
             Documentos Comunes:
           </Text>
