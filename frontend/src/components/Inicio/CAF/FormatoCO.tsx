@@ -267,15 +267,19 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               value={formData.buildingId}
               onChange={handleChange}
               {...getFieldProps()}
+              required
             />
 
             {[
-              { label: "Cliente/Desarrollo", name: "cliente" },
+              { label: "Cliente/Desarrollo", name: "cliente", required: true },
               { label: "Dirección", name: "direccion" },
               { label: "Proveedor", name: "proveedor" },
             ].map((f, i) => (
               <Form.Group key={i} className="mb-2">
-                <Form.Label>{f.label}</Form.Label>
+                <Form.Label>
+                  {f.label}
+                  {f.required && <span className="text-danger ms-1">*</span>}
+                </Form.Label>
                 <Form.Control
                   name={f.name}
                   value={(formData as any)[f.name]}
@@ -335,7 +339,10 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             <Row>
               <Col>
                 <Form.Group className="mb-2">
-                  <Form.Label>Tipo de trabajo</Form.Label>
+                  <Form.Label>
+                    Tipo de trabajo
+                    <span className="text-danger ms-1">*</span>
+                  </Form.Label>
                   <Form.Select
                     name="tipoTrabajo"
                     value={formData.tipoTrabajo}
@@ -350,7 +357,10 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
               </Col>
               <Col>
                 <Form.Group className="mb-4">
-                  <Form.Label>Es recuperable o No Recuperable</Form.Label>
+                  <Form.Label>
+                    Es recuperable o No Recuperable
+                    <span className="text-danger ms-1">*</span>
+                  </Form.Label>
                   <Form.Select
                     name="recuperable"
                     value={formData.recuperable}

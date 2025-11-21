@@ -249,10 +249,14 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
               value={formData.buildingId}
               onChange={handleChange}
               {...getFieldProps()}
+              required
             />
             {["cliente", "direccion", "proveedor"].map((name, i) => (
               <Form.Group key={i} className="mb-2">
-                <Form.Label>{name === "cliente" ? "Cliente/Desarrollo" : name.charAt(0).toUpperCase() + name.slice(1)}</Form.Label>
+                <Form.Label>
+                  {name === "cliente" ? "Cliente/Desarrollo" : name.charAt(0).toUpperCase() + name.slice(1)}
+                  {name === "cliente" && <span className="text-danger ms-1">*</span>}
+                </Form.Label>
                 <Form.Control name={name} value={(formData as any)[name]} onChange={handleChange} {...getFieldProps()} />
               </Form.Group>
             ))}
@@ -290,7 +294,10 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
             <div className="form-column">
              
                 <Form.Group className="mb-2">
-                  <Form.Label>Tipo de trabajo</Form.Label>
+                  <Form.Label>
+                    Tipo de trabajo
+                    <span className="text-danger ms-1">*</span>
+                  </Form.Label>
                   <Form.Select name="tipoTrabajo" value={formData.tipoTrabajo} onChange={handleChange}>
                     <option>Desarrollo</option>
                     <option>Mantenimiento</option>
@@ -300,7 +307,10 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
                
                
                 <Form.Group className="mb-4">
-                  <Form.Label>Es recuperable o No Recuperable</Form.Label>
+                  <Form.Label>
+                    Es recuperable o No Recuperable
+                    <span className="text-danger ms-1">*</span>
+                  </Form.Label>
                   <Form.Select name="recuperable" value={formData.recuperable} onChange={handleChange}>
                     <option>REC</option>
                     <option>NO REC</option>

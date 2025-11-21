@@ -241,10 +241,14 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
               value={formData.buildingId}
               onChange={handleChange}
               {...getFieldProps()}
+              required
             />
 
             <Form.Group className="mb-2">
-              <Form.Label>Cliente/Desarrollo</Form.Label>
+              <Form.Label>
+                Cliente/Desarrollo
+                <span className="text-danger ms-1">*</span>
+              </Form.Label>
               <Form.Control name="cliente" value={formData.cliente} onChange={handleChange} {...getFieldProps()} />
             </Form.Group>
 
