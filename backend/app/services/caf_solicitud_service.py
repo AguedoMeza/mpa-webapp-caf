@@ -1,7 +1,10 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from app.models.caf_solicitud import TBL_CAF_Solicitud, SolicitudStatus
+from app.models.building import CAT_BUILDINGS
 from app.events.domain_events import SolicitudCreada, SolicitudAprobada, SolicitudRechazada, SolicitudCorreccionesRealizadas
 from app.events.event_dispatcher import get_event_dispatcher
+from typing import List, Dict, Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -175,3 +178,33 @@ class CafSolicitudService:
             logger.error(f"Error disparando evento de aprobación/rechazo: {str(e)}")
         
         return solicitud
+    
+    def get_buildings_for_select(self, db: Session) -> List[Dict[str, str]]:
+        """
+        Obtiene lista de edificios para usar en un select.
+        La búsqueda/filtrado se realiza en el frontend.
+        
+        Args:
+            db: Sesión de base de datos
+            
+        Returns:
+            Lista de diccionarios con formato {value, label} para React Select
+        """
+        try:
+            # Query: solo edificios activos (INACTIVE = NULL o 'N'), ordenados por nombre
+            buildings = db.query(CAT_BUILDINGS).filter(
+                or_(
+                    CAT_BUILDINGS.INACTIVE == 'N',
+                    CAT_BUILDINGS.INACTIVE == None
+                )
+            ).order_by(CAT_BUILDINGS.BLDGNAME).all()
+            
+            # Formatear para select usando el método del modelo
+            result = [building.to_select_option() for building in buildings]
+            
+            logger.info(f"Se obtuvieron {len(result)} edificios activos para select")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error al obtener edificios: {str(e)}")
+            return []

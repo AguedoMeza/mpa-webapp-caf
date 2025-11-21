@@ -10,7 +10,7 @@ import ResponsableSelect from "../../shared/ResponsableSelect";
 import { pdf } from '@react-pdf/renderer';
 import { generatePDFCO } from '../../../utils/pdf/generatePDFCO';
 import ApprovedPDFDownload from './ApprovedPDFDownload';
-
+import BuildingSelect from "../../shared/BuildingSelect"; 
 
 interface Props {
   tipoContrato: string;
@@ -263,8 +263,13 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
             <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{solicitudData?.Tipo_Contratacion || tipoContrato}</span></h6>
 
             <h6 className="mt-3">Información General</h6>
+            <BuildingSelect
+              value={formData.buildingId}
+              onChange={handleChange}
+              {...getFieldProps()}
+            />
+
             {[
-              { label: "Building ID", name: "buildingId" },
               { label: "Cliente/Desarrollo", name: "cliente" },
               { label: "Dirección", name: "direccion" },
               { label: "Proveedor", name: "proveedor" },

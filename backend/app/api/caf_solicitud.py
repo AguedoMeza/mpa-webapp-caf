@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, Depends, status, HTTPException, Query
 from sqlalchemy.orm import Session
+from typing import Optional
 from app.core.database import get_db
 from app.services.caf_solicitud_service import CafSolicitudService
 from app.schemas.caf_solicitud import ApprovalRequest, ApprovalResponse
@@ -113,3 +114,23 @@ def approve_or_reject_solicitud(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
+
+
+@router.get("/buildings/select", status_code=status.HTTP_200_OK)
+def get_buildings_for_select(db: Session = Depends(get_db)):
+    """
+    Obtiene lista de edificios para usar en un componente Select.
+    El filtrado/búsqueda se realiza en el frontend.
+    
+    Returns:
+    ```json
+    [
+        {
+            "value": "BLDG01",
+            "label": "Torre Principal - Ciudad de México, CDMX"
+        }
+    ]
+    ```
+    """
+    service = CafSolicitudService()
+    return service.get_buildings_for_select(db)
