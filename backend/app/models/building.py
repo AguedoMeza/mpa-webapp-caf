@@ -20,28 +20,8 @@ class CAT_BUILDINGS(Base):
     INACTIVE = Column(String(1), nullable=True)
     
     def to_select_option(self):
-        """Formato para React Select con información adicional para evitar duplicados"""
-        # Formato: BLDGID - ADDRESS1 - CITY, STATE - ZIPCODE
-        label_parts = [self.BLDGID]
-        
-        if self.ADDRESS1:
-            label_parts.append(self.ADDRESS1)
-        
-        # Ciudad y estado juntos
-        location = []
-        if self.CITY:
-            location.append(self.CITY)
-        if self.STATE:
-            location.append(self.STATE)
-        if location:
-            label_parts.append(", ".join(location))
-        
-        if self.ZIPCODE:
-            label_parts.append(self.ZIPCODE)
-        
-        label = " - ".join(label_parts)
-        
+        """Formato para React Select - solo BLDGID"""
         return {
             "value": self.BLDGID,
-            "label": label
+            "label": self.BLDGID
         }
