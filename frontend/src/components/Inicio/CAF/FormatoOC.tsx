@@ -6,6 +6,7 @@ import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoOCToAPI, mapAPIToFormatoOC } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFOC } from "../../../utils/pdf/generatePDFOC";
 
@@ -244,7 +245,12 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
             <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{formData.tipo_contratacion || tipoContrato}</span></h6>
 
             <h6 className="mt-3">Información General</h6>
-            {["buildingId", "cliente", "direccion", "proveedor"].map((name, i) => (
+            <BuildingSelect
+              value={formData.buildingId}
+              onChange={handleChange}
+              {...getFieldProps()}
+            />
+            {["cliente", "direccion", "proveedor"].map((name, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{name === "cliente" ? "Cliente/Desarrollo" : name.charAt(0).toUpperCase() + name.slice(1)}</Form.Label>
                 <Form.Control name={name} value={(formData as any)[name]} onChange={handleChange} {...getFieldProps()} />

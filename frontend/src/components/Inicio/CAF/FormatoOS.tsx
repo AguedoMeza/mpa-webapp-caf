@@ -6,6 +6,7 @@ import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoOSToAPI, mapAPIToFormatoOS } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFOS } from "../../../utils/pdf/generatePDFOS";
 
@@ -236,10 +237,11 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
             <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{formData.tipo_contratacion || tipoContrato}</span></h6>
             <h6 className="mt-3">Información General</h6>
 
-            <Form.Group className="mb-2">
-              <Form.Label>Building ID</Form.Label>
-              <Form.Control name="buildingId" value={formData.buildingId} onChange={handleChange} {...getFieldProps()} />
-            </Form.Group>
+            <BuildingSelect
+              value={formData.buildingId}
+              onChange={handleChange}
+              {...getFieldProps()}
+            />
 
             <Form.Group className="mb-2">
               <Form.Label>Cliente/Desarrollo</Form.Label>

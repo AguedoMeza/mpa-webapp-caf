@@ -6,6 +6,7 @@ import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoFDToAPI, mapAPIToFormatoFD } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFFD } from "../../../utils/pdf/generatePDFFD";
 
@@ -236,8 +237,12 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
             </h6>
 
             <h6 className="mt-3">Información General</h6>
+            <BuildingSelect
+              value={formData.buildingId}
+              onChange={handleChange}
+              {...getFieldProps()}
+            />
             {[
-              { label: "Building ID", name: "buildingId" },
               { label: "Cliente/Desarrollo", name: "cliente" },
               { label: "Dirección", name: "direccion" },
               { label: "Proveedor", name: "proveedor" },
@@ -248,6 +253,7 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
                   name={f.name}
                   value={(formData as any)[f.name]}
                   onChange={handleChange}
+                  {...getFieldProps()}
                 />
               </Form.Group>
             ))}

@@ -6,6 +6,7 @@ import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoPDToAPI, mapAPIToFormatoPD } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFPD } from "../../../utils/pdf/generatePDFPD";
 
@@ -232,15 +233,19 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
             <h6 className="fw-semibold">Tipo de Contratación: <span className="text-primary">{formData.tipo_contratacion || tipoContrato}</span></h6>
 
             <h6 className="mt-3">Información General</h6>
+            <BuildingSelect
+              value={formData.buildingId}
+              onChange={handleChange}
+              {...getFieldProps()}
+            />
             {[
-              { label: "Building ID", name: "buildingId" },
               { label: "Cliente/Desarrollo", name: "cliente" },
               { label: "Dirección", name: "direccion" },
               { label: "Proveedor", name: "proveedor" },
             ].map((f, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{f.label}</Form.Label>
-                <Form.Control name={f.name} value={(formData as any)[f.name]} onChange={handleChange} />
+                <Form.Control name={f.name} value={(formData as any)[f.name]} onChange={handleChange} {...getFieldProps()} />
               </Form.Group>
             ))}
 
