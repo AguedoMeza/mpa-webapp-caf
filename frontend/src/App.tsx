@@ -23,7 +23,7 @@ const customMenu: MenuItem[] = [
     menu: 'Inicio',
     description: 'Página principal',
     icon: 'house',
-    path: '/',
+    path: 'https://webapplication.mpagroup.mx/#/',
     level: 1,
     order: 1
   }
