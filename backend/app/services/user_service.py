@@ -16,7 +16,8 @@ class UserService:
     # Departamentos permitidos (el orden define la prioridad en los resultados)
     ALLOWED_DEPARTMENTS = [
         "Property Management",      # ← Aparecerá primero
-        "Information Technology"    # ← Aparecerá después
+        "Information Technology",   # ← Aparecerá después
+        "Engineering"               # ← Nuevo departamento permitido
     ]
     
     def __init__(self):
