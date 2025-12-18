@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Col, Form, Alert, Spinner } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import "./FormatoOC.css";
+import { tipoTrabajoOptions } from "../../../types/caf-solicitud.types";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoOCToAPI, mapAPIToFormatoOC } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
@@ -18,6 +19,8 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
 
+  // Usar opciones compartidas
+
   const [formData, setFormData] = useState({
     buildingId: "",
     cliente: "",
@@ -31,7 +34,7 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
     anticipo: "",
     fuerzaTrabajo: "",
     presupuesto: "",
-    tipoTrabajo: "Desarrollo",
+    tipoTrabajo: tipoTrabajoOptions[0], // Usar opciones compartidas
     recuperable: "REC",
     montoOriginalPesos: "",
     montoOriginalDolares: "",
@@ -299,9 +302,9 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
                     <span className="text-danger ms-1">*</span>
                   </Form.Label>
                   <Form.Select name="tipoTrabajo" value={formData.tipoTrabajo} onChange={handleChange}>
-                    <option>Desarrollo</option>
-                    <option>Mantenimiento</option>
-                    <option>Supervisión</option>
+                    {tipoTrabajoOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
                

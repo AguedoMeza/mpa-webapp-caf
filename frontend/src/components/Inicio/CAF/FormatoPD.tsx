@@ -3,6 +3,7 @@ import { Button, Col, Form, Row, Alert, Spinner } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import "./FormatoPD.css";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
+import { tipoTrabajoOptions } from "../../../types/caf-solicitud.types";
 import { mapFormatoPDToAPI, mapAPIToFormatoPD } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
@@ -18,6 +19,8 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
 
+    // Usar opciones compartidas
+
   const [formData, setFormData] = useState({
     buildingId: "",
     cliente: "",
@@ -25,7 +28,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
     proveedor: "",
     montoPesos: "",
     presupuesto: "",
-    tipoTrabajo: "Desarrollo",
+    tipoTrabajo: tipoTrabajoOptions[0],
     responsable: "",
     fecha: "",
     descripcion: "",
@@ -43,6 +46,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
     docFichaPago: false,
     docInfoBancaria: false,
   });
+
 
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
@@ -256,7 +260,7 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
             <h6 className="mt-3">Datos de los Trabajos / Servicios</h6>
             {[
               { label: "Monto en pesos (subtotal)", name: "montoPesos" },
-              { label: "Presupuesto existente", name: "presupuesto" },
+              { label: "Presupuesto existente", name: "presupuesto" }
             ].map((f, i) => (
               <Form.Group key={i} className="mb-2">
                 <Form.Label>{f.label}</Form.Label>
@@ -264,15 +268,15 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
               </Form.Group>
             ))}
 
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-2">
               <Form.Label>
                 Tipo de trabajo
                 <span className="text-danger ms-1">*</span>
               </Form.Label>
               <Form.Select name="tipoTrabajo" value={formData.tipoTrabajo} onChange={handleChange} {...getFieldProps()}>
-                <option>Desarrollo</option>
-                <option>Mantenimiento</option>
-                <option>Supervisión</option>
+                {tipoTrabajoOptions.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
               </Form.Select>
             </Form.Group>
 

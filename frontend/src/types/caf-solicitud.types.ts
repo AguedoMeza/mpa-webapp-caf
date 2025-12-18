@@ -67,6 +67,19 @@ export interface CAFSolicitudOS extends CAFSolicitudBase, DatosTrabajoServicio {
   // OS no tiene campos adicionales específicos más allá de base + trabajos
 }
 
+// Opciones de tipo de trabajo CAF (compartidas)
+export const tipoTrabajoOptions: string[] = [
+  //"Desarrollo",
+  //"Mantenimiento",
+  "Supervisión",
+  "Development",
+  "Maintenance",
+  "Extraordinary CAPEX",
+  "Normalized CAPEX",
+  "TI",
+  "ASTI"
+];
+
 // Interfaz para Formato OC (Orden de Cambio)
 export interface CAFSolicitudOC extends CAFSolicitudBase, DatosTrabajoServicio {
   // Campos exclusivos de Órdenes de Cambio

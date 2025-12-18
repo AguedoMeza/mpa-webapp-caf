@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { tipoTrabajoOptions } from "../../../types/caf-solicitud.types";
 import { Button, Col, Form, Row, Alert, Spinner } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import "./FormatoCO.css";
@@ -20,6 +21,8 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id;
 
+  // Usar opciones compartidas
+
   const [formData, setFormData] = useState({
     buildingId: "",
     cliente: "",
@@ -33,7 +36,7 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
     anticipo: "",
     fuerzaTrabajo: "",
     presupuesto: "",
-    tipoTrabajo: "Desarrollo",
+    tipoTrabajo: tipoTrabajoOptions[0],
     recuperable: "REC",
     fechaOcupacion: "",
     fechaSustancial: "",
@@ -349,9 +352,9 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
                     onChange={handleChange}
                     {...getFieldProps()}
                   >
-                    <option>Desarrollo</option>
-                    <option>Mantenimiento</option>
-                    <option>Supervisión</option>
+                    {tipoTrabajoOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </Form.Select>
                 </Form.Group>
               </Col>

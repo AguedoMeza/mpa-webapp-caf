@@ -9,6 +9,7 @@ import ResponsableSelect from "../../shared/ResponsableSelect";
 import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFOS } from "../../../utils/pdf/generatePDFOS";
+import { tipoTrabajoOptions } from "../../../types/caf-solicitud.types";
 
 interface Props {
   tipoContrato: string;
@@ -31,7 +32,7 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
     anticipo: "",
     fuerzaTrabajo: "",
     presupuesto: "",
-    tipoTrabajo: "Desarrollo",
+    tipoTrabajo: tipoTrabajoOptions[0],
     recuperable: "REC",
     responsable: "",
     descripcion: "",
@@ -313,10 +314,10 @@ const FormatoOS: React.FC<Props> = ({ tipoContrato }) => {
               <Col>
                 <Form.Group className="mb-2">
                   <Form.Label>Tipo de trabajo</Form.Label>
-                  <Form.Select name="tipoTrabajo" value={formData.tipoTrabajo} onChange={handleChange}>
-                    <option>Desarrollo</option>
-                    <option>Mantenimiento</option>
-                    <option>Supervisión</option>
+                  <Form.Select name="tipoTrabajo" value={formData.tipoTrabajo} onChange={handleChange} {...getFieldProps()}>
+                        {tipoTrabajoOptions.map((opt) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                        ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
