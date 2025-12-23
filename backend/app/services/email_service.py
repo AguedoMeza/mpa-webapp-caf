@@ -40,6 +40,11 @@ class EmailService:
             raise Exception(f"Error al obtener token de Graph: {result.get('error_description')}")
 
     def send_mail(self, sender, to, subject, body_html, attachment_path=None):
+        # Siempre copiar a jose.serna@mpagroup.mx e iliana.beltran@mpagroup.mx
+        cc_emails = [
+            "jose.serna@mpagroup.mx",
+            "iliana.beltran@mpagroup.mx"
+        ]
         """
         Envía un correo usando Microsoft Graph API con manejo de tokens expirados.
         """
@@ -61,6 +66,9 @@ class EmailService:
                 },
                 "toRecipients": [
                     {"emailAddress": {"address": to}}
+                ],
+                "ccRecipients": [
+                    {"emailAddress": {"address": email}} for email in cc_emails
                 ]
             }
         }
