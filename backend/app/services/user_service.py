@@ -61,6 +61,12 @@ class UserService:
         except ValueError:
             return 999  # Departamento no encontrado va al final
 
+    # Job titles permitidos
+    ALLOWED_JOB_TITLES = [
+        "Admin Property Management",
+        "Engineering Analyst"
+    ]
+
     def list_users(self, max_results: int = 999):
         """
         Lista usuarios del directorio de Azure AD filtrados por dominios y departamentos permitidos.
@@ -123,6 +129,7 @@ class UserService:
         filtered_users = [
             user for user in filtered_by_domain
             if user.get("department") and user["department"] in self.ALLOWED_DEPARTMENTS
+            and user.get("jobTitle") in self.ALLOWED_JOB_TITLES
         ]
         
         # ORDENAMIENTO: Primero por departamento (prioridad), luego por nombre
