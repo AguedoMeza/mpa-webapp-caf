@@ -6,6 +6,7 @@ import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoOSToAPI, mapAPIToFormatoOS } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import IngenieroResponsableLabel from "../../shared/IngenieroResponsableLabel";
 import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFOS } from "../../../utils/pdf/generatePDFOS";

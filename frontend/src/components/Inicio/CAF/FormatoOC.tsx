@@ -7,6 +7,7 @@ import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoOCToAPI, mapAPIToFormatoOC } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import IngenieroResponsableLabel from "../../shared/IngenieroResponsableLabel";
 import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFOC } from "../../../utils/pdf/generatePDFOC";
@@ -343,6 +344,8 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
               {...getFieldProps()}
               required
             />
+
+            <IngenieroResponsableLabel />
 
             <Form.Group className="mb-2">
               <Form.Label>Fecha</Form.Label>

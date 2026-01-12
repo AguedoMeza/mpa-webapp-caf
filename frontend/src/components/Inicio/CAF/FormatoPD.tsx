@@ -7,6 +7,7 @@ import { tipoTrabajoOptions } from "../../../types/caf-solicitud.types";
 import { mapFormatoPDToAPI, mapAPIToFormatoPD } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import IngenieroResponsableLabel from "../../shared/IngenieroResponsableLabel";
 import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFPD } from "../../../utils/pdf/generatePDFPD";
@@ -300,6 +301,8 @@ const FormatoPD: React.FC<Props> = ({ tipoContrato }) => {
               {...getFieldProps()}
               required
             />
+
+            <IngenieroResponsableLabel />
 
             <Form.Group className="mb-3">
               <Form.Label>Fecha</Form.Label>

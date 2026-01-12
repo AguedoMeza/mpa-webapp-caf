@@ -6,6 +6,7 @@ import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { mapFormatoFDToAPI, mapAPIToFormatoFD } from "../../../utils/caf-solicitud.utils";
 import ApprovalActions from "./ApprovalActions";
 import ResponsableSelect from "../../shared/ResponsableSelect";
+import IngenieroResponsableLabel from "../../shared/IngenieroResponsableLabel";
 import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFFD } from "../../../utils/pdf/generatePDFFD";
@@ -307,6 +308,8 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
               {...getFieldProps()}
               required
             />
+
+            <IngenieroResponsableLabel />
 
             <Form.Group className="mb-2">
               <Form.Label>Fecha</Form.Label>

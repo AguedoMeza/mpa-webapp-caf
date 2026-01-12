@@ -36,15 +36,15 @@ const IngenieroResponsableLabel: React.FC = () => {
     fetchUserDetails();
   }, [currentEmail]);
   
-  // Formato igual a ResponsableSelect: "Nombre - Departamento (email)"
+  // Formato: "Nombre - Job Title (email)"
   let formattedUser = 'Usuario no identificado';
   
   if (userDetails) {
-    // Usar datos completos de Azure AD con departamento
+    // Usar datos completos de Azure AD con job title
     const namePart = userDetails.display_name;
-    const deptPart = userDetails.department ? ` - ${userDetails.department}` : '';
+    const jobPart = userDetails.job_title ? ` - ${userDetails.job_title}` : '';
     const emailPart = userDetails.email ? ` (${userDetails.email})` : '';
-    formattedUser = `${namePart}${deptPart}${emailPart}`;
+    formattedUser = `${namePart}${jobPart}${emailPart}`;
   } else if (currentUser && !loading) {
     // Fallback: mostrar lo que tengamos del usuario SAML (sin departamento)
     const displayName = currentUser.given_name && currentUser.family_name 
