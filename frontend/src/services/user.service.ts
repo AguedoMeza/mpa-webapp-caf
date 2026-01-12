@@ -51,6 +51,20 @@ class UserService {
       throw error;
     }
   }
+
+  /**
+   * Obtiene información de un usuario específico por email
+   * No aplica filtros de job title
+   */
+  async getUserByEmail(email: string): Promise<User> {
+    try {
+      const response = await this.api.get<User>(`/users/by-email/${encodeURIComponent(email)}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error al obtener usuario por email:', error);
+      throw error;
+    }
+  }
 }
 
 // Singleton

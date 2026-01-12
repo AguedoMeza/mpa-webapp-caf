@@ -162,5 +162,57 @@ class UserService:
         }
 
 
+    def get_user_by_email(self, email: str):
+        """
+        Obtiene información de un usuario específico por email.
+        No aplica filtros de job title - solo verifica dominio permitido.
+        
+        Args:
+            email: Email del usuario a buscar
+        
+        Returns:
+            dict: Información del usuario o None si no se encuentra
+        """
+        if not self.token:
+            self.get_access_token()
+
+        # Verificar que el email tenga dominio permitido
+        if not any(email.endswith(domain) for domain in self.ALLOWED_DOMAINS):
+            return None
+
+        url = "https://graph.microsoft.com/v1.0/users"
+        headers = {"Authorization": f"Bearer {self.token}"}
+        
+        # Filtrar por email o userPrincipalName
+        params = {
+            "$filter": f"mail eq '{email}' or userPrincipalName eq '{email}'",
+            "$select": "id,displayName,mail,userPrincipalName,jobTitle,department"
+        }
+        
+        response = requests.get(url, headers=headers, params=params)
+        
+        # Renovar token si expiró
+        if response.status_code == 401:
+            self.get_access_token()
+            headers["Authorization"] = f"Bearer {self.token}"
+            response = requests.get(url, headers=headers, params=params)
+        
+        if response.status_code == 200:
+            data = response.json()
+            users = data.get("value", [])
+            
+            if users:
+                user = users[0]
+                return {
+                    "id": user["id"],
+                    "display_name": user.get("displayName", ""),
+                    "email": user.get("mail") or user.get("userPrincipalName"),
+                    "job_title": user.get("jobTitle"),
+                    "department": user.get("department")
+                }
+        
+        return None
+
+
 # Instancia singleton
 user_service = UserService()
