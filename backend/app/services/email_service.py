@@ -39,15 +39,28 @@ class EmailService:
         else:
             raise Exception(f"Error al obtener token de Graph: {result.get('error_description')}")
 
-    def send_mail(self, sender, to, subject, body_html, attachment_path=None):
+    def send_mail(self, sender, to, subject, body_html, attachment_path=None, extra_cc=None):
+        """
+        Envía un correo usando Microsoft Graph API con manejo de tokens expirados.
+        Args:
+            sender: Email del remitente
+            to: Email del destinatario principal
+            subject: Asunto del correo
+            body_html: Cuerpo del correo en HTML
+            attachment_path: Ruta opcional de archivo adjunto
+            extra_cc: Lista opcional de emails adicionales para CC
+        """
         # Siempre copiar a jose.serna@mpagroup.mx e iliana.beltran@mpagroup.mx
         cc_emails = [
             "jose.serna@mpagroup.mx",
             "iliana.beltran@mpagroup.mx"
         ]
-        """
-        Envía un correo usando Microsoft Graph API con manejo de tokens expirados.
-        """
+        
+        # Agregar CC adicionales si se proporcionan (evitando duplicados)
+        if extra_cc:
+            for email in extra_cc:
+                if email and email not in cc_emails and email != to:
+                    cc_emails.append(email)
         if not self.token:
             self.get_access_token()
 
@@ -181,7 +194,10 @@ class EmailService:
         # Obtener el email del sender desde la configuración de Graph
         sender_email = settings.GRAPH_CONFIG["sender_email"]
         
-        return self.send_mail(sender_email, to_email, subject, body_html)
+        # Agregar al usuario solicitante como CC para que tenga confirmación de su solicitud
+        extra_cc = [usuario_solicitante] if usuario_solicitante else None
+        
+        return self.send_mail(sender_email, to_email, subject, body_html, extra_cc=extra_cc)
 
     def send_caf_approval_result(self, to_email, solicitud_id, tipo_contratacion, approved, responsable, comentarios=None, edit_url=None, building=None, cliente=None, proveedor=None, usuario_solicitante=None):
         """
