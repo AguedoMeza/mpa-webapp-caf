@@ -64,6 +64,7 @@ class UserService:
     # Job titles permitidos
     ALLOWED_JOB_TITLES = [
         "Admin Property Management",
+        "Sr. Admin Property Management",  # ← Agregado para incluir seniors
         "Engineering Analyst"
     ]
 
