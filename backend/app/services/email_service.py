@@ -50,10 +50,9 @@ class EmailService:
             attachment_path: Ruta opcional de archivo adjunto
             extra_cc: Lista opcional de emails adicionales para CC
         """
-        # Siempre copiar a jose.serna@mpagroup.mx e iliana.beltran@mpagroup.mx
+        # Siempre copiar a jose.serna@mpagroup.mx
         cc_emails = [
-            "jose.serna@mpagroup.mx",
-            "iliana.beltran@mpagroup.mx"
+            "jose.serna@mpagroup.mx"
         ]
         
         # Agregar CC adicionales si se proporcionan (evitando duplicados)
