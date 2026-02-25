@@ -27,6 +27,11 @@ class CafSolicitudService:
         print(f"🧹 Datos limpiados: removido id_solicitud, campos restantes: {len(data_clean)}")
         print(f"📝 CAF payload keys: {sorted(data_clean.keys())}")
         print(f"🧾 CAF payload values: {data_clean}")
+        payload_lengths = {
+            key: (len(value) if isinstance(value, str) else None)
+            for key, value in data_clean.items()
+        }
+        print(f"📏 CAF payload lengths: {payload_lengths}")
         
         # IMPORTANTE: No establecer approve en la creación, debe quedar NULL (pendiente)
         # Remover approve si viene en los datos para que quede NULL
