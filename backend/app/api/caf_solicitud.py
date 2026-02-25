@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import DataError, IntegrityError
 from typing import Optional
 from app.core.database import get_db
 from app.services.caf_solicitud_service import CafSolicitudService
@@ -15,9 +16,14 @@ def create_caf_solicitud(data: dict, db: Session = Depends(get_db)):
     Crea una nueva solicitud CAF.
     El campo 'approve' se deja como NULL (pendiente de revisión) automáticamente.
     """
-    service = CafSolicitudService()
-    solicitud = service.create(db, data)
-    return solicitud
+    try:
+        service = CafSolicitudService()
+        solicitud = service.create(db, data)
+        return solicitud
+    except (DataError, IntegrityError) as e:
+        raise HTTPException(status_code=400, detail=f"Error de datos: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error al crear la solicitud: {str(e)}")
 
 @router.get("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
 def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
@@ -31,11 +37,16 @@ def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
 @router.put("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
 def update_caf_solicitud(solicitud_id: int, data: dict, db: Session = Depends(get_db)):
     """Actualiza una solicitud CAF existente"""
-    service = CafSolicitudService()
-    result = service.update(db, solicitud_id, data)
-    if not result:
-        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
-    return result
+    try:
+        service = CafSolicitudService()
+        result = service.update(db, solicitud_id, data)
+        if not result:
+            raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+        return result
+    except (DataError, IntegrityError) as e:
+        raise HTTPException(status_code=400, detail=f"Error de datos: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error al actualizar la solicitud: {str(e)}")
 
 @router.patch("/caf-solicitud/{solicitud_id}/approval", status_code=status.HTTP_200_OK, response_model=ApprovalResponse)
 def approve_or_reject_solicitud(

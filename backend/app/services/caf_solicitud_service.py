@@ -25,6 +25,8 @@ class CafSolicitudService:
         # Remover id_solicitud si viene en los datos (es autoincrement)
         data_clean = {k: v for k, v in data.items() if k != 'id_solicitud'}
         print(f"🧹 Datos limpiados: removido id_solicitud, campos restantes: {len(data_clean)}")
+        logger.info("CAF payload keys: %s", sorted(data_clean.keys()))
+        logger.info("CAF payload values: %s", data_clean)
         
         # IMPORTANTE: No establecer approve en la creación, debe quedar NULL (pendiente)
         # Remover approve si viene en los datos para que quede NULL
