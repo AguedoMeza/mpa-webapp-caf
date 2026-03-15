@@ -15,7 +15,7 @@
     "@types/react-dom": "^19.2.2",
     "axios": "^1.13.1",
     "bootstrap": "^5.3.7",
-    "mpa-shared-components": "git+https://REDACTED@github.com/AguedoMeza/mpa-shared-components.git",
+    "mpa-shared-components": "git+https://github.com/AguedoMeza/mpa-shared-components.git",
     "react": "^19.2.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.0",
