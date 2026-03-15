@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node node_modules/mpa-deploy-tools/init.js --check",
     "prepare": "husky",
     "prepush": "node node_modules/mpa-deploy-tools/build-agent.js",
-    "deploy:dry-run": "node node_modules/mpa-deploy-tools/build-agent.js"
+    "deploy:dry-run": "node node_modules/mpa-deploy-tools/build-agent.js",
+    "precommit": "node node_modules/mpa-deploy-tools/init.js --check"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://REDACTED@github.com/AguedoMeza/mpa-webapp-caf.git"
+    "url": "git+https://github.com/AguedoMeza/mpa-webapp-caf.git"
   },
   "keywords": [],
   "author": "",
