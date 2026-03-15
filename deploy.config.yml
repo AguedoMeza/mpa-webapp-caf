@@ -1,0 +1,36 @@
+version: "1"
+
+project:
+  name: mpa-webapp-caf
+
+paths:
+  frontend: frontend/
+  backend: backend/
+
+build:
+  frontend:
+    command: npm run build
+    output_dir: frontend/build
+    working_dir: frontend/
+
+  backend:
+    type: python
+
+deploy:
+  storage:
+    provider: sharepoint
+    folder: mpa-webapp-caf
+
+  server:
+    frontend:
+      enabled: true
+      inetpub_path: 'C:\inetpub\wwwroot\mpa-webapp-caf\frontend\build'
+      deploy_mode: replace   # replace | junction (default)
+      app_pool: mpa-webapp-caf-pool  # opcional
+      # health_check desactivado temporalmente
+
+    backend:
+      enabled: true
+      repo_path: 'C:\inetpub\wwwroot\mpa-webapp-caf'
+      nssm_service: mpa-webapp-caf-backend
+      # health_check desactivado temporalmente

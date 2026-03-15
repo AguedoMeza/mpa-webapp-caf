@@ -1,0 +1,27 @@
+{
+  "name": "mpa-webapp-caf",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky",
+    "prepush": "node node_modules/mpa-deploy-tools/build-agent.js",
+    "deploy:dry-run": "node node_modules/mpa-deploy-tools/build-agent.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://REDACTED@github.com/AguedoMeza/mpa-webapp-caf.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AguedoMeza/mpa-webapp-caf/issues"
+  },
+  "homepage": "https://github.com/AguedoMeza/mpa-webapp-caf#readme",
+  "description": "",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "mpa-deploy-tools": "github:AguedoMeza/mpa-deploy-tools#main"
+  }
+}
