@@ -32,5 +32,5 @@ deploy:
     backend:
       enabled: true
       repo_path: 'C:\inetpub\wwwroot\mpa-webapp-caf'
-      nssm_service: mpa-webapp-caf-backend
+      nssm_service: Backend-WebappCAF
       # health_check desactivado temporalmente
