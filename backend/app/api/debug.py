@@ -1,8 +1,21 @@
 from fastapi import APIRouter
+from datetime import datetime, timezone
 from app.events.observer_initializer import get_observers_status
 from app.events.event_dispatcher import get_event_dispatcher
 
 router = APIRouter()
+
+
+@router.get("/deploy-check")
+def deploy_check():
+    """
+    Endpoint dummie para validar que el deploy del backend está activo.
+    """
+    return {
+        "status": "ok",
+        "service": "mpa-webapp-caf-backend",
+        "timestamp_utc": datetime.now(timezone.utc).isoformat()
+    }
 
 
 @router.get("/observers/status")
