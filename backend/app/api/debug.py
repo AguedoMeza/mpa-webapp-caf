@@ -18,6 +18,14 @@ def deploy_check():
     }
 
 
+@router.get("/deploy-ping")
+def deploy_ping():
+    """
+    Endpoint dummie mínimo para validar ruteo en deploy.
+    """
+    return {"ok": True, "message": "deploy ping"}
+
+
 @router.get("/observers/status")
 def get_observer_status():
     """
