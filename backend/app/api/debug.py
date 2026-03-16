@@ -26,6 +26,14 @@ def deploy_ping():
     return {"ok": True, "message": "deploy ping"}
 
 
+@router.get("/deploy-ready")
+def deploy_ready():
+    """
+    Endpoint dummie adicional para validar readiness en deploy.
+    """
+    return {"ready": True, "env": "test-deploy", "version": "v1"}
+
+
 @router.get("/observers/status")
 def get_observer_status():
     """
