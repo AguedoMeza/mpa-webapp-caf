@@ -58,6 +58,18 @@ def deploy_smoke():
     }
 
 
+@router.get("/deploy-status")
+def deploy_status():
+    """
+    Endpoint dummie GET para validar estado básico del deploy.
+    """
+    return {
+        "deploy": "success",
+        "status_code": 200,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat()
+    }
+
+
 @router.get("/observers/status")
 def get_observer_status():
     """

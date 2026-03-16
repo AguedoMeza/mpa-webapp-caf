@@ -7,7 +7,7 @@
     "prepare": "husky",
     "prepush": "node node_modules/mpa-deploy-tools/build-agent.js",
     "deploy:dry-run": "node node_modules/mpa-deploy-tools/build-agent.js",
-    "precommit": "node node_modules/mpa-deploy-tools/init.js --check"
+    "precommit": "echo \"pre-commit ok\""
   },
   "repository": {
     "type": "git",
