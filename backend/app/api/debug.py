@@ -46,6 +46,18 @@ def deploy_alive():
     }
 
 
+@router.get("/deploy-smoke")
+def deploy_smoke():
+    """
+    Endpoint dummie extra para smoke test de deploy.
+    """
+    return {
+        "smoke": "ok",
+        "backend": "running",
+        "timestamp_utc": datetime.now(timezone.utc).isoformat()
+    }
+
+
 @router.get("/observers/status")
 def get_observer_status():
     """
