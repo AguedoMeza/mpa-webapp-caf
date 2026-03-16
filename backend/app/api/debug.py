@@ -34,6 +34,18 @@ def deploy_ready():
     return {"ready": True, "env": "test-deploy", "version": "v1"}
 
 
+@router.get("/deploy-alive")
+def deploy_alive():
+    """
+    Endpoint dummie adicional para validar disponibilidad en deploy.
+    """
+    return {
+        "alive": True,
+        "service": "mpa-webapp-caf-backend",
+        "checked_at_utc": datetime.now(timezone.utc).isoformat()
+    }
+
+
 @router.get("/observers/status")
 def get_observer_status():
     """
