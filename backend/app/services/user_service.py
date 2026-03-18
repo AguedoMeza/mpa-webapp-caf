@@ -63,10 +63,18 @@ class UserService:
 
     # Job titles permitidos
     ALLOWED_JOB_TITLES = [
-        "Admin Property Management",
-        "Sr. Admin Property Management",
-        "Property Management Admin.",     # ← Variante con orden diferente
-        "Engineering Analyst"
+        "Property Management Admin.",
+        "Property Manager & Park Specialist",
+        "Jr Property Manager",
+        "Building Risk Manager",
+        "Administrative Manager",
+        #"WHSE Manager",
+        "Leasing Administrator",
+        "PSP Analyst",
+        #"Jr. Accountant",
+        "PSP Manager",
+        "PSP Jr. Analyst",
+        "Staff Accountant"
     ]
 
     def list_users(self, max_results: int = 999):
