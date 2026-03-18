@@ -64,9 +64,9 @@ class UserService:
     # Job titles permitidos
     ALLOWED_JOB_TITLES = [
         "Admin Property Management",
-        "Property Manager & Park Specialist",
+        #"Property Manager & Park Specialist",
         "Jr Property Manager",
-        "Building Risk Manager",
+        #"Building Risk Manager",
         "Administrative Manager",
         #"WHSE Manager",
         "Leasing Administrator",
