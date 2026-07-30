@@ -26,7 +26,7 @@ class TBL_CAF_Solicitud(Base):
     Building = Column(String(100), nullable=True)
     Direccion = Column(String(1000), nullable=True)
     Proveedor = Column(String(100), nullable=True)
-    Descripcion_trabajo_servicio = Column(String(1000), nullable=True)
+    Descripcion_trabajo_servicio = Column(String(2000), nullable=True)
     Fecha_inicio = Column(Date, nullable=True)
     FechaTerminacionFinalServ = Column(Date, nullable=True)
     MontoMXNsubtotal = Column(String(100), nullable=True)
