@@ -329,7 +329,11 @@ const FormatoFD: React.FC<Props> = ({ tipoContrato }) => {
                 name="descripcion"
                 value={formData.descripcion}
                 onChange={handleChange}
+                maxLength={2000}
               />
+              <Form.Text className="text-muted">
+                Máximo 2000 caracteres. {formData.descripcion.length}/2000
+              </Form.Text>
             </Form.Group>
 
             <h6>Justificación de Trabajos</h6>

@@ -429,7 +429,10 @@ const FormatoCO: React.FC<Props> = ({ tipoContrato }) => {
 
             <Form.Group className="mb-3">
               <Form.Label>Descripción de los Trabajos/Servicios Solicitados</Form.Label>
-              <Form.Control as="textarea" rows={2} name="descripcion" value={formData.descripcion} onChange={handleChange} {...getFieldProps()} />
+              <Form.Control as="textarea" rows={2} name="descripcion" value={formData.descripcion} onChange={handleChange} maxLength={2000} {...getFieldProps()} />
+              <Form.Text className="text-muted">
+                Máximo 2000 caracteres. {formData.descripcion.length}/2000
+              </Form.Text>
             </Form.Group>
 
             <h6>Documentos a Enviar</h6>
