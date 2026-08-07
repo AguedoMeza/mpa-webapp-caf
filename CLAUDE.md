@@ -38,11 +38,12 @@ FastAPI app (`backend/main.py`) mounts a single router tree under `/api/v1` (`ap
 
 Layering: **api → services → (models / repositories / events)**.
 
-- `app/core/database.py` — SQLAlchemy engine for SQL Server. Auto-detects the best installed ODBC driver and always uses SQL auth (`MASTER_DB_*` env vars) with `TrustServerCertificate=yes`. `get_db()` is the FastAPI session dependency.
+- `app/core/database.py` — SQLAlchemy engine for SQL Server. Auto-detects the best installed ODBC driver and always uses SQL auth (`MASTER_DB_*` env vars) with `TrustServerCertificate=yes`. `get_db()` is the FastAPI session dependency. The database is **`WH_QA_Macquarie`** — despite the "QA" in the name, this is the one real database the deployed app uses.
 - `app/core/config.py` — `settings` singleton reading env (SharePoint `SP_*`, Microsoft Graph `GRAPH_*`, `FRONTEND_BASE_URL`). Loaded from `backend/.env`.
 - `app/models/` — SQLAlchemy ORM. Central table is `TBL_CAF_Solicitud` (`caf_solicitud.py`); plus catalogs (`building`, `tipo_contratacion`, `tipo_trabajo`, `vendor`, `elegibilidad_usuario`).
 - `app/services/` — business logic. `caf_solicitud_service.py` is the core; `user_service.py` / `vendor_service.py` query Microsoft Graph + DB; `email_service.py` sends mail via Microsoft Graph; `mri_connector_service.py` for MRI integration.
 - `app/repositories/elegibilidad_repository.py` — data access for `CAT_Elegibilidad_Usuario`.
+- `scripts/` — one-off support tooling, run manually from `backend/` with the venv active. `reasignar_responsable.py` changes a solicitud's `Responsable` (there is no UI for this: when the assigned approver leaves or goes on vacation the solicitud is stuck). It reuses `SessionLocal` + `CafSolicitudService` + `email_service`, simulates unless `--aplicar`, and only mails with `--notificar`.
 
 ### Approval state machine (the domain core)
 `TBL_CAF_Solicitud.approve` is an integer with this meaning (see `SolicitudStatus` enum in `models/caf_solicitud.py`):
@@ -84,6 +85,10 @@ Only the assigned **Responsable** sees approval controls. Authorization is clien
 - Codebase comments, docstrings, log messages and the design docs (`*.md` at root) are in **Spanish**. Match that when editing.
 - Tipo_Contratacion values are full Spanish strings ("Contrato de Obra", etc.), mapped to route slugs — see `test_mapeo.py` for the correct mapping (do not use the old code-based `CO`/`OS`/... mapping).
 - Many `TBL_CAF_Solicitud` columns are `varchar` even for amounts/numbers — values are passed as strings, not numerics.
+- **Column widths live in three places and must stay in sync**: the SQL Server DDL, the `String(n)` in `models/caf_solicitud.py`, and the `maxLength` on the corresponding form field. SQLAlchemy does **not** validate lengths client-side and `POST /caf-solicitud` takes a raw `dict` (no Pydantic schema), so an oversized value travels untouched to the `INSERT` and surfaces as SQL Server error 8152 ("String or binary data would be truncated") — which does not name the column. When that happens, read the `📏 CAF payload lengths` line the service prints and compare against the DDL. `Descripcion_trabajo_servicio` is `varchar(2000)`; most other text columns are 100, 500 or 1000.
+- `frontend/esquema-er.md` is **outdated** and reports wrong column sizes. Source of truth is the live DDL or `models/caf_solicitud.py`.
+- `email_service.send_mail()` hardcodes a CC to `jose.serna@mpagroup.mx` on **every** mail the system sends.
+- `FRONTEND_BASE_URL` defaults to `http://localhost:3000`. Any script that sends mail from a dev machine will embed an unusable link unless it overrides the base URL.
 - The backend logs heavily with `print()` + emoji to stdout for tracing request flow; this is intentional in this codebase.
 - Secrets live in `backend/.env` and `frontend/.env` / `.env.local` (gitignored). `backend/.env.example` documents required vars.
-- Reference docs at repo root: `ARQUITECTURA_APROBACION.md`, `IMPLEMENTACION_APROBACIONES_COMPLETA.md`, `SEGURIDAD_APROBACIONES.md`, `IMPLEMENTACION_ELEGIBILIDAD_USUARIOS.md`; ER schema in `frontend/esquema-er.md`.
+- Reference docs at repo root: `ARQUITECTURA_APROBACION.md`, `IMPLEMENTACION_APROBACIONES_COMPLETA.md`, `SEGURIDAD_APROBACIONES.md`, `IMPLEMENTACION_ELEGIBILIDAD_USUARIOS.md`. `frontend/esquema-er.md` documents the ER schema but is stale — see the gotcha above.
