@@ -381,6 +381,22 @@ const ListaSolicitudes: React.FC = () => {
               </Form.Select>
             </Col>
           </Row>
+
+          {/* Salida rápida: sin esto, quitar los filtros obliga a regresar cada
+              select a mano y a borrar el buscador uno por uno. */}
+          {hayFiltros && (
+            <div className="fila-limpiar">
+              <Button
+                variant="link"
+                size="sm"
+                className="btn-limpiar"
+                onClick={limpiarTodo}
+              >
+                <i className="bi bi-arrow-counterclockwise me-1" />
+                Limpiar filtros
+              </Button>
+            </div>
+          )}
         </Card.Body>
 
         <div className="tabla-wrapper" aria-busy={isPending}>

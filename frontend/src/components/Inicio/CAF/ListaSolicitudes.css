@@ -302,6 +302,28 @@
   white-space: nowrap;
 }
 
+/* Salida para quitar todos los filtros de un golpe. Solo aparece cuando hay
+   alguno activo, así no ocupa espacio ni invita a nada el resto del tiempo. */
+.fila-limpiar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.15rem;
+}
+
+.btn-limpiar {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #a84000; /* Orange Shade 3 — contraste AA sobre blanco */
+  text-decoration: none;
+  padding: 0.15rem 0.35rem;
+}
+
+.btn-limpiar:hover,
+.btn-limpiar:focus-visible {
+  color: #d97f18;
+  text-decoration: underline;
+}
+
 .aviso-busqueda {
   display: block;
   margin-top: 0.3rem;
