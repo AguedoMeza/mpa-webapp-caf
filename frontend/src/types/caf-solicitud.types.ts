@@ -120,6 +120,35 @@ export type CAFSolicitud =
   | CAFSolicitudPD 
   | CAFSolicitudFD;
 
+// Fila del listado (GET /caf-solicitud). El backend proyecta solo estas columnas,
+// no la fila completa de TBL_CAF_Solicitud.
+export interface CAFSolicitudListItem {
+  id_solicitud: number;
+  Fecha: string | null;              // "YYYY-MM-DD"
+  Tipo_Contratacion: string | null;
+  Building: string | null;
+  Cliente: string | null;
+  Proveedor: string | null;
+  MontoMXNsubtotal: string | null;   // varchar en BD: llega tal cual lo capturaron
+  MontoUSDsubtotal: string | null;   // 81 de 955 solicitudes solo tienen importe aquí
+  Usuario: string | null;            // solicitante
+  Responsable: string | null;        // quien aprueba
+  approve: number | null;            // null=pendiente, 0=correcciones, 1=aprobado, 2=rechazado
+  Mode: string | null;               // 'Edit' habilita la edición del formulario
+}
+
+// Página del listado devuelta por GET /caf-solicitud
+export interface CAFSolicitudPage {
+  items: CAFSolicitudListItem[];
+  total: number;      // total de registros que cumplen los filtros, no de la página
+  page: number;
+  page_size: number;
+  pages: number;
+}
+
+// Estados del filtro; el backend los traduce a la columna approve
+export type CAFEstadoFiltro = 'pendiente' | 'correcciones' | 'aprobado' | 'rechazado';
+
 // Response del API
 export interface CAFSolicitudResponse {
   id_solicitud: number;

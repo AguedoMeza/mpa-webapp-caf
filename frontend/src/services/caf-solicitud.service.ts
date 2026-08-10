@@ -1,13 +1,22 @@
 import axios, { AxiosInstance } from 'axios';
 import { 
-  CAFSolicitud, 
+  CAFSolicitud,
   CAFSolicitudResponse,
+  CAFSolicitudListItem,
+  CAFSolicitudPage,
+  CAFEstadoFiltro,
   CAFSolicitudCO,
   CAFSolicitudOS,
   CAFSolicitudOC,
   CAFSolicitudPD,
   CAFSolicitudFD
 } from '../types/caf-solicitud.types';
+
+/**
+ * Distingue una petición abortada de un error real. El listado cancela la
+ * petición anterior cada vez que cambian los filtros o la página.
+ */
+export const esCancelacion = (error: unknown): boolean => axios.isCancel(error);
 
 class CAFSolicitudService {
   private api: AxiosInstance;
@@ -75,20 +84,29 @@ class CAFSolicitudService {
   /**
    * Listar todas las solicitudes
    */
-  async listSolicitudes(params?: {
-    skip?: number;
-    limit?: number;
-    tipo_contratacion?: string;
-    responsable?: string;
-  }): Promise<CAFSolicitudResponse[]> {
+  async listSolicitudes(
+    params?: {
+      page?: number;
+      page_size?: number;
+      search?: string;
+      tipo_contratacion?: string;
+      estado?: CAFEstadoFiltro;
+      responsable?: string;
+    },
+    signal?: AbortSignal
+  ): Promise<CAFSolicitudPage> {
     try {
-      const response = await this.api.get<CAFSolicitudResponse[]>(
+      const response = await this.api.get<CAFSolicitudPage>(
         '/caf-solicitud',
-        { params }
+        { params, signal }
       );
       return response.data;
     } catch (error) {
-      console.error('Error al listar solicitudes CAF:', error);
+      // Una petición cancelada no es un fallo: pasa cada vez que el usuario
+      // teclea o cambia de página antes de que responda la anterior.
+      if (!esCancelacion(error)) {
+        console.error('Error al listar solicitudes CAF:', error);
+      }
       throw error;
     }
   }

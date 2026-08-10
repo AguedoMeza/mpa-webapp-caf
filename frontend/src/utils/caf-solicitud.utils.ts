@@ -7,6 +7,34 @@ import {
 } from '../types/caf-solicitud.types';
 
 /**
+ * Ruta del formato que corresponde a cada Tipo_Contratacion.
+ * Debe coincidir con las rutas declaradas en App.tsx y con tipo_routes de
+ * backend/app/services/email_service.py (los links de los correos).
+ */
+export const RUTAS_POR_TIPO: Record<string, string> = {
+  'Contrato de Obra': 'formato-co',
+  'Orden de Servicio': 'solicitud-caf',
+  'Orden de Cambio': 'formato-oc',
+  'Pago a Dependencia': 'formato-pd',
+  'Firma de Documento': 'formato-fd',
+
+  // Valores historicos que siguen vivos en TBL_CAF_Solicitud. Sin estas entradas
+  // el listado abriria esas solicitudes en el formato equivocado (caian al default).
+  // No usar estos codigos para registros nuevos: el valor correcto es el nombre completo.
+  'CO': 'formato-co',
+  'OS': 'solicitud-caf',
+  'OC': 'formato-oc',
+  'PD': 'formato-pd',
+  'FD': 'formato-fd',
+  'Orden se Servicio': 'solicitud-caf',        // typo historico, 30 registros
+  'Contrato de Servicios Estándar': 'formato-co',
+};
+
+export const getRutaFormato = (tipoContratacion: string | null | undefined): string => {
+  return RUTAS_POR_TIPO[tipoContratacion || ''] || 'solicitud-caf';
+};
+
+/**
  * Obtener email del usuario autenticado desde localStorage
  */
 export const getAuthenticatedUserEmail = (): string => {

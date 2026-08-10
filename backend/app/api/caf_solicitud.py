@@ -25,6 +25,45 @@ def create_caf_solicitud(data: dict, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error al crear la solicitud: {str(e)}")
 
+@router.get("/caf-solicitud", status_code=status.HTTP_200_OK)
+def list_caf_solicitudes(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    search: Optional[str] = Query(None, max_length=100),
+    tipo_contratacion: Optional[str] = Query(None, max_length=100),
+    estado: Optional[str] = Query(
+        None,
+        pattern="^(pendiente|correcciones|aprobado|rechazado)$",
+        description="Filtra por estado de aprobacion",
+    ),
+    responsable: Optional[str] = Query(None, max_length=100),
+    db: Session = Depends(get_db),
+):
+    """
+    Lista una pagina del listado de solicitudes CAF, las mas recientes primero.
+
+    La paginacion y los filtros se resuelven en la BD: si se filtrara en el cliente
+    sobre una pagina, los filtros solo verian los registros visibles.
+
+    Devuelve {items, total, page, page_size, pages} y solo las columnas que la
+    tabla necesita, no la fila completa.
+    """
+    try:
+        service = CafSolicitudService()
+        return service.list_all(
+            db,
+            page=page,
+            page_size=page_size,
+            search=search,
+            tipo_contratacion=tipo_contratacion,
+            status=estado,
+            responsable=responsable,
+        )
+    except Exception as e:
+        print(f"❌ Error listando solicitudes CAF: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error al listar las solicitudes")
+
+
 @router.get("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
 def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
     """Obtiene el detalle de una solicitud CAF por ID"""

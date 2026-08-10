@@ -1,0 +1,488 @@
+/* -----------------------------------------------
+   Lista de Solicitudes CAF — MPA Design System
+
+   Lenguaje visual tomado del componente equivalente de app-legal-filling
+   (badges, chips, focus ring naranja, estado vacío). El layout sí difiere:
+   ese listado tiene 9 columnas cortas y este maneja 11 campos, así que se
+   agrupan en 8 columnas con celdas de dos líneas y la adaptación se hace con
+   container queries sobre el ancho real de la tabla, no del viewport (la
+   barra lateral se colapsa y cambia el espacio disponible sin que el
+   viewport cambie).
+----------------------------------------------- */
+
+.lista-container {
+  padding: 1.5rem 0;
+  min-height: 100%;
+  /* Se monta dentro de Bienvenida, cuyo contenedor es .text-center */
+  text-align: left;
+}
+
+/* Header */
+.lista-titulo {
+  font-size: clamp(1.35rem, 1rem + 1.2vw, 1.8rem);
+  font-weight: 700;
+  color: #212529;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.15rem;
+}
+
+.lista-subtitulo {
+  font-size: 0.95rem;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+/* Card de filtros */
+.card-filtros {
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Buscador y filtros — focus ring MPA */
+.filtro-input,
+.filtro-select {
+  font-size: 0.95rem;
+}
+
+.filtro-input:focus {
+  box-shadow: none !important;
+}
+
+.filtro-select:focus {
+  border-color: #F7931F !important;
+  box-shadow: 0 0 0 0.2rem rgba(247, 147, 31, 0.25) !important;
+}
+
+.card-filtros .input-group:focus-within {
+  border-radius: 6px;
+  box-shadow: 0 0 0 0.2rem rgba(247, 147, 31, 0.25);
+  border: 1px solid #F7931F;
+}
+
+/* -----------------------------------------------
+   Tabla
+----------------------------------------------- */
+
+/* Contexto de container query. El scroll horizontal queda como último recurso;
+   con table-layout: fixed y anchos en % la tabla no debería desbordar. */
+.tabla-wrapper {
+  container-type: inline-size;
+  container-name: tabla;
+  overflow-x: auto;
+}
+
+.tabla-solicitudes {
+  /* Sin esto el navegador reparte el ancho según el contenido y columnas como
+     Monto MXN acaparan espacio mientras Proveedor se trunca. */
+  table-layout: fixed;
+  width: 100%;
+}
+
+.tabla-solicitudes thead th {
+  background: #e9ecef;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.6rem 0.65rem;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tabla-solicitudes tbody td {
+  padding: 0.5rem 0.65rem;
+  font-size: 0.875rem;
+  vertical-align: middle;
+  border-color: #f0f0f0;
+  overflow: hidden;
+}
+
+.tabla-solicitudes tbody tr:nth-child(even) td {
+  background: #f8f9fa;
+}
+
+.tabla-solicitudes tbody tr:hover td {
+  background: #e9ecef;
+  cursor: pointer;
+}
+
+/* Las filas son clickables: sin esto, arrastrar para hacer scroll selecciona
+   el texto de las celdas y deja el resaltado azul encima de la tabla. */
+.tabla-solicitudes tbody {
+  user-select: none;
+}
+
+/* Anchos declarados. Suman 100% para que ninguna columna acapare el sobrante. */
+.col-folio     { width: 9%;  }
+.col-tipo      { width: 12%; }
+.col-inmueble  { width: 19%; }
+.col-proveedor { width: 16%; }
+.col-personas  { width: 18%; }
+.col-monto     { width: 12%; }
+.col-status    { width: 9%;  }
+.col-acciones  { width: 5%;  }
+
+/* Celdas de dos líneas: dato principal arriba, secundario abajo */
+.celda-principal,
+.celda-sub {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.celda-principal {
+  font-weight: 600;
+  color: #212529;
+}
+
+.celda-sub {
+  font-size: 0.78rem;
+  color: #6c757d;
+  line-height: 1.35;
+}
+
+.col-proveedor {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Chip de tipo */
+.chip-tipo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e8edf5;
+  color: #2F58A7;
+  border-radius: 4px;
+  padding: 0.2rem 0.45rem;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip-corto { display: none; }
+
+/* Folio */
+.id-cell {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #495057;
+}
+
+/* MontoMXNsubtotal es varchar: llega tal como lo capturaron ("$313,605.00",
+   "69000", "1,991,397.69 MXN"). Se muestra sin reformatear para no alterar el dato. */
+.monto-cell {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Marca de moneda: el importe puede venir en MXN o en USD según cómo se capturó. */
+.moneda {
+  font-size: 0.68rem;
+  color: #6c757d;
+  margin-left: 0.25rem;
+  font-weight: 600;
+}
+
+/* -----------------------------------------------
+   Status Badges — MPA Design System
+----------------------------------------------- */
+
+.badge-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.28rem 0.5rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  display: inline-block;
+  line-height: 1;
+}
+
+/* Lemon — Pendiente */
+.badge-pending {
+  background: #faf5c0;
+  color: #4d3d00;
+  border: 1px solid #f5e880;
+}
+
+/* Orange suave — Requiere correcciones */
+.badge-rework {
+  background: #fad8b0;
+  color: #4d1a00;
+  border: 1px solid #f5b87a;
+}
+
+/* Mint — Aprobado */
+.badge-approved {
+  background: #d8faf0;
+  color: #004030;
+  border: 1px solid #80e8c4;
+}
+
+/* Tomato — Rechazado */
+.badge-rejected {
+  background: #ffdede;
+  color: #8c0011;
+  border: 1px solid #ff8080;
+}
+
+/* -----------------------------------------------
+   Botones de acción
+----------------------------------------------- */
+
+/* Botón Corregir — acción del solicitante cuando Mode = 'Edit'
+   Orange outline → fill al hover (MPA Design System, Orange Shade 6) */
+.btn-corregir {
+  background-color: transparent;
+  border: 1px solid #F7931F;
+  color: #a84000;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-corregir:hover {
+  background-color: #F7931F;
+  border-color: #F7931F;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(247, 147, 31, 0.35);
+}
+
+.btn-corregir:active,
+.btn-corregir:focus-visible {
+  background-color: #d97f18;
+  border-color: #d97f18;
+  color: #ffffff;
+  outline: 2px solid rgba(247, 147, 31, 0.5);
+  outline-offset: 2px;
+}
+
+.btn-ver {
+  font-size: 0.78rem;
+  padding: 0.25rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* Área táctil mínima de 44px en dispositivos sin mouse fino */
+@media (pointer: coarse) {
+  .btn-ver,
+  .btn-corregir {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+.btn-texto {
+  margin-left: 0.3rem;
+}
+
+/* Footer de tabla */
+.tabla-footer {
+  background: #fff !important;
+  border-top: 1px solid #dee2e6 !important;
+  padding: 0.65rem 1rem !important;
+}
+
+/* Buscador explícito: el botón se enciende solo cuando hay texto sin aplicar. */
+.btn-buscar {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.aviso-busqueda {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: #a84000; /* Orange Shade 3 — contraste AA sobre blanco */
+}
+
+/* -----------------------------------------------
+   Paginación
+----------------------------------------------- */
+
+.paginacion-barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.paginacion-conteo {
+  font-size: 0.8rem;
+  color: #6c757d;
+  display: inline-flex;
+  align-items: center;
+}
+
+.paginacion {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.pag-btn {
+  min-width: 2rem;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.pag-actual {
+  background-color: #2F58A7 !important;
+  border-color: #2F58A7 !important;
+  font-weight: 600;
+}
+
+.pag-gap {
+  color: #adb5bd;
+  padding: 0 0.15rem;
+  user-select: none;
+}
+
+/* Área táctil mínima para la paginación en pantallas sin mouse fino */
+@media (pointer: coarse) {
+  .pag-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Mientras llega la página nueva se conserva la anterior, atenuada: evita que la
+   tabla parpadee en vacío en cada tecleo o cambio de página. */
+.tabla-cargando tbody {
+  opacity: 0.55;
+  transition: opacity 0.12s ease-in;
+}
+
+/* Sin la altura mínima, una página con menos de 10 filas encoge la tarjeta y los
+   controles de paginación saltan de posición. */
+.tabla-wrapper {
+  min-height: 320px;
+}
+
+/* Estado vacío */
+.tabla-vacia {
+  padding: 2.5rem 1rem;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+.tabla-vacia i {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  opacity: 0.4;
+}
+
+/* -----------------------------------------------
+   Adaptación por ancho de la tabla (container queries)
+----------------------------------------------- */
+
+/* Ancho medio: el nombre del tipo no cabe, se pasa a sigla (CO/OS/OC/PD/FD)
+   y el botón deja solo el icono. El texto completo sigue en el title. */
+@container tabla (max-width: 1200px) {
+  .chip-largo { display: none; }
+  .chip-corto { display: inline; }
+
+  .col-tipo     { width: 6%; }
+  .col-inmueble { width: 22%; }
+  .col-personas { width: 20%; }
+  .btn-texto    { display: none; }
+  .col-acciones { width: 6%; }
+}
+
+/* Angosto: Proveedor se va de la tabla. Sigue siendo buscable y visible en el
+   detalle; es el campo que menos sirve para identificar un CAF de un vistazo. */
+@container tabla (max-width: 980px) {
+  .col-proveedor { display: none; }
+
+  .col-folio    { width: 12%; }
+  .col-inmueble { width: 28%; }
+  .col-personas { width: 24%; }
+  .col-monto    { width: 16%; }
+  .col-status   { width: 12%; }
+  .col-acciones { width: 8%; }
+}
+
+/* Móvil / panel angosto: la tabla se convierte en tarjetas. Cada fila es un
+   bloque y cada celda muestra su etiqueta mediante data-label. */
+@container tabla (max-width: 720px) {
+  .tabla-solicitudes,
+  .tabla-solicitudes thead,
+  .tabla-solicitudes tbody,
+  .tabla-solicitudes tr,
+  .tabla-solicitudes td {
+    display: block;
+    width: auto;
+  }
+
+  .tabla-solicitudes thead {
+    display: none;
+  }
+
+  .tabla-solicitudes tbody tr {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.6rem;
+    background: #fff;
+  }
+
+  .tabla-solicitudes tbody tr:nth-child(even) td,
+  .tabla-solicitudes tbody tr:hover td {
+    background: transparent;
+  }
+
+  .tabla-solicitudes tbody td {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.3rem 0;
+    border: none;
+    text-align: left !important;
+  }
+
+  .tabla-solicitudes tbody td::before {
+    content: attr(data-label);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6c757d;
+  }
+
+  /* Proveedor vuelve, aquí sí hay renglón para él */
+  .col-proveedor {
+    display: grid !important;
+    white-space: normal;
+  }
+
+  .chip-largo { display: inline; }
+  .chip-corto { display: none; }
+  .btn-texto  { display: inline; }
+
+  .celda-principal,
+  .celda-sub {
+    white-space: normal;
+  }
+
+  .fila-vacia {
+    border: none !important;
+  }
+}

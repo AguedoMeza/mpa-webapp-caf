@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form } from 'react-bootstrap';
 import { useAuth } from '../../hooks/useAuth';
+import ListaSolicitudes from './CAF/ListaSolicitudes';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Bienvenida.css';
 
@@ -14,6 +15,7 @@ const Bienvenida: React.FC = () => {
   const nombreUsuario = user ? `${user.given_name || ''} ${user.family_name || ''}`.trim() : 'Usuario';
 
   return (
+    <>
     <div className="container py-5 text-center">
       <div className="mb-4">
         <h1 className="fw-bold mb-3">Bienvenido, {nombreUsuario}</h1>
@@ -56,6 +58,13 @@ const Bienvenida: React.FC = () => {
 
       {/* El formulario ahora se navega por rutas, no se renderiza aquí */}
     </div>
+
+    {/* El listado va fuera del .container: la tabla tiene 11 columnas y no cabe
+        en los ~1140px que impone el contenedor centrado. */}
+    <div className="container-fluid px-4 pb-5">
+      <ListaSolicitudes />
+    </div>
+    </>
   );
 };
 

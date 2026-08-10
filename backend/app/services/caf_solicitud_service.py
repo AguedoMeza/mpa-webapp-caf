@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, collate, cast, String
 from app.models.caf_solicitud import TBL_CAF_Solicitud, SolicitudStatus
 from app.models.building import CAT_BUILDINGS
 from app.events.domain_events import SolicitudCreada, SolicitudAprobada, SolicitudRechazada, SolicitudCorreccionesRealizadas
@@ -21,6 +21,153 @@ class CafSolicitudService:
             return None
         return solicitud
     
+    # Colacion sin acentos para el buscador: la BD es Modern_Spanish_CI_AS (ignora
+    # mayusculas pero NO acentos), y con ella "supervision" no encontraria
+    # "Supervisión". La variante _CI_AI ignora ambos.
+    _COLACION_BUSQUEDA = "Modern_Spanish_CI_AI"
+
+    # approve: NULL = pendiente, 0 = requiere correcciones, 1 = aprobado, 2 = rechazado
+    _FILTROS_STATUS = {
+        "pendiente": lambda: TBL_CAF_Solicitud.approve.is_(None),
+        "correcciones": lambda: TBL_CAF_Solicitud.approve == 0,
+        "aprobado": lambda: TBL_CAF_Solicitud.approve == 1,
+        "rechazado": lambda: TBL_CAF_Solicitud.approve == 2,
+    }
+
+    def _aplicar_filtros(
+        self,
+        query,
+        search: Optional[str],
+        tipo_contratacion: Optional[str],
+        status: Optional[str],
+        responsable: Optional[str],
+    ):
+        """Filtros compartidos por la consulta de pagina y la del total."""
+        if tipo_contratacion:
+            query = query.filter(TBL_CAF_Solicitud.Tipo_Contratacion == tipo_contratacion)
+
+        if responsable:
+            query = query.filter(TBL_CAF_Solicitud.Responsable == responsable)
+
+        condicion_status = self._FILTROS_STATUS.get(status or "")
+        if condicion_status:
+            query = query.filter(condicion_status())
+
+        termino = (search or "").strip()
+        if termino:
+            # Escapar los comodines de LIKE para que un '%' escrito por el usuario
+            # busque un '%' literal y no todo el catalogo.
+            escapado = termino.replace("[", "[[]").replace("%", "[%]").replace("_", "[_]")
+            patron = f"%{escapado}%"
+
+            columnas = (
+                TBL_CAF_Solicitud.Building,
+                TBL_CAF_Solicitud.Cliente,
+                TBL_CAF_Solicitud.Proveedor,
+                TBL_CAF_Solicitud.Usuario,
+                TBL_CAF_Solicitud.Responsable,
+            )
+            condiciones = [
+                collate(columna, self._COLACION_BUSQUEDA).like(patron) for columna in columnas
+            ]
+            # El folio se busca como texto para que "97" encuentre #97, #970, #971...
+            condiciones.append(cast(TBL_CAF_Solicitud.id_solicitud, String).like(patron))
+
+            query = query.filter(or_(*condiciones))
+
+        return query
+
+    def list_all(
+        self,
+        db: Session,
+        page: int = 1,
+        page_size: int = 10,
+        search: Optional[str] = None,
+        tipo_contratacion: Optional[str] = None,
+        status: Optional[str] = None,
+        responsable: Optional[str] = None,
+    ) -> Dict:
+        """
+        Devuelve una pagina del listado, las mas recientes primero.
+
+        Paginacion y filtros van en el servidor: con ~1000 solicitudes y creciendo,
+        traer todo y filtrar en el navegador desperdicia ancho de banda y, si se
+        pagina en cliente, los filtros solo verian la pagina visible.
+
+        Proyecta solo las columnas que necesita la tabla: TBL_CAF_Solicitud tiene 56
+        y traerlas completas por fila no aporta nada a un listado.
+
+        Devuelve {items, total, page, page_size, pages}.
+        """
+        page = max(1, page)
+        page_size = max(1, min(page_size, 100))
+
+        base = self._aplicar_filtros(
+            db.query(TBL_CAF_Solicitud.id_solicitud),
+            search,
+            tipo_contratacion,
+            status,
+            responsable,
+        )
+        total = base.count()
+
+        query = self._aplicar_filtros(
+            db.query(
+                TBL_CAF_Solicitud.id_solicitud,
+                TBL_CAF_Solicitud.Fecha,
+                TBL_CAF_Solicitud.Tipo_Contratacion,
+                TBL_CAF_Solicitud.Building,
+                TBL_CAF_Solicitud.Cliente,
+                TBL_CAF_Solicitud.Proveedor,
+                TBL_CAF_Solicitud.MontoMXNsubtotal,
+                TBL_CAF_Solicitud.MontoUSDsubtotal,
+                TBL_CAF_Solicitud.Usuario,
+                TBL_CAF_Solicitud.Responsable,
+                TBL_CAF_Solicitud.approve,
+                TBL_CAF_Solicitud.Mode,
+            ),
+            search,
+            tipo_contratacion,
+            status,
+            responsable,
+        )
+
+        filas = (
+            query.order_by(TBL_CAF_Solicitud.id_solicitud.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+            .all()
+        )
+
+        pages = max(1, -(-total // page_size))  # division hacia arriba
+        print(f"📋 Listado CAF: pagina {page}/{pages}, {len(filas)} de {total} solicitudes")
+
+        return {
+            "items": [
+                {
+                    "id_solicitud": fila.id_solicitud,
+                    "Fecha": fila.Fecha.isoformat() if fila.Fecha else None,
+                    "Tipo_Contratacion": fila.Tipo_Contratacion,
+                    "Building": fila.Building,
+                    "Cliente": fila.Cliente,
+                    "Proveedor": fila.Proveedor,
+                    "MontoMXNsubtotal": fila.MontoMXNsubtotal,
+                    # 81 de 955 solicitudes capturan el importe solo en USD; sin este
+                    # campo el listado las mostraria sin monto.
+                    "MontoUSDsubtotal": fila.MontoUSDsubtotal,
+                    "Usuario": fila.Usuario,
+                    "Responsable": fila.Responsable,
+                    "approve": fila.approve,
+                    "Mode": fila.Mode,
+                }
+                for fila in filas
+            ],
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "pages": pages,
+        }
+
     def create(self, db: Session, data: dict) -> TBL_CAF_Solicitud:
         # Remover id_solicitud si viene en los datos (es autoincrement)
         data_clean = {k: v for k, v in data.items() if k != 'id_solicitud'}
