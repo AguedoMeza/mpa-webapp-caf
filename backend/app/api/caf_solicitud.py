@@ -64,6 +64,22 @@ def list_caf_solicitudes(
         raise HTTPException(status_code=500, detail="Error al listar las solicitudes")
 
 
+# OJO: esta ruta va declarada ANTES de /caf-solicitud/{solicitud_id}. Si se declara
+# despues, FastAPI intenta interpretar "responsables" como un int y responde 422.
+@router.get("/caf-solicitud/responsables", status_code=status.HTTP_200_OK)
+def list_responsables_caf(db: Session = Depends(get_db)):
+    """
+    Responsables que aparecen en las solicitudes, con el conteo de cada uno.
+    Alimenta el filtro del listado.
+    """
+    try:
+        service = CafSolicitudService()
+        return service.list_responsables(db)
+    except Exception as e:
+        print(f"❌ Error listando responsables: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error al listar los responsables")
+
+
 @router.get("/caf-solicitud/{solicitud_id}", status_code=status.HTTP_200_OK)
 def get_caf_solicitud_detail(solicitud_id: int, db: Session = Depends(get_db)):
     """Obtiene el detalle de una solicitud CAF por ID"""

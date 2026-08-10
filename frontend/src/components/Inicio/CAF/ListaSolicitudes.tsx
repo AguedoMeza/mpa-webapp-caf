@@ -2,7 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState, useTransition } from 
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Card, Col, Form, InputGroup, Row, Spinner, Table } from 'react-bootstrap';
 import { cafSolicitudService, esCancelacion } from '../../../services/caf-solicitud.service';
-import { CAFEstadoFiltro, CAFSolicitudListItem, CAFSolicitudPage } from '../../../types/caf-solicitud.types';
+import {
+  CAFEstadoFiltro,
+  CAFResponsableOpcion,
+  CAFSolicitudListItem,
+  CAFSolicitudPage,
+} from '../../../types/caf-solicitud.types';
 import { getAuthenticatedUserEmail, getRutaFormato } from '../../../utils/caf-solicitud.utils';
 import './ListaSolicitudes.css';
 
@@ -121,7 +126,12 @@ const ListaSolicitudes: React.FC = () => {
   const [busqueda, setBusqueda] = useState('');
   const [tipoFilter, setTipoFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [responsableFilter, setResponsableFilter] = useState<string>('all');
   const [pagina, setPagina] = useState(1);
+
+  // Opciones del filtro de responsable. Se piden una sola vez: cambian cuando
+  // alguien crea una solicitud con un responsable nuevo, no en cada consulta.
+  const [responsables, setResponsables] = useState<CAFResponsableOpcion[]>([]);
 
   const [datos, setDatos] = useState<CAFSolicitudPage>(PAGINA_VACIA);
   const [cargaInicial, setCargaInicial] = useState(true);
@@ -130,6 +140,20 @@ const ListaSolicitudes: React.FC = () => {
   // isPending mantiene la tabla anterior visible mientras llega la nueva página,
   // en vez de vaciarla y mostrar un spinner en cada tecleo.
   const [isPending, startTransition] = useTransition();
+
+  // Las opciones del filtro no dependen de la página ni de los otros filtros.
+  useEffect(() => {
+    const controlador = new AbortController();
+
+    cafSolicitudService
+      .listResponsables(controlador.signal)
+      .then(setResponsables)
+      .catch(() => {
+        // Si falla, el filtro se queda sin opciones pero el listado sigue usable.
+      });
+
+    return () => controlador.abort();
+  }, []);
 
   useEffect(() => {
     const controlador = new AbortController();
@@ -143,6 +167,7 @@ const ListaSolicitudes: React.FC = () => {
             search: busqueda || undefined,
             tipo_contratacion: tipoFilter === 'all' ? undefined : tipoFilter,
             estado: statusFilter === 'all' ? undefined : (statusFilter as CAFEstadoFiltro),
+            responsable: responsableFilter === 'all' ? undefined : responsableFilter,
           },
           controlador.signal
         );
@@ -159,7 +184,7 @@ const ListaSolicitudes: React.FC = () => {
     });
 
     return () => controlador.abort();
-  }, [pagina, busqueda, tipoFilter, statusFilter]);
+  }, [pagina, busqueda, tipoFilter, statusFilter, responsableFilter]);
 
   /** Dispara la consulta con lo que hay escrito. Enter o clic en Buscar. */
   const aplicarBusqueda = useCallback(() => {
@@ -179,6 +204,7 @@ const ListaSolicitudes: React.FC = () => {
     setBusqueda('');
     setTipoFilter('all');
     setStatusFilter('all');
+    setResponsableFilter('all');
     setPagina(1);
   }, []);
 
@@ -191,6 +217,11 @@ const ListaSolicitudes: React.FC = () => {
 
   const cambiarStatus = useCallback((valor: string) => {
     setStatusFilter(valor);
+    setPagina(1);
+  }, []);
+
+  const cambiarResponsable = useCallback((valor: string) => {
+    setResponsableFilter(valor);
     setPagina(1);
   }, []);
 
@@ -217,7 +248,11 @@ const ListaSolicitudes: React.FC = () => {
   // Hay texto escrito que todavía no se ha buscado: sin avisarlo, la tabla y el
   // input muestran dos verdades distintas y el usuario no sabe cuál manda.
   const busquedaPendiente = textoBuscador.trim() !== busqueda;
-  const hayFiltros = busqueda !== '' || tipoFilter !== 'all' || statusFilter !== 'all';
+  const hayFiltros =
+    busqueda !== '' ||
+    tipoFilter !== 'all' ||
+    statusFilter !== 'all' ||
+    responsableFilter !== 'all';
 
   if (cargaInicial) {
     return (
@@ -250,8 +285,11 @@ const ListaSolicitudes: React.FC = () => {
 
       <Card className="card-filtros mb-3">
         <Card.Body className="py-2 px-3">
+          {/* El buscador va en su propia fila: con cuatro controles apretados en
+              una sola, los selects quedan tan angostos que "Pago a Dependencia"
+              y los correos se cortan. */}
           <Row className="g-2 align-items-center">
-            <Col xs={12} lg={6}>
+            <Col xs={12}>
               <InputGroup>
                 <InputGroup.Text>
                   <i className="bi bi-search" />
@@ -294,9 +332,13 @@ const ListaSolicitudes: React.FC = () => {
                 </Form.Text>
               )}
             </Col>
-            <Col xs={12} sm={6} lg={3}>
+          </Row>
+
+          <Row className="g-2 align-items-center mt-1">
+            <Col xs={12} md={4}>
               <Form.Select
                 className="filtro-select"
+                aria-label="Filtrar por tipo de contratación"
                 value={tipoFilter}
                 onChange={(e) => cambiarTipo(e.target.value)}
               >
@@ -308,9 +350,10 @@ const ListaSolicitudes: React.FC = () => {
                 <option value="Firma de Documento">Firma de Documento</option>
               </Form.Select>
             </Col>
-            <Col xs={12} sm={6} lg={3}>
+            <Col xs={12} md={4}>
               <Form.Select
                 className="filtro-select"
+                aria-label="Filtrar por status de aprobación"
                 value={statusFilter}
                 onChange={(e) => cambiarStatus(e.target.value)}
               >
@@ -319,6 +362,22 @@ const ListaSolicitudes: React.FC = () => {
                 <option value="correcciones">correcciones</option>
                 <option value="aprobado">aprobado</option>
                 <option value="rechazado">rechazado</option>
+              </Form.Select>
+            </Col>
+            <Col xs={12} md={4}>
+              <Form.Select
+                className="filtro-select"
+                aria-label="Filtrar por admin responsable"
+                value={responsableFilter}
+                onChange={(e) => cambiarResponsable(e.target.value)}
+                disabled={responsables.length === 0}
+              >
+                <option value="all">Todos los admin responsables</option>
+                {responsables.map((r) => (
+                  <option key={r.responsable} value={r.responsable}>
+                    {cortarCorreo(r.responsable)} ({r.total})
+                  </option>
+                ))}
               </Form.Select>
             </Col>
           </Row>

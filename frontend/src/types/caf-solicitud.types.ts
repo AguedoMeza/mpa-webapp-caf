@@ -149,6 +149,12 @@ export interface CAFSolicitudPage {
 // Estados del filtro; el backend los traduce a la columna approve
 export type CAFEstadoFiltro = 'pendiente' | 'correcciones' | 'aprobado' | 'rechazado';
 
+// Opción del filtro de Admin Responsable (GET /caf-solicitud/responsables)
+export interface CAFResponsableOpcion {
+  responsable: string;
+  total: number;      // cuántas solicitudes tiene asignadas
+}
+
 // Response del API
 export interface CAFSolicitudResponse {
   id_solicitud: number;

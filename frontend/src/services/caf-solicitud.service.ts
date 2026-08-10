@@ -5,6 +5,7 @@ import {
   CAFSolicitudListItem,
   CAFSolicitudPage,
   CAFEstadoFiltro,
+  CAFResponsableOpcion,
   CAFSolicitudCO,
   CAFSolicitudOS,
   CAFSolicitudOC,
@@ -106,6 +107,25 @@ class CAFSolicitudService {
       // teclea o cambia de página antes de que responda la anterior.
       if (!esCancelacion(error)) {
         console.error('Error al listar solicitudes CAF:', error);
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Responsables que aparecen en las solicitudes, con su conteo.
+   * Alimenta el filtro de Admin Responsable del listado.
+   */
+  async listResponsables(signal?: AbortSignal): Promise<CAFResponsableOpcion[]> {
+    try {
+      const response = await this.api.get<CAFResponsableOpcion[]>(
+        '/caf-solicitud/responsables',
+        { signal }
+      );
+      return response.data;
+    } catch (error) {
+      if (!esCancelacion(error)) {
+        console.error('Error al listar responsables:', error);
       }
       throw error;
     }

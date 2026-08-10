@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, collate, cast, String
+from sqlalchemy import or_, collate, cast, String, func
 from app.models.caf_solicitud import TBL_CAF_Solicitud, SolicitudStatus
 from app.models.building import CAT_BUILDINGS
 from app.events.domain_events import SolicitudCreada, SolicitudAprobada, SolicitudRechazada, SolicitudCorreccionesRealizadas
@@ -76,6 +76,30 @@ class CafSolicitudService:
             query = query.filter(or_(*condiciones))
 
         return query
+
+    def list_responsables(self, db: Session) -> List[Dict]:
+        """
+        Responsables que realmente aparecen en solicitudes, con cuantas tiene cada uno.
+
+        Se saca de TBL_CAF_Solicitud y no del catalogo de usuarios elegibles porque el
+        filtro solo debe ofrecer valores que puedan devolver resultados. Van ordenados
+        por volumen: los pocos con carga real quedan arriba y los valores historicos
+        malformados ('betty', 'Juan Perez') caen al final sin desaparecer, para que
+        esas solicitudes sigan siendo alcanzables.
+        """
+        filas = (
+            db.query(
+                TBL_CAF_Solicitud.Responsable,
+                func.count().label("total"),
+            )
+            .filter(TBL_CAF_Solicitud.Responsable.isnot(None))
+            .filter(TBL_CAF_Solicitud.Responsable != "")
+            .group_by(TBL_CAF_Solicitud.Responsable)
+            .order_by(func.count().desc())
+            .all()
+        )
+
+        return [{"responsable": fila.Responsable, "total": fila.total} for fila in filas]
 
     def list_all(
         self,
