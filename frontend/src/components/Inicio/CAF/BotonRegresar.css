@@ -11,7 +11,10 @@
    empieza el contenido. */
 .barra-regresar {
   position: sticky;
-  top: 0;
+  /* El NavBar de mpa-shared-components es position:fixed con height:70px. Con
+     top:0 esta barra se pega al borde del viewport y queda TAPADA detrás de él.
+     El offset la deja justo debajo. */
+  top: var(--alto-navbar, 70px);
   z-index: 5;
   display: flex;
   padding: 0.6rem 0;

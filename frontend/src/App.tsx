@@ -13,6 +13,7 @@ import FormatoPD from './components/Inicio/CAF/FormatoPD';
 import FormatoFD from './components/Inicio/CAF/FormatoFD';
 import FormatoOS from './components/Inicio/CAF/FormatoOS';
 import Login from './components/Login/Login';
+import ScrollToTop from './components/ScrollToTop';
 import { AuthService } from './services/AuthService';
 import { useAuth } from './hooks/useAuth';
 
@@ -115,6 +116,8 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <HashRouter>
+      {/* Debe ir dentro del router: usa useLocation para detectar el cambio de ruta */}
+      <ScrollToTop />
       <AppContent />
     </HashRouter>
   );

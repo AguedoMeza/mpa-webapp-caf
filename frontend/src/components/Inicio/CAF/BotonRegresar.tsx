@@ -33,7 +33,9 @@ const BotonRegresar: React.FC<Props> = ({ hayCambios = false, etiqueta = 'Regres
     ) {
       return;
     }
-    navigate('/');
+    // El listado vive al fondo de Bienvenida. Sin la marca, regresar deja al
+    // usuario arriba de todo y obliga a volver a bajar hasta la tabla.
+    navigate('/', { state: { volverAlListado: true } });
   }, [hayCambios, navigate]);
 
   return (

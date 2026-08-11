@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Form } from 'react-bootstrap';
 import { useAuth } from '../../hooks/useAuth';
 import ListaSolicitudes from './CAF/ListaSolicitudes';
@@ -10,6 +10,17 @@ const Bienvenida: React.FC = () => {
   const { user } = useAuth();
   const [tipoContrato, setTipoContrato] = useState('Contrato de Obra');
   const navigate = useNavigate();
+  const location = useLocation();
+  const refListado = useRef<HTMLDivElement>(null);
+
+  // Al volver desde un formato, BotonRegresar marca la navegación para que el
+  // usuario aterrice en la tabla y no arriba de todo: el listado vive al fondo
+  // de esta pantalla y volver a bajar en cada regreso es un ida y vuelta inútil.
+  useEffect(() => {
+    if ((location.state as { volverAlListado?: boolean } | null)?.volverAlListado) {
+      refListado.current?.scrollIntoView({ block: 'start' });
+    }
+  }, [location.state]);
 
   // Definir nombre del usuario reutilizable
   const nombreUsuario = user ? `${user.given_name || ''} ${user.family_name || ''}`.trim() : 'Usuario';
@@ -61,7 +72,7 @@ const Bienvenida: React.FC = () => {
 
     {/* El listado va fuera del .container: la tabla tiene 11 columnas y no cabe
         en los ~1140px que impone el contenedor centrado. */}
-    <div className="container-fluid px-4 pb-5">
+    <div className="container-fluid px-4 pb-5" ref={refListado}>
       <ListaSolicitudes />
     </div>
     </>
