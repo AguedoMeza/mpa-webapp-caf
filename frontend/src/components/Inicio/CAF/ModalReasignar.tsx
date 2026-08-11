@@ -102,7 +102,7 @@ const ModalReasignar: React.FC<Props> = ({
             as="textarea"
             rows={2}
             maxLength={200}
-            placeholder="Ej. Andrea está de vacaciones hasta el 30 de agosto"
+            placeholder="Ej. El responsable asignado está de vacaciones"
             value={motivo}
             onChange={(e) => setMotivo(e.target.value)}
             disabled={enviando}
