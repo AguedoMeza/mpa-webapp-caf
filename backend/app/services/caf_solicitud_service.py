@@ -115,27 +115,22 @@ class CafSolicitudService:
                 f"La solicitud #{solicitud_id} ya está {etiqueta}; reasignarla no la reabre"
             )
 
-        marca = datetime.now().strftime("%Y-%m-%d %H:%M")
-        linea = f"{marca} | {usuario} | {anterior or '(sin asignar)'} -> {nuevo}"
-        if motivo:
-            linea += f" | {motivo.strip()}"
-
-        historial = solicitud.Historial_Reasignacion or ""
-        nuevo_historial = f"{historial}\n{linea}".strip() if historial else linea
-
-        # El campo es varchar(2000): si se llena, se conservan las entradas
-        # recientes en lugar de reventar el INSERT con el error 8152.
-        if len(nuevo_historial) > 2000:
-            nuevo_historial = nuevo_historial[-2000:]
-
         solicitud.Responsable = nuevo
-        solicitud.Historial_Reasignacion = nuevo_historial
 
         db.commit()
         db.refresh(solicitud)
 
-        print(f"🔁 Solicitud #{solicitud_id} reasignada: {anterior} -> {nuevo} (por {usuario})")
-        logger.info(f"Solicitud #{solicitud_id} reasignada de {anterior} a {nuevo} por {usuario}")
+        # PENDIENTE: mientras no exista la columna Historial_Reasignacion, el
+        # rastro vive solo en el log del backend. La linea va con formato fijo a
+        # proposito, para poder reconstruir el historial desde stdout y para poder
+        # migrarlo a la columna cuando se aplique la DDL.
+        marca = datetime.now().strftime("%Y-%m-%d %H:%M")
+        rastro = f"{marca} | {usuario} | {anterior or '(sin asignar)'} -> {nuevo}"
+        if motivo:
+            rastro += f" | {motivo.strip()}"
+
+        print(f"🔁 REASIGNACION #{solicitud_id} | {rastro}")
+        logger.info(f"REASIGNACION #{solicitud_id} | {rastro}")
 
         return solicitud
 

@@ -116,7 +116,6 @@ def reasignar_responsable(
             "success": True,
             "id_solicitud": solicitud.id_solicitud,
             "responsable": solicitud.Responsable,
-            "historial": solicitud.Historial_Reasignacion,
             "notificado": aviso_enviado,
             "message": f"Solicitud #{solicitud_id} reasignada a {solicitud.Responsable}",
         }

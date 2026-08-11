@@ -83,8 +83,9 @@ const ModalReasignar: React.FC<Props> = ({
 
         <Alert variant="warning" className="py-2">
           <i className="bi bi-exclamation-triangle me-2" />
-          Al reasignar transfieres la facultad de aprobar esta solicitud. Queda
-          registrado en su historial junto con tu usuario y la fecha.
+          Al reasignar transfieres la facultad de aprobar esta solicitud. El
+          cambio se registra con tu usuario y la fecha, y se le avisa por correo
+          al nuevo responsable.
         </Alert>
 
         <ResponsableSelect
