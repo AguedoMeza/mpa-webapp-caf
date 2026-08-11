@@ -5,6 +5,7 @@ from app.models.building import CAT_BUILDINGS
 from app.events.domain_events import SolicitudCreada, SolicitudAprobada, SolicitudRechazada, SolicitudCorreccionesRealizadas
 from app.events.event_dispatcher import get_event_dispatcher
 from typing import List, Dict, Optional
+from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,67 @@ class CafSolicitudService:
             query = query.filter(or_(*condiciones))
 
         return query
+
+    def reasignar_responsable(
+        self,
+        db: Session,
+        solicitud_id: int,
+        nuevo_responsable: str,
+        usuario: str,
+        motivo: Optional[str] = None,
+    ) -> TBL_CAF_Solicitud:
+        """
+        Cambia el Responsable de una solicitud y deja constancia en el historial.
+
+        El campo 'usuario' es quien dice el navegador que esta haciendo el cambio.
+        No hay identidad verificada del lado del servidor, asi que el registro
+        sirve para reconstruir lo que paso de buena fe, no como prueba.
+
+        Lanza ValueError con un mensaje legible cuando la operacion no procede.
+        """
+        solicitud = db.query(TBL_CAF_Solicitud).filter_by(id_solicitud=solicitud_id).first()
+        if not solicitud:
+            raise ValueError(f"No existe la solicitud #{solicitud_id}")
+
+        anterior = (solicitud.Responsable or "").strip()
+        nuevo = nuevo_responsable.strip()
+
+        if not nuevo:
+            raise ValueError("El nuevo responsable es obligatorio")
+
+        if anterior.lower() == nuevo.lower():
+            raise ValueError(f"La solicitud #{solicitud_id} ya está asignada a {nuevo}")
+
+        # Reasignar una solicitud ya resuelta no la reabre; solo ensucia el registro.
+        if solicitud.approve in (SolicitudStatus.aprobado.value, SolicitudStatus.rechazado_definitivo.value):
+            etiqueta = "aprobada" if solicitud.approve == 1 else "rechazada"
+            raise ValueError(
+                f"La solicitud #{solicitud_id} ya está {etiqueta}; reasignarla no la reabre"
+            )
+
+        marca = datetime.now().strftime("%Y-%m-%d %H:%M")
+        linea = f"{marca} | {usuario} | {anterior or '(sin asignar)'} -> {nuevo}"
+        if motivo:
+            linea += f" | {motivo.strip()}"
+
+        historial = solicitud.Historial_Reasignacion or ""
+        nuevo_historial = f"{historial}\n{linea}".strip() if historial else linea
+
+        # El campo es varchar(2000): si se llena, se conservan las entradas
+        # recientes en lugar de reventar el INSERT con el error 8152.
+        if len(nuevo_historial) > 2000:
+            nuevo_historial = nuevo_historial[-2000:]
+
+        solicitud.Responsable = nuevo
+        solicitud.Historial_Reasignacion = nuevo_historial
+
+        db.commit()
+        db.refresh(solicitud)
+
+        print(f"🔁 Solicitud #{solicitud_id} reasignada: {anterior} -> {nuevo} (por {usuario})")
+        logger.info(f"Solicitud #{solicitud_id} reasignada de {anterior} a {nuevo} por {usuario}")
+
+        return solicitud
 
     def list_responsables(self, db: Session) -> List[Dict]:
         """

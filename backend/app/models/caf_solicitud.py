@@ -73,3 +73,6 @@ class TBL_CAF_Solicitud(Base):
     NuevaTerminacionSust = Column(String(100), nullable=True)
     NuevaTerminacionFinal = Column(String(100), nullable=True)
     TiempoDias = Column(String(100), nullable=True)
+    # Bitácora de reasignaciones del Responsable. Se le agrega una línea por cada
+    # cambio: "YYYY-MM-DD HH:MM | quien | anterior -> nuevo | motivo".
+    Historial_Reasignacion = Column(String(2000), nullable=True)

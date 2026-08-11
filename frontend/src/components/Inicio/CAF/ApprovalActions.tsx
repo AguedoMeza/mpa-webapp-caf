@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button, Modal, Form, Alert, Spinner, Card, Badge } from "react-bootstrap";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import { canUserApprove, getUserPermissions } from "../../../utils/caf-solicitud.utils";
+import ModalReasignar from "./ModalReasignar";
 import "./ApprovalActions.css";
 
 interface ApprovalActionsProps {
@@ -29,6 +30,7 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [mostrarReasignar, setMostrarReasignar] = useState(false);
 
   // Verificar permisos del usuario actual
   const userPermissions = getUserPermissions(solicitudData);
@@ -92,6 +94,29 @@ const ApprovalActions: React.FC<ApprovalActionsProps> = ({
               <strong>Estado:</strong> {getStatusBadge()}
             </p>
           </div>
+
+          {/* Salida cuando el responsable no está disponible: sin esto la
+              solicitud queda atorada y hay que pedirle a IT que la mueva. */}
+          <hr />
+          <p className="text-muted small mb-2">
+            ¿El responsable asignado no está disponible para revisarla?
+          </p>
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => setMostrarReasignar(true)}
+          >
+            <i className="bi bi-person-gear me-2" />
+            Reasignar responsable
+          </Button>
+
+          <ModalReasignar
+            show={mostrarReasignar}
+            onHide={() => setMostrarReasignar(false)}
+            solicitudId={solicitudId}
+            responsableActual={responsable ?? null}
+            onReasignado={() => window.location.reload()}
+          />
         </Card.Body>
       </Card>
     );

@@ -9,6 +9,7 @@ import {
   CAFSolicitudPage,
 } from '../../../types/caf-solicitud.types';
 import { getAuthenticatedUserEmail, getRutaFormato } from '../../../utils/caf-solicitud.utils';
+import ModalReasignar from './ModalReasignar';
 import './ListaSolicitudes.css';
 
 const TAMANO_PAGINA = 10;
@@ -133,6 +134,10 @@ const ListaSolicitudes: React.FC = () => {
   // alguien crea una solicitud con un responsable nuevo, no en cada consulta.
   const [responsables, setResponsables] = useState<CAFResponsableOpcion[]>([]);
 
+  // Solicitud cuyo responsable se está reasignando; null = modal cerrado.
+  const [reasignando, setReasignando] = useState<CAFSolicitudListItem | null>(null);
+  const [recarga, setRecarga] = useState(0);
+
   const [datos, setDatos] = useState<CAFSolicitudPage>(PAGINA_VACIA);
   const [cargaInicial, setCargaInicial] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -184,7 +189,8 @@ const ListaSolicitudes: React.FC = () => {
     });
 
     return () => controlador.abort();
-  }, [pagina, busqueda, tipoFilter, statusFilter, responsableFilter]);
+    // 'recarga' fuerza volver a pedir la página tras reasignar, sin cambiar filtros.
+  }, [pagina, busqueda, tipoFilter, statusFilter, responsableFilter, recarga]);
 
   /** Dispara la consulta con lo que hay escrito. Enter o clic en Buscar. */
   const aplicarBusqueda = useCallback(() => {
@@ -482,6 +488,16 @@ const ListaSolicitudes: React.FC = () => {
                         <span className={statusCfg.className}>{statusCfg.label}</span>
                       </td>
                       <td className="col-acciones text-center" data-label="Acciones">
+                        <Button
+                          size="sm"
+                          variant="outline-secondary"
+                          className="btn-reasignar me-1"
+                          onClick={(e) => { e.stopPropagation(); setReasignando(s); }}
+                          title={`Reasignar responsable (hoy: ${s.Responsable ?? 'sin asignar'})`}
+                          aria-label={`Reasignar el admin responsable de la solicitud ${s.id_solicitud}`}
+                        >
+                          <i className="bi bi-person-gear" />
+                        </Button>
                         {puedeCorregir(s) ? (
                           <Button
                             size="sm"
@@ -567,6 +583,16 @@ const ListaSolicitudes: React.FC = () => {
           </div>
         </Card.Footer>
       </Card>
+
+      {reasignando && (
+        <ModalReasignar
+          show
+          onHide={() => setReasignando(null)}
+          solicitudId={reasignando.id_solicitud}
+          responsableActual={reasignando.Responsable}
+          onReasignado={() => setRecarga((n) => n + 1)}
+        />
+      )}
     </div>
   );
 };

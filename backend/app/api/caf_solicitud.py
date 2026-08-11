@@ -4,7 +4,9 @@ from sqlalchemy.exc import DataError, IntegrityError
 from typing import Optional
 from app.core.database import get_db
 from app.services.caf_solicitud_service import CafSolicitudService
-from app.schemas.caf_solicitud import ApprovalRequest, ApprovalResponse
+from app.schemas.caf_solicitud import ApprovalRequest, ApprovalResponse, ReasignacionRequest
+from app.services.email_service import email_service
+from app.core.config import settings
 
 
 router = APIRouter()
@@ -62,6 +64,67 @@ def list_caf_solicitudes(
     except Exception as e:
         print(f"❌ Error listando solicitudes CAF: {str(e)}")
         raise HTTPException(status_code=500, detail="Error al listar las solicitudes")
+
+
+@router.patch("/caf-solicitud/{solicitud_id}/responsable", status_code=status.HTTP_200_OK)
+def reasignar_responsable(
+    solicitud_id: int,
+    data: ReasignacionRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Cambia el Admin Responsable de una solicitud y lo registra en su historial.
+
+    Existe porque cuando el responsable causa baja o sale de vacaciones la
+    solicitud queda atorada: nadie mas ve los controles de aprobacion.
+
+    No valida quien lo ejecuta. El correo que llega en 'usuario' se guarda tal
+    como lo manda el cliente.
+    """
+    try:
+        service = CafSolicitudService()
+        solicitud = service.reasignar_responsable(
+            db,
+            solicitud_id=solicitud_id,
+            nuevo_responsable=data.responsable,
+            usuario=data.usuario,
+            motivo=data.motivo,
+        )
+
+        aviso_enviado = False
+        if data.notificar:
+            # El correo no debe tumbar la reasignacion: el cambio ya se guardo.
+            try:
+                resultado = email_service.send_caf_notification(
+                    to_email=solicitud.Responsable,
+                    solicitud_id=solicitud.id_solicitud,
+                    tipo_contratacion=solicitud.Tipo_Contratacion,
+                    responsable=solicitud.Responsable,
+                    frontend_base_url=settings.FRONTEND_BASE_URL,
+                    building=solicitud.Building,
+                    cliente=solicitud.Cliente,
+                    proveedor=solicitud.Proveedor,
+                    usuario_solicitante=solicitud.Usuario,
+                )
+                aviso_enviado = resultado.get("status") == "success"
+                if not aviso_enviado:
+                    print(f"⚠️ Reasignacion #{solicitud_id} guardada pero el correo fallo: {resultado}")
+            except Exception as e:
+                print(f"⚠️ Reasignacion #{solicitud_id} guardada pero el correo fallo: {str(e)}")
+
+        return {
+            "success": True,
+            "id_solicitud": solicitud.id_solicitud,
+            "responsable": solicitud.Responsable,
+            "historial": solicitud.Historial_Reasignacion,
+            "notificado": aviso_enviado,
+            "message": f"Solicitud #{solicitud_id} reasignada a {solicitud.Responsable}",
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        print(f"❌ Error reasignando solicitud #{solicitud_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error al reasignar la solicitud")
 
 
 # OJO: esta ruta va declarada ANTES de /caf-solicitud/{solicitud_id}. Si se declara

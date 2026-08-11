@@ -119,12 +119,12 @@
 /* Anchos declarados. Suman 100% para que ninguna columna acapare el sobrante. */
 .col-folio     { width: 9%;  }
 .col-tipo      { width: 12%; }
-.col-inmueble  { width: 19%; }
-.col-proveedor { width: 16%; }
+.col-inmueble  { width: 17%; }
+.col-proveedor { width: 14%; }
 .col-personas  { width: 18%; }
 .col-monto     { width: 12%; }
 .col-status    { width: 9%;  }
-.col-acciones  { width: 5%;  }
+.col-acciones  { width: 9%;  }
 
 /* Celdas de dos líneas: dato principal arriba, secundario abajo */
 .celda-principal,
@@ -269,16 +269,32 @@
   outline-offset: 2px;
 }
 
-.btn-ver {
+.btn-ver,
+.btn-reasignar {
   font-size: 0.78rem;
   padding: 0.25rem 0.5rem;
   white-space: nowrap;
 }
 
+/* Reasignar es una acción excepcional: se queda discreta hasta el hover para no
+   competir con Ver, que es lo que la gente hace el 99% de las veces. */
+.btn-reasignar {
+  color: #6c757d;
+  border-color: #dee2e6;
+}
+
+.btn-reasignar:hover,
+.btn-reasignar:focus-visible {
+  color: #ffffff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
 /* Área táctil mínima de 44px en dispositivos sin mouse fino */
 @media (pointer: coarse) {
   .btn-ver,
-  .btn-corregir {
+  .btn-corregir,
+  .btn-reasignar {
     min-height: 44px;
     min-width: 44px;
   }
@@ -425,7 +441,7 @@
   .col-inmueble { width: 22%; }
   .col-personas { width: 20%; }
   .btn-texto    { display: none; }
-  .col-acciones { width: 6%; }
+  .col-acciones { width: 10%; }
 }
 
 /* Angosto: Proveedor se va de la tabla. Sigue siendo buscable y visible en el
@@ -433,12 +449,12 @@
 @container tabla (max-width: 980px) {
   .col-proveedor { display: none; }
 
-  .col-folio    { width: 12%; }
-  .col-inmueble { width: 28%; }
-  .col-personas { width: 24%; }
-  .col-monto    { width: 16%; }
-  .col-status   { width: 12%; }
-  .col-acciones { width: 8%; }
+  .col-folio    { width: 11%; }
+  .col-inmueble { width: 26%; }
+  .col-personas { width: 23%; }
+  .col-monto    { width: 14%; }
+  .col-status   { width: 10%; }
+  .col-acciones { width: 10%; }
 }
 
 /* Móvil / panel angosto: la tabla se convierte en tarjetas. Cada fila es un

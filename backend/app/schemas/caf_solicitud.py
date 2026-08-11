@@ -37,6 +37,37 @@ class ApprovalRequest(BaseModel):
         }
 
 
+class ReasignacionRequest(BaseModel):
+    """
+    Request para cambiar el Admin Responsable de una solicitud CAF.
+
+    'usuario' es quien dice el cliente que ejecuta el cambio. No hay identidad
+    verificada en el servidor, asi que se guarda tal cual para poder reconstruir
+    lo ocurrido, no como prueba de autoria.
+    """
+    responsable: str = Field(
+        ...,
+        min_length=3,
+        max_length=100,
+        description="Correo del nuevo Admin Responsable"
+    )
+    usuario: str = Field(
+        ...,
+        min_length=3,
+        max_length=100,
+        description="Correo de quien realiza la reasignacion"
+    )
+    motivo: Optional[str] = Field(
+        None,
+        max_length=200,
+        description="Razon del cambio; queda en el historial"
+    )
+    notificar: bool = Field(
+        True,
+        description="Enviar al nuevo responsable el correo con el link de la solicitud"
+    )
+
+
 class ApprovalResponse(BaseModel):
     """Response después de aprobar/rechazar una solicitud"""
     success: bool

@@ -132,6 +132,30 @@ class CAFSolicitudService {
   }
 
   /**
+   * Cambia el Admin Responsable de una solicitud y lo deja en su historial.
+   *
+   * El backend no valida quién ejecuta el cambio: 'usuario' se guarda tal como
+   * lo manda el cliente.
+   */
+  async reasignarResponsable(
+    id: number,
+    data: {
+      responsable: string;
+      usuario: string;
+      motivo?: string;
+      notificar?: boolean;
+    }
+  ): Promise<any> {
+    try {
+      const response = await this.api.patch(`/caf-solicitud/${id}/responsable`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error al reasignar responsable:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Actualizar una solicitud existente
    */
   async updateSolicitud(
