@@ -10,15 +10,9 @@
 --
 -- Ejecutar en la base a la que apunta MASTER_DB_NAME del backend desplegado.
 --
--- PENDIENTE DE APLICAR. La reasignacion ya funciona sin esta columna: el rastro
--- queda en el log del backend con formato fijo ("REASIGNACION #id | fecha |
--- quien | anterior -> nuevo | motivo").
---
--- Cuando se aplique, hay que reactivar en el codigo:
---   1. models/caf_solicitud.py       -> descomentar Historial_Reasignacion
---   2. services/caf_solicitud_service.py -> en reasignar_responsable(), escribir
---      la linea 'rastro' en la columna en lugar de solo loguearla
---   3. api/caf_solicitud.py          -> devolver "historial" en la respuesta
+-- APLICADO el 2026-08-11 en WH_QA_Macquarie. El codigo que la usa ya esta
+-- activo en models, services y api. Se conserva el script como registro del
+-- cambio de esquema y para poder replicarlo en otro ambiente.
 
 USE WH_QA_Macquarie;
 GO

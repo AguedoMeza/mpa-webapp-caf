@@ -115,20 +115,31 @@ class CafSolicitudService:
                 f"La solicitud #{solicitud_id} ya está {etiqueta}; reasignarla no la reabre"
             )
 
-        solicitud.Responsable = nuevo
-
-        db.commit()
-        db.refresh(solicitud)
-
-        # PENDIENTE: mientras no exista la columna Historial_Reasignacion, el
-        # rastro vive solo en el log del backend. La linea va con formato fijo a
-        # proposito, para poder reconstruir el historial desde stdout y para poder
-        # migrarlo a la columna cuando se aplique la DDL.
         marca = datetime.now().strftime("%Y-%m-%d %H:%M")
         rastro = f"{marca} | {usuario} | {anterior or '(sin asignar)'} -> {nuevo}"
         if motivo:
             rastro += f" | {motivo.strip()}"
 
+        historial = solicitud.Historial_Reasignacion or ""
+        nuevo_historial = f"{historial}\n{rastro}" if historial else rastro
+
+        # La columna es varchar(2000). Si se llena se conservan las entradas mas
+        # recientes, recortando por linea completa para no dejar una a la mitad,
+        # en lugar de reventar el UPDATE con el error 8152 de truncamiento.
+        if len(nuevo_historial) > 2000:
+            lineas = nuevo_historial.split("\n")
+            while lineas and len("\n".join(lineas)) > 2000:
+                lineas.pop(0)
+            nuevo_historial = "\n".join(lineas)
+
+        solicitud.Responsable = nuevo
+        solicitud.Historial_Reasignacion = nuevo_historial
+
+        db.commit()
+        db.refresh(solicitud)
+
+        # Se deja tambien en el log: el historial de la columna se puede recortar
+        # con el tiempo, el log no.
         print(f"🔁 REASIGNACION #{solicitud_id} | {rastro}")
         logger.info(f"REASIGNACION #{solicitud_id} | {rastro}")
 
