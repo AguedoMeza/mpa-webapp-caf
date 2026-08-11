@@ -12,6 +12,7 @@ import BuildingSelect from "../../shared/BuildingSelect";
 import ApprovedPDFDownload from "./ApprovedPDFDownload";
 import { generatePDFOC } from "../../../utils/pdf/generatePDFOC";
 
+import BotonRegresar from './BotonRegresar';
 interface Props {
   tipoContrato: string;
 }
@@ -117,8 +118,14 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
     }
   };
 
+  // Se enciende con la primera captura del usuario; BotonRegresar lo usa
+  // para confirmar antes de salir y no perder lo escrito.
+  const [hayCambios, setHayCambios] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
+
+    setHayCambios(true);
     
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
@@ -184,6 +191,7 @@ const FormatoOC: React.FC<Props> = ({ tipoContrato }) => {
 
   return (
     <div className="container py-5">
+      <BotonRegresar hayCambios={hayCambios} />
 
       {/* Mostrar botón de PDF solo cuando está aprobado */}
       {isEditMode && solicitudData && solicitudData.approve === 1 && (

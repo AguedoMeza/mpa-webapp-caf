@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Card, Spinner, Alert } from "react-bootstrap";
 import { cafSolicitudService } from "../../../services/caf-solicitud.service";
 import ApprovalActions from "./ApprovalActions";
+import BotonRegresar from "./BotonRegresar";
 
 const ApprovalPage: React.FC = () => {
   const { tipo, id } = useParams<{ tipo: string; id: string }>();
@@ -60,6 +61,8 @@ const ApprovalPage: React.FC = () => {
 
   return (
     <Container className="py-5">
+      <BotonRegresar />
+
       <h2 className="text-center mb-4">Aprobar/Rechazar Solicitud CAF</h2>
 
       {/* Detalles de la solicitud */}
