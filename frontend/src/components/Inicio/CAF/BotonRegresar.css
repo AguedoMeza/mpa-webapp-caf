@@ -3,15 +3,21 @@
 ----------------------------------------------- */
 
 /* Sticky: los formatos miden varias pantallas y sin esto el botón desaparece
-   al primer scroll. El fondo evita que el contenido se transparente debajo. */
+   al primer scroll.
+
+   El fondo es sólido a propósito: al quedar fijo, los campos del formulario
+   scrollean por debajo de la barra. Con un degradado se alcanzaban a ver
+   deslizándose detrás. El borde inferior marca dónde termina la barra y
+   empieza el contenido. */
 .barra-regresar {
   position: sticky;
   top: 0;
   z-index: 5;
   display: flex;
-  padding: 0.5rem 0 0.75rem;
-  margin-bottom: 0.25rem;
-  background: linear-gradient(#fff 70%, rgba(255, 255, 255, 0));
+  padding: 0.6rem 0;
+  margin-bottom: 0.75rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .btn-regresar {
