@@ -2,6 +2,13 @@
 import config from "../config/config";
 import { SAMLUser, AuthStatusResponse, LoginResponse, LogoutResponse } from "../types/authTypes";
 
+// Usuario del catalogo de QA que expone el backend de AML en /api/auth/dev-users
+export interface QAUser {
+  email: string;
+  name: string;
+  job_title: string;
+}
+
 export const AuthService = {
   /**
    * Iniciar login SSO con Azure AD
@@ -27,6 +34,43 @@ export const AuthService = {
       console.error("Error iniciando login SAML:", error);
       throw new Error("Error conectando con Azure AD");
     }
+  },
+
+  /**
+   * Catalogo de usuarios de QA. Devuelve [] si el backend no esta en QA_MODE,
+   * que es la senal para no mostrar el selector.
+   */
+  async getQAUsers(): Promise<QAUser[]> {
+    try {
+      const response = await fetch(`${config.API_URL_AML}/api/auth/dev-users`, {
+        credentials: 'include',
+      });
+      if (!response.ok) return [];
+      return await response.json();
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Login de QA (solo con QA_MODE activo en el backend de AML).
+   * No pasa por Azure AD ni SAML: el backend valida contra su catalogo de
+   * usuarios de prueba y siembra la misma sesion que el flujo real.
+   */
+  async devLogin(username: string): Promise<void> {
+    const response = await fetch(`${config.API_URL_AML}/api/auth/dev-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ username }),
+    });
+
+    if (!response.ok) {
+      throw new Error('El login de QA no esta habilitado en este backend');
+    }
+
+    const data = await response.json();
+    this.saveUserToStorage(data.user);
   },
 
   /**
@@ -76,11 +120,15 @@ export const AuthService = {
       window.location.href = data.saml_logout_url;
     } else {
       window.location.href = `${process.env.REACT_APP_PUBLIC_URL || ""}/#/login`;
+      // Cambiar solo el hash no recarga el documento: sin la recarga la app
+      // conserva su estado y el NavBar sigue mostrando al usuario que salio.
+      window.location.reload();
     }
   } catch (error) {
     console.error("Error en logout:", error);
     this.clearUserFromStorage();
     window.location.href = `${process.env.REACT_APP_PUBLIC_URL || ""}/#/login`;
+    window.location.reload();
   }
 },
 
