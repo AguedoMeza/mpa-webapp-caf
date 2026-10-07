@@ -43,7 +43,7 @@ Layering: **api → services → (models / repositories / events)**.
 - `app/models/` — SQLAlchemy ORM. Central table is `TBL_CAF_Solicitud` (`caf_solicitud.py`); plus catalogs (`building`, `tipo_contratacion`, `tipo_trabajo`, `vendor`, `elegibilidad_usuario`).
 - `app/services/` — business logic. `caf_solicitud_service.py` is the core; `user_service.py` / `vendor_service.py` query Microsoft Graph + DB; `email_service.py` sends mail via Microsoft Graph; `mri_connector_service.py` for MRI integration.
 - `app/repositories/elegibilidad_repository.py` — data access for `CAT_Elegibilidad_Usuario`.
-- `scripts/` — one-off support tooling, run manually from `backend/` with the venv active. `reasignar_responsable.py` changes a solicitud's `Responsable` (there is no UI for this: when the assigned approver leaves or goes on vacation the solicitud is stuck). It reuses `SessionLocal` + `CafSolicitudService` + `email_service`, simulates unless `--aplicar`, and only mails with `--notificar`.
+- `scripts/` — one-off support tooling, run manually from `backend/` with the venv active. `reasignar_responsable.py` changes a solicitud's `Responsable` from the command line (the UI equivalent is described under *Responsable reassignment* below). It reuses `SessionLocal` + `CafSolicitudService` + `email_service`, simulates unless `--aplicar`, and only mails with `--notificar`.
 
 ### Approval state machine (the domain core)
 `TBL_CAF_Solicitud.approve` is an integer with this meaning (see `SolicitudStatus` enum in `models/caf_solicitud.py`):
@@ -53,6 +53,11 @@ Layering: **api → services → (models / repositories / events)**.
 - `2` = `rechazado_definitivo` (comments optional).
 
 Cyclic flow: a solicitud in `requiere_correcciones` (0) that gets updated resets to NULL (pendiente) and re-notifies. The approval endpoint is `PATCH /api/v1/caf-solicitud/{id}/approval` with body `{approve, comentarios}` (see `api/caf_solicitud.py` and `schemas/caf_solicitud.py`).
+
+### Listing and Responsable reassignment
+- `GET /api/v1/caf-solicitud` is the paginated listing; paging and filters run server-side (including the filter by admin responsable). `GET /caf-solicitud/responsables` feeds that filter. Frontend: `ListaSolicitudes.tsx`.
+- `PATCH /api/v1/caf-solicitud/{id}/responsable` reassigns the approver (frontend: `ModalReasignar.tsx`, launched from the listing / `ApprovalActions`). Every change appends one line (`fecha | quien | anterior -> nuevo | motivo`) to `Historial_Reasignacion` (`varchar(2000)`), a text log column rather than a separate table. Its DDL is in `backend/scripts/add_historial_reasignacion.sql` (already applied to `WH_QA_Macquarie`).
+- Static routes like `/caf-solicitud/responsables` are declared before `/caf-solicitud/{solicitud_id}` in `api/caf_solicitud.py`. Keep that order when adding routes, or FastAPI will match them as an id.
 
 ### Observer / domain events
 Decoupled notifications via an in-process Observer pattern (`app/events/`):
@@ -71,7 +76,8 @@ Who can be selected as Responsable / which AD users appear is driven by the `CAT
 CRA + TypeScript SPA using `HashRouter` (routes are `/#/...`). `App.tsx` is the entry, wraps routes with `ProtectedRoute` and renders the shared `NavBar` from the `mpa-shared-components` package (git dependency).
 
 - Auth is **SAML/SSO via Azure AD**, but delegated to a separate external service (`AuthService.ts` calls `config.API_URL_AML`, an AML service, not this repo's backend). Session is cookie-based (`credentials: 'include'`). `useAuth` hook + `ProtectedRoute` guard pages.
-- `config/config.ts` holds the API base URLs (`API_URL` for the CAF backend, `API_URL_AML` for the auth/AML service). These are hardcoded and toggled by comment for dev/prod — check this file when API calls hit the wrong host/port.
+- **The CAF backend URL is `REACT_APP_API_URL` in `frontend/.env`**, read directly by each axios service (fallback `http://localhost:8000`). CRA freezes it at build time, so a rebuild is needed after changing it. `config/config.ts` is *not* the switch: only its `API_URL_AML` is consumed (by `AuthService`), and both entries are same-origin relative paths (`/aml-servicios`, `/mpa-webapp-caf-servicios`) because front and back live under the same IIS site.
+- QA login: `Login.tsx` offers a test-user selector (`/api/auth/dev-users` on the AML backend) that bypasses Azure AD. It is hidden when the hostname is `webapplication.mpagroup.mx`, and the AML backend returns 404 unless its `QA_MODE` is on — `QA_MODE` lives in the AML repo, not here.
 - `components/Inicio/CAF/` — the five solicitud form types, one per `Tipo_Contratacion`: `FormatoCO` (Contrato de Obra), `FormatoOS` (Orden de Servicio), `FormatoOC` (Orden de Cambio), `FormatoPD` (Pago a Dependencia), `FormatoFD` (Firma de Documento). `ApprovalActions` / `ApprovalPage` handle the approve/reject UI.
 - `utils/caf-solicitud.utils.ts` — the form↔API mapping layer (`mapFormatoXXToAPI` / `mapAPIToFormatoXX`) plus checkbox↔int and date helpers. The DB stores document checkboxes as ints and dates need formatting, so always route payloads through these mappers.
 - `utils/pdf/` — `@react-pdf/renderer` PDF generation, one `generatePDFxx.tsx` per formato + shared `pdfStyles.ts`.
@@ -87,7 +93,7 @@ Only the assigned **Responsable** sees approval controls. Authorization is clien
 - Many `TBL_CAF_Solicitud` columns are `varchar` even for amounts/numbers — values are passed as strings, not numerics.
 - **Column widths live in three places and must stay in sync**: the SQL Server DDL, the `String(n)` in `models/caf_solicitud.py`, and the `maxLength` on the corresponding form field. SQLAlchemy does **not** validate lengths client-side and `POST /caf-solicitud` takes a raw `dict` (no Pydantic schema), so an oversized value travels untouched to the `INSERT` and surfaces as SQL Server error 8152 ("String or binary data would be truncated") — which does not name the column. When that happens, read the `📏 CAF payload lengths` line the service prints and compare against the DDL. `Descripcion_trabajo_servicio` is `varchar(2000)`; most other text columns are 100, 500 or 1000.
 - `frontend/esquema-er.md` is **outdated** and reports wrong column sizes. Source of truth is the live DDL or `models/caf_solicitud.py`.
-- `email_service.send_mail()` hardcodes a CC to `jose.serna@mpagroup.mx` on **every** mail the system sends.
+- `email_service` copies the admin (`ADMIN_CC_EMAIL`, hardcoded) only when the caller passes `cc_admin=True`: today that's the definitive rejection (`approve = 2`) and Responsable reassignments (API and script). Routine flow mails (created, approved, corrections, corrections done) don't copy the admin — keep it that way to avoid inbox noise.
 - `FRONTEND_BASE_URL` defaults to `http://localhost:3000`. Any script that sends mail from a dev machine will embed an unusable link unless it overrides the base URL.
 - The backend logs heavily with `print()` + emoji to stdout for tracing request flow; this is intentional in this codebase.
 - Secrets live in `backend/.env` and `frontend/.env` / `.env.local` (gitignored). `backend/.env.example` documents required vars.

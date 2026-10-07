@@ -183,9 +183,11 @@ class EmailNotificationObserver(Observer):
                 building=event.solicitud.Building,
                 cliente=event.solicitud.Cliente,
                 proveedor=event.solicitud.Proveedor,
-                usuario_solicitante=event.solicitud.Usuario
+                usuario_solicitante=event.solicitud.Usuario,
+                # Las correcciones son flujo normal; solo el rechazo definitivo copia al admin
+                cc_admin=not requiere_correcciones
             )
-            
+
             if result.get("status") == "success":
                 tipo_email = "correcciones" if requiere_correcciones else "rechazo definitivo"
                 logger.info(f"Correo de {tipo_email} enviado exitosamente para solicitud #{event.solicitud_id}")

@@ -7,6 +7,9 @@ from app.core.config import settings
  # ⭐ FIX: Importar settings al inicio del método
 from app.core.config import settings
 
+# Administrador del sistema: se copia solo cuando el llamador pasa cc_admin=True.
+ADMIN_CC_EMAIL = "jose.serna@mpagroup.mx"
+
 class EmailService:
     """
     Servicio para envío de correos usando Microsoft Graph API.
@@ -39,7 +42,7 @@ class EmailService:
         else:
             raise Exception(f"Error al obtener token de Graph: {result.get('error_description')}")
 
-    def send_mail(self, sender, to, subject, body_html, attachment_path=None, extra_cc=None):
+    def send_mail(self, sender, to, subject, body_html, attachment_path=None, extra_cc=None, cc_admin=False):
         """
         Envía un correo usando Microsoft Graph API con manejo de tokens expirados.
         Args:
@@ -49,11 +52,11 @@ class EmailService:
             body_html: Cuerpo del correo en HTML
             attachment_path: Ruta opcional de archivo adjunto
             extra_cc: Lista opcional de emails adicionales para CC
+            cc_admin: Si True, copia al administrador del sistema. Solo se usa en
+                eventos excepcionales (rechazo definitivo, reasignación) para no
+                llenarle la bandeja con el flujo normal.
         """
-        # Siempre copiar a jose.serna@mpagroup.mx
-        cc_emails = [
-            "jose.serna@mpagroup.mx"
-        ]
+        cc_emails = [ADMIN_CC_EMAIL] if cc_admin else []
         
         # Agregar CC adicionales si se proporcionan (evitando duplicados)
         if extra_cc:
@@ -118,7 +121,7 @@ class EmailService:
             return {"status": "error", "code": resp.status_code, "message": resp.text}
 
     def send_caf_notification(self, to_email, solicitud_id, tipo_contratacion, responsable, 
-                          frontend_base_url, is_update_from_corrections=False, building=None, cliente=None, proveedor=None, usuario_solicitante=None):
+                          frontend_base_url, is_update_from_corrections=False, building=None, cliente=None, proveedor=None, usuario_solicitante=None, cc_admin=False):
         """
         Envía correo de notificación de nueva solicitud CAF al responsable.
         Args:
@@ -196,9 +199,9 @@ class EmailService:
         # Agregar al usuario solicitante como CC para que tenga confirmación de su solicitud
         extra_cc = [usuario_solicitante] if usuario_solicitante else None
         
-        return self.send_mail(sender_email, to_email, subject, body_html, extra_cc=extra_cc)
+        return self.send_mail(sender_email, to_email, subject, body_html, extra_cc=extra_cc, cc_admin=cc_admin)
 
-    def send_caf_approval_result(self, to_email, solicitud_id, tipo_contratacion, approved, responsable, comentarios=None, edit_url=None, building=None, cliente=None, proveedor=None, usuario_solicitante=None):
+    def send_caf_approval_result(self, to_email, solicitud_id, tipo_contratacion, approved, responsable, comentarios=None, edit_url=None, building=None, cliente=None, proveedor=None, usuario_solicitante=None, cc_admin=False):
         """
         Envía correo con el resultado de la aprobación/rechazo.
         """
@@ -292,8 +295,8 @@ class EmailService:
         """
         
         sender_email = settings.GRAPH_CONFIG["sender_email"]
-        
-        return self.send_mail(sender_email, to_email, subject, body_html)
+
+        return self.send_mail(sender_email, to_email, subject, body_html, cc_admin=cc_admin)
 
 
 # Instancia singleton del servicio

@@ -105,6 +105,7 @@ def reasignar_responsable(
                     cliente=solicitud.Cliente,
                     proveedor=solicitud.Proveedor,
                     usuario_solicitante=solicitud.Usuario,
+                    cc_admin=True,
                 )
                 aviso_enviado = resultado.get("status") == "success"
                 if not aviso_enviado:

@@ -80,6 +80,7 @@ def notificar(solicitud, destinatario: str, frontend_url: str) -> bool:
         cliente=solicitud.Cliente,
         proveedor=solicitud.Proveedor,
         usuario_solicitante=solicitud.Usuario,
+        cc_admin=True,
     )
     if resultado.get("status") == "success":
         print("Correo enviado.")
