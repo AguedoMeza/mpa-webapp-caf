@@ -89,7 +89,7 @@ const ApprovedPDFDownload: React.FC<ApprovedPDFDownloadProps> = ({
           <Button
             size="sm"
             className="fw-semibold text-white"
-            style={{ backgroundColor: "#F7931F", borderColor: "#F7931F" }}
+            style={{ backgroundColor: "#194F90", borderColor: "#194F90" }}
             onClick={handleDownload}
             disabled={loading}
           >

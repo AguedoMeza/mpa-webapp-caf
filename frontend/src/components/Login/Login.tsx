@@ -6,7 +6,7 @@ import { AuthService, QAUser } from '../../services/AuthService';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import logoImage from '../../assets/MPA500px.png';
+import logoImage from '../../assets/mpa-fibramty-color.png';
 
 
 // El selector de QA no se ofrece en el dominio productivo. Fuera de el, manda el
@@ -81,7 +81,7 @@ const Login: React.FC = () => {
                 <div className="text-center mb-4">
                   <img
                     src={logoImage}
-                    alt="Logo FIBRA Macquarie"
+                    alt="MPA | Una empresa de Fibra MTY"
                     style={{ maxWidth: "200px", width: "100%", height: "auto", paddingBottom: "24px" }}
                   />
                   <p className="system-subtitle">WEB APP CAF</p>

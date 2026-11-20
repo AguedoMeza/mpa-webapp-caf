@@ -3,7 +3,7 @@
 import React from 'react';
 import { Document, Page, View, Text, Image } from '@react-pdf/renderer';
 import { pdfStyles as styles } from './pdfStyles';
-import MPAlogo from '../../assets/MPA500px.png';
+import MPAlogo from '../../assets/mpa-fibramty-color.png';
 
 
 interface GeneratePDFCOProps {
@@ -206,7 +206,7 @@ export const generatePDFCO = ({ formData, solicitudData }: GeneratePDFCOProps) =
         {formData.sharepoint && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>ENLACE SHAREPOINT</Text>
-            <Text style={[styles.text, { color: '#2c5aa0' }]}>
+            <Text style={[styles.text, { color: '#194F90' }]}>
               {formData.sharepoint}
             </Text>
           </View>

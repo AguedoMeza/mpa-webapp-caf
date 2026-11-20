@@ -58,7 +58,8 @@ const AppContent: React.FC = () => {
   if (!isAuthenticated && window.location.hash.includes('/login')) {
     return (
       <div className="app-container">
-        <main className="main-content">
+        {/* Sin sesion no hay SideMenu ni barra superior: el login ocupa toda la pantalla */}
+        <main className="login-layout">
           <Routes>
             <Route path="/login" element={<Login />} />
           </Routes>

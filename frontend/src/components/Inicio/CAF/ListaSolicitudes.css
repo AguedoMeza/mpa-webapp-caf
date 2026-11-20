@@ -50,14 +50,14 @@
 }
 
 .filtro-select:focus {
-  border-color: #F7931F !important;
-  box-shadow: 0 0 0 0.2rem rgba(247, 147, 31, 0.25) !important;
+  border-color: #194F90 !important;
+  box-shadow: 0 0 0 0.2rem rgba(25, 79, 144, 0.25) !important;
 }
 
 .card-filtros .input-group:focus-within {
   border-radius: 6px;
-  box-shadow: 0 0 0 0.2rem rgba(247, 147, 31, 0.25);
-  border: 1px solid #F7931F;
+  box-shadow: 0 0 0 0.2rem rgba(25, 79, 144, 0.25);
+  border: 1px solid #194F90;
 }
 
 /* -----------------------------------------------
@@ -156,7 +156,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   background: #e8edf5;
-  color: #2F58A7;
+  color: #194F90;
   border-radius: 4px;
   padding: 0.2rem 0.45rem;
   white-space: nowrap;
@@ -240,11 +240,11 @@
 ----------------------------------------------- */
 
 /* Botón Corregir — acción del solicitante cuando Mode = 'Edit'
-   Orange outline → fill al hover (MPA Design System, Orange Shade 6) */
+   Outline azul institucional → relleno al hover */
 .btn-corregir {
   background-color: transparent;
-  border: 1px solid #F7931F;
-  color: #a84000;
+  border: 1px solid #194F90;
+  color: #194F90;
   font-size: 0.78rem;
   font-weight: 600;
   border-radius: 6px;
@@ -254,18 +254,18 @@
 }
 
 .btn-corregir:hover {
-  background-color: #F7931F;
-  border-color: #F7931F;
+  background-color: #194F90;
+  border-color: #194F90;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(247, 147, 31, 0.35);
+  box-shadow: 0 2px 8px rgba(25, 79, 144, 0.35);
 }
 
 .btn-corregir:active,
 .btn-corregir:focus-visible {
-  background-color: #d97f18;
-  border-color: #d97f18;
+  background-color: #123A6B;
+  border-color: #123A6B;
   color: #ffffff;
-  outline: 2px solid rgba(247, 147, 31, 0.5);
+  outline: 2px solid rgba(25, 79, 144, 0.5);
   outline-offset: 2px;
 }
 
@@ -329,14 +329,14 @@
 .btn-limpiar {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #a84000; /* Orange Shade 3 — contraste AA sobre blanco */
+  color: #194F90; /* azul institucional, contraste AA sobre blanco */
   text-decoration: none;
   padding: 0.15rem 0.35rem;
 }
 
 .btn-limpiar:hover,
 .btn-limpiar:focus-visible {
-  color: #d97f18;
+  color: #123A6B;
   text-decoration: underline;
 }
 
@@ -344,7 +344,7 @@
   display: block;
   margin-top: 0.3rem;
   font-size: 0.78rem;
-  color: #a84000; /* Orange Shade 3 — contraste AA sobre blanco */
+  color: #194F90; /* azul institucional, contraste AA sobre blanco */
 }
 
 /* -----------------------------------------------
@@ -381,8 +381,8 @@
 }
 
 .pag-actual {
-  background-color: #2F58A7 !important;
-  border-color: #2F58A7 !important;
+  background-color: #194F90 !important;
+  border-color: #194F90 !important;
   font-weight: 600;
 }
 

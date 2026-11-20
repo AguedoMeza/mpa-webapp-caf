@@ -49,8 +49,8 @@ textarea.form-control {
 }
 
 .btn-primary {
-  background-color: #2f58a7;
-  border-color: #2f58a7;
+  background-color: #194F90;
+  border-color: #194F90;
   font-weight: 600;
   letter-spacing: 0.4px;
   border-radius: 6px;
@@ -59,8 +59,8 @@ textarea.form-control {
 }
 
 .btn-primary:hover {
-  background-color: #1d3f7c;
-  border-color: #1d3f7c;
+  background-color: #123A6B;
+  border-color: #123A6B;
 }
 
 /* ===== CONTENEDOR DE COLUMNAS ===== */

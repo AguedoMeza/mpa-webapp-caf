@@ -1,12 +1,12 @@
 :root{
-  --bg:#262626;
+  --bg:#123A6B;  /* azul oscuro institucional */
   --surface:#fff;
   --text:#111;
   --muted:#6b7280;
   --line:#e5e7eb;
   --radius:10px;
   --shadow:0 4px 12px rgba(0,0,0,.08);
-   --font-heading: "Antonio", "Anton", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+   --font-heading: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 
@@ -57,9 +57,9 @@ body{
 }
 
 /* Botón primario estilo "negro MPA" */
- /* Botón naranja con gradiente */
+ /* Botón primario en azul institucional */
 .btn.cbre-button{
-  background: linear-gradient(135deg, #F7941D 0%, #F7941D 100%);
+  background: linear-gradient(135deg, #194F90 0%, #194F90 100%);
   color:#fff;
   border:0;
   font-weight:700;
@@ -68,7 +68,7 @@ body{
 }
 
 .btn.cbre-button:hover{
-  background: linear-gradient(135deg, #F7941D 0%, #F7941D 100%);
+  background: linear-gradient(135deg, #194F90 0%, #194F90 100%);
   transform: translateY(-2px); 
 }
 
@@ -91,7 +91,7 @@ body{
 }
 
 .table-wrap thead.table-dark th{
-  background-color: #2BB14A!important;
+  background-color: #194F90!important;
   color: #ffffff !important;     
   border-color: #9fa5aa !important;
 }
@@ -109,7 +109,7 @@ body{
 
 /* ===== NAVBAR (scope: .app-navbar) ===== */
 .app-navbar {
-  background-color: #1a1a1a !important;
+  background-color: #123A6B !important;
   color: #ffffff;
   padding: 10px 20px;
   box-shadow: 0 2px 12px rgba(0,0,0,.35);
@@ -150,7 +150,7 @@ body{
   gap: 15px;
 }
 .app-navbar .logout-btn {
-  background-color: #F7941D;
+  background-color: #194F90;
   border: none;
   padding: 8px 16px;
   color: white;
@@ -160,7 +160,7 @@ body{
   transition: background-color .3s;
 }
 .app-navbar .logout-btn:hover {
-  background-color: #F7941D;
+  background-color: #194F90;
 }
 
 /* Aplica a títulos globales o sólo a la clase .page-title */
@@ -215,3 +215,29 @@ h1, .page-title{
   .ms-md-auto { margin-left: auto !important; }
 }
 
+
+/* ===== Identidad MPA | Una empresa de Fibra MTY ===== */
+/* Botones primarios de Bootstrap en el azul institucional (Pantone 7686 C) */
+.btn.btn-primary {
+  --bs-btn-bg: #194F90;
+  --bs-btn-border-color: #194F90;
+  --bs-btn-hover-bg: #123A6B;
+  --bs-btn-hover-border-color: #123A6B;
+  --bs-btn-active-bg: #123A6B;
+  --bs-btn-active-border-color: #123A6B;
+  --bs-btn-disabled-bg: #194F90;
+  --bs-btn-disabled-border-color: #194F90;
+  --bs-btn-focus-shadow-rgb: 25, 79, 144;
+}
+
+/* Login sin sesion: sin los margenes de .main-content (reservados para SideMenu y barra) */
+.login-layout {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Texto "primario" de Bootstrap en azul institucional */
+.text-primary {
+  color: #194F90 !important;
+}

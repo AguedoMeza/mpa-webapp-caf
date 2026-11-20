@@ -50,15 +50,15 @@ textarea.form-control {
 
 /* === BOTÓN === */
 .btn-primary {
-  background-color: #2f58a7;
-  border-color: #2f58a7;
+  background-color: #194F90;
+  border-color: #194F90;
   font-weight: 600;
   transition: all 0.2s ease-in-out;
 }
 
 .btn-primary:hover {
-  background-color: #1d3f7c;
-  border-color: #1d3f7c;
+  background-color: #123A6B;
+  border-color: #123A6B;
   transform: translateY(-1px);
 }
 

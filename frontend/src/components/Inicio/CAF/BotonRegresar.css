@@ -35,14 +35,14 @@
 }
 
 .btn-regresar:hover {
-  background-color: #F7931F;
-  border-color: #F7931F;
+  background-color: #194F90;
+  border-color: #194F90;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(247, 147, 31, 0.35);
+  box-shadow: 0 2px 8px rgba(25, 79, 144, 0.35);
 }
 
 .btn-regresar:focus-visible {
-  outline: 2px solid rgba(247, 147, 31, 0.6);
+  outline: 2px solid rgba(25, 79, 144, 0.6);
   outline-offset: 2px;
 }
 

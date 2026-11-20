@@ -8,7 +8,7 @@
 }
 
 .approval-actions-card .card-header {
-  background-color: #2F58A7 !important;
+  background-color: #194F90 !important;
   color: #fff !important;
   font-weight: 700;
   font-size: 1.1rem;
@@ -56,14 +56,14 @@
 .approval-actions-card .alert-info {
   background-color: #f5f7fb !important;
   border: 1px solid #dbe3f3 !important;
-  border-left: 4px solid #2F58A7 !important;
+  border-left: 4px solid #194F90 !important;
   color: #2E2E2E !important;
   border-radius: 8px !important;
   padding: 1rem 1.3rem !important;
 }
 
 .approval-actions-card .alert-info strong {
-  color: #2F58A7 !important;
+  color: #194F90 !important;
 }
 
 .approval-actions-card .alert-info ul {
@@ -81,7 +81,7 @@
 }
 /* Botón Aprobar */
 .approval-button.btn-success {
-  background-color: #2F58A7 !important;
+  background-color: #194F90 !important;
   color: #fff !important;
 }
 .approval-button.btn-success:hover {
@@ -129,7 +129,7 @@
 
 /* --- Header azul institucional --- */
 .caf-modal-header {
-  background-color: #2F58A7 !important;
+  background-color: #194F90 !important;
   padding: 1rem 1.5rem !important;
   border-radius: 10px 10px 0 0 !important;
 }
@@ -177,8 +177,8 @@
   padding: 0.75rem !important;
 }
 .caf-textarea:focus {
-  border-color: #2F58A7 !important;
-  box-shadow: 0 0 0 2px rgba(47, 88, 167, 0.2) !important;
+  border-color: #194F90 !important;
+  box-shadow: 0 0 0 2px rgba(25, 79, 144, 0.2) !important;
 }
 
 /* --- Footer gris claro --- */

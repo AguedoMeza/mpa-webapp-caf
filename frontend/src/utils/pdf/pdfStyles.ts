@@ -14,13 +14,13 @@ export const pdfStyles = StyleSheet.create({
   header: {
     marginBottom: 20,
     borderBottom: 2,
-    borderBottomColor: '#2c5aa0',
+    borderBottomColor: '#194F90',
     paddingBottom: 10,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2c5aa0',
+    color: '#194F90',
     textAlign: 'center',
     marginBottom: 5,
   },
@@ -53,7 +53,7 @@ export const pdfStyles = StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#2c5aa0',
+    color: '#194F90',
     marginBottom: 8,
     borderBottom: 1,
     borderBottomColor: '#e0e0e0',

@@ -1,7 +1,7 @@
 /* components/Login/Login.css */
 
 .login-page {
-  background: linear-gradient(135deg, #000000 0%, #2C2C2C 50%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #194F90 0%, #123A6B 100%);
   min-height: 100vh;
 }
 
@@ -15,7 +15,7 @@
 .logo-fibra {
   width: 70px;
   height: 70px;
-  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  background: linear-gradient(135deg, #194F90 0%, #477399 100%);
   border-radius: 15px;
   display: flex;
   align-items: center;
@@ -24,7 +24,7 @@
   color: white;
   font-size: 1.8em;
   font-weight: bold;
-  box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3);
+  box-shadow: 0 10px 25px rgba(25, 79, 144, 0.3);
 }
 
 .company-title {
@@ -56,11 +56,11 @@
 }
 
 .password-toggle:hover {
-  color: #FF6B00;
+  color: #194F90;
 }
 
 .login-btn {
-  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  background: linear-gradient(135deg, #194F90 0%, #477399 100%);
   border:   none;
   padding: 12px;
   font-weight: 600;
@@ -70,7 +70,7 @@
 
 .login-btn:hover {
   transform: translateY(-2px); 
-  background: linear-gradient(135deg, #FF6B00 0%, #FF8533 100%);
+  background: linear-gradient(135deg, #194F90 0%, #477399 100%);
 }
 
 .login-btn:active {

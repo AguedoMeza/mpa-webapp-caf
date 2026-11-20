@@ -79,14 +79,14 @@ const ResponsableSelect: React.FC<ResponsableSelectProps> = ({
     option: (provided, state) => ({
       ...provided,
       backgroundColor: state.isSelected
-        ? '#0d6efd'
+        ? '#194F90'
         : state.isFocused
         ? '#e9ecef'
         : 'white',
       color: state.isSelected ? 'white' : '#212529',
       cursor: 'pointer',
       '&:active': {
-        backgroundColor: '#0d6efd',
+        backgroundColor: '#194F90',
       },
     }),
   };
